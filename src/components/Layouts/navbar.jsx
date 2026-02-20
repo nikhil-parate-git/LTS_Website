@@ -3,7 +3,7 @@ import { Mic, Search, Menu, User, MapPin, ChevronDown } from "lucide-react";
 import logo from "../../../src/assets/logo.png";
 
 const locations = [
-  "Delhi (Delhi NCR)", "Mumbai", "Bangalore", "Chennai",
+  "Nagpur (Nagpur NCR)", "Mumbai", "Bangalore", "Chennai",
   "Hyderabad", "Pune", "Kolkata", "Nagpur", "Ahmedabad", "Jaipur",
 ];
 

@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 const businesses = [   
   {
     id: 1,
-    name: "ApplyToLoans Consultancy Services",
+    name: "QuickLoan Advisors or FundFlow Consultancy",
     category: "Banks Loans & Currency Exchange",
-    location: "Uttam Nagar, Delhi",
+    location: "Uttam Nagar, Nagpur",
     rating: 5.0,
     reviews: 24,
     image: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=400&q=80",
@@ -16,9 +16,9 @@ const businesses = [
   },
   {
     id: 2,
-    name: "Fire Engineering Technology",
+    name: " BlazeGuard Solutions or InfernoShield Technologies",
     category: "Fire Fighting Solution Providers",
-    location: "Uttam Nagar, Delhi",
+    location: "Uttam Nagar, Nagpur",
     rating: 5.0,
     reviews: 18,
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
@@ -27,9 +27,9 @@ const businesses = [
   },
   {
     id: 3,
-    name: "Full Body Massage In Delhi",
+    name: " Serenity Touch Spa or Rejuvenate Wellness Hub",
     category: "Massage & Spa Parlours",
-    location: "Paharganj, Delhi",
+    location: "Paharganj, Nagpur",
     rating: 5.0,
     reviews: 42,
     image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80",
@@ -38,9 +38,9 @@ const businesses = [
   },
   {
     id: 4,
-    name: "Om Sai Safeguard Services Pvt. Ltd.",
+    name: "VigilGuard Security or SafeShield Protectors",
     category: "Security Guards & Security Agencies",
-    location: "Raj Nagar - II, Delhi",
+    location: "Raj Nagar - II, Nagpur",
     rating: 5.0,
     reviews: 31,
     image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=400&q=80",
@@ -50,8 +50,8 @@ const businesses = [
   {
     id: 5,
     name: "Detective Guru",
-    category: "Marriage Bureau & Matrimony Services",
-    location: "Moti Bagh, Delhi",
+    category: "SoulMate Matrimony or Bandhan Marriage Bureau",
+    location: "Moti Bagh, Nagpur",
     rating: 4.8,
     reviews: 15,
     image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80",
@@ -60,9 +60,9 @@ const businesses = [
   },
   {
     id: 6,
-    name: "Russian Spa Mahipalpur",
+    name: "Royal Russian Retreat or Tsar Wellness Spa",
     category: "Massage & Spa Parlours",
-    location: "Mahipalpur, Delhi",
+    location: "Mahipalpur, Nagpur",
     rating: 4.9,
     reviews: 67,
     image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80",
@@ -71,9 +71,9 @@ const businesses = [
   },
   {
     id: 7,
-    name: "Birth Certificate Agents Passport Agent",
+    name: "DocuLegal Experts or PermitPro Consultants",
     category: "Legal Documents & License Agents",
-    location: "Shahdara, Delhi",
+    location: "Shahdara, Nagpur",
     rating: 5.0,
     reviews: 29,
     image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&q=80",
@@ -82,9 +82,9 @@ const businesses = [
   },
   {
     id: 8,
-    name: "DCC Animal Hospital",
+    name: "Paws & Claws Vet Clinic or PetCare Specialists",
     category: "Veterinary Clinics & Pet Doctors",
-    location: "Masjid Moth Extn, Delhi",
+    location: "Masjid Moth Extn, Nagpur",
     rating: 4.7,
     reviews: 53,
     image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80",
@@ -205,7 +205,7 @@ export default function TopRatedBusinesses() {
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
               Top Rated Businesses{" "}
-              <span className="text-orange-500">in Delhi</span>
+              <span className="text-orange-500">in Nagpur</span>
             </h2>
             <p className="text-gray-400 text-sm mt-1">Trusted by thousands of local customers</p>
           </div>

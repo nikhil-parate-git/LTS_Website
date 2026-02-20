@@ -137,7 +137,7 @@ export default function Footer() {
           {/* Left — copyright + legal */}
           <div className="flex flex-col gap-1.5">
             <p className="text-gray-500 text-xs">
-              Copyright – Pan India Internet Pvt Ltd (PIIPL)
+              Copyright – Local Trade Street
             </p>
             <div className="flex flex-wrap gap-1 items-center">
               {legalLinks.map((l, i) => (

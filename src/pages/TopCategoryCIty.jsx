@@ -128,7 +128,7 @@ function ViewMoreTile({ onClick }) {
   );
 }
 
-export default function TopCategoryCity({ city = "Delhi" }) {
+export default function TopCategoryCity({ city = "Nagpur" }) {
   const [showAll, setShowAll] = useState(false);
 
   const visibleCats = showAll ? categories : categories.slice(0, INITIAL_SHOW - 1);

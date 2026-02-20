@@ -5,7 +5,7 @@ const reviews = [
   {
     id: 1,
     name: "Rahul Mehta",
-    location: "Delhi",
+    location: "Nagpur",
     rating: 5,
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul&backgroundColor=b6e3f4",
     text: "Outstanding service! I found the perfect interior designer through LocalTradeStreet within minutes. The business was verified, the team was professional, and the results exceeded my expectations. Highly recommend this platform!",

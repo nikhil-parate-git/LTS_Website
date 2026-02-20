@@ -11,7 +11,7 @@ import Footer from "./Footer";
 
 // ─── LOCATIONS ─────────────────────────────────────────────────
 const locations = [
-  "Delhi (Delhi NCR)", "Mumbai", "Bangalore", "Chennai",
+  "Nagpur (Nagpur NCR)", "Mumbai", "Bangalore", "Chennai",
   "Hyderabad", "Pune", "Kolkata", "Nagpur", "Ahmedabad", "Jaipur",
 ];
 
@@ -22,14 +22,14 @@ const slides = [
     image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80",
     title: "India's No. 1 Local Search Engine",
     subtitle: "Hungry? Find the Best Restaurants Near You",
-    cta: "EXPLORE TOP RESTAURANTS IN DELHI",
+    cta: "EXPLORE TOP RESTAURANTS IN NAGPUR",
   },
   {
     id: 2,
     image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=80",
     title: "India's No. 1 Local Search Engine",
     subtitle: "Need Financial Advise? Planning to invest in Mutual Funds or Insurance?",
-    cta: "CONNECT WITH TOP INVESTMENT ADVISORS IN DELHI",
+    cta: "CONNECT WITH TOP INVESTMENT ADVISORS IN NAGPUR",
   },
   {
     id: 3,
