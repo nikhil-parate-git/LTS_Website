@@ -115,7 +115,7 @@ export default function WhyChooseUs() {
           <p className="text-gray-400 text-sm md:text-base mt-4 max-w-xl mx-auto leading-relaxed">
             India's most trusted local search platform — connecting millions of customers with verified businesses across 500+ cities.
           </p>
-          {/* Decorative underline */}
+        
           <div className="mt-5 flex items-center justify-center gap-1.5">
             <div className="h-1 w-8 rounded-full bg-orange-200" />
             <div className="h-1 w-16 rounded-full bg-orange-500" />
