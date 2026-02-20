@@ -11,7 +11,7 @@ const reasons = [
   },
   {
     id: 2,
-    icon: "⭐",
+    icon: "⭐",   
     bgColor: "#F0FDF4",
     iconBg: "#DCFCE7",
     title: "100% Satisfaction Guarantee",

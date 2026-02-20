@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapPin, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const businesses = [
+const businesses = [   
   {
     id: 1,
     name: "ApplyToLoans Consultancy Services",
