@@ -7,6 +7,7 @@ import TopRatedBusinesses from "./TopRatedBusinesses";
 import TopCategoryCity from "./TopCategoryCIty";
 import WhyChooseUs from "./WhyChooseUs";
 import CustomerReviews from "./CustomerReviews";
+import Footer from "./Footer";
 
 // ─── LOCATIONS ─────────────────────────────────────────────────
 const locations = [
@@ -415,6 +416,7 @@ export default function Home() {
       <TopCategoryCity/>
       <WhyChooseUs/>
       <CustomerReviews/>
+      <Footer/>
       <main></main>
     </div>
   );
