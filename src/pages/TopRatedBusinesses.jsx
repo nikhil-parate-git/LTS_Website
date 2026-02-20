@@ -201,7 +201,7 @@ export default function TopRatedBusinesses() {
       <div className="max-w-screen-xl mx-auto">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
               Top Rated Businesses{" "}
@@ -210,7 +210,7 @@ export default function TopRatedBusinesses() {
             <p className="text-gray-400 text-sm mt-1">Trusted by thousands of local customers</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
@@ -228,7 +228,7 @@ export default function TopRatedBusinesses() {
             <button className="ml-2 text-orange-500 font-semibold text-sm hover:underline underline-offset-4">
               View All →
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Grid */}
@@ -247,11 +247,11 @@ export default function TopRatedBusinesses() {
         </div>
 
         {/* Load More */}
-        <div className="flex justify-center mt-10">
+        {/* <div className="flex justify-center mt-10">
           <button className="group relative bg-white border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-bold text-sm uppercase tracking-wider px-8 py-3 rounded-xl transition-all duration-300 overflow-hidden">
             <span className="relative z-10">Load More Businesses</span>
           </button>
-        </div>
+        </div> */}
       </div>
 
       <style>{`

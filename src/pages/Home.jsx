@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Layouts/navbar";
 import ListBusiness from "./ListBusiness";
 import TopRatedBusinesses from "./TopRatedBusinesses";
+import TopCategoryCity from "./TopCategoryCIty";
+import WhyChooseUs from "./WhyChooseUs";
+import CustomerReviews from "./CustomerReviews";
 
 // ─── LOCATIONS ─────────────────────────────────────────────────
 const locations = [
@@ -409,6 +412,9 @@ export default function Home() {
       <TrendingCategories />
       <ListBusiness/>
       <TopRatedBusinesses/>
+      <TopCategoryCity/>
+      <WhyChooseUs/>
+      <CustomerReviews/>
       <main></main>
     </div>
   );
