@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import Subscriptions from "../pages/Subscriptions";
 
 const Home = lazy(() => import("../pages/Home"));
 const SubCategory = lazy(() => import("../pages/SubCategory"));
@@ -12,6 +13,7 @@ export default function PublicRoute() {
       <Routes>
         <Route path="/" element={<Home />} />
           <Route path="/category/:slug" element={<SubCategory />} />
+          <Route path="/subscriptions" element={<Subscriptions/>} />
         {/* <Route path="/register" element={<Register />} /> */}
       </Routes>
     </Suspense>
