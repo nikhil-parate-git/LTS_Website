@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Home, ChevronRight, MapPin, Phone, Star, Clock, Shield,
   BadgeCheck, Eye, Send, ChevronDown, SlidersHorizontal,
   Bookmark, Share2, Zap, TrendingUp, Users, Filter, X
 } from "lucide-react";
+
+
 // navbar is now provided by MainLayout
 // import Navbar from "../components/Layouts/navbar";
 
@@ -249,13 +251,20 @@ function BusinessCard({ biz }) {
             <button className="flex items-center gap-1.5 border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white text-xs font-bold px-4 py-2 rounded-xl transition-all">
               <Send size={12} /> Send Enquiry
             </button>
-            <button className="ml-auto text-xs text-blue-500 hover:underline font-medium">
-              View Profile →
-            </button>
+           
+        <div>
+        <Link size = {12}
+          to={`/business/${biz.id}`}
+          className="text-orange-600 font-semibold hover:underline" mt-4>
+          View Profile →
+        </Link>
+        </div>
+
+            </div>
           </div>
         </div>
       </div>
-    </div>
+ 
   );
 }
 

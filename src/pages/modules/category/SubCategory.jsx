@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Home, Star, ChevronRight } from "lucide-react";
+  
 // navbar provided by MainLayout
 
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
