@@ -4,6 +4,71 @@ import Navbar from "../components/Layouts/navbar";
 
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
 const allSubCategories = {
+  "ac-services": {
+    name: "AC Repair & Services",
+    items: [
+      { id: 1, name: "AC Installation", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&q=80" },
+      { id: 2, name: "AC Gas Refilling", image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+      { id: 3, name: "AC Deep Cleaning", image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+      { id: 4, name: "AC PCB Repair", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
+      { id: 5, name: "Split AC Repair", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" },
+      { id: 6, name: "Window AC Repair", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+      { id: 7, name: "AC AMC Services", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&q=80" },
+      { id: 8, name: "Cassette AC Repair", image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80" },
+    ],
+  },
+  "ac-services": {
+    name: "AC Repair & Services",
+    items: [
+      { id: 1, name: "AC Installation", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&q=80" },
+      { id: 2, name: "AC Gas Refilling", image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+      { id: 3, name: "AC Deep Cleaning", image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+      { id: 4, name: "AC PCB Repair", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
+      { id: 5, name: "Split AC Repair", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" },
+      { id: 6, name: "Window AC Repair", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+      { id: 7, name: "AC AMC Services", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&q=80" },
+      { id: 8, name: "Cassette AC Repair", image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80" },
+    ],
+  },
+  "plumber": {
+    name: "Plumber",
+    items: [
+      { id: 1, name: "Pipe Leakage Repair", image: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400&q=80" },
+      { id: 2, name: "Bathroom Fitting", image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+      { id: 3, name: "Water Tank Cleaning", image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+      { id: 4, name: "Tap & Mixer Repair", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+      { id: 5, name: "Drainage & Sewage Cleaning", image: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=400&q=80" },
+      { id: 6, name: "Geyser Installation & Repair", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&q=80" },
+      { id: 7, name: "Kitchen Plumbing", image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80" },
+      { id: 8, name: "Overhead Tank Installation", image: "https://images.unsplash.com/photo-1553413077-190dd305871c?w=400&q=80" },
+    ],
+  },
+  "carpenter": {
+    name: "Carpenter",
+    items: [
+      { id: 1, name: "Furniture Making", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&q=80" },
+      { id: 2, name: "Modular Kitchen", image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80" },
+      { id: 3, name: "Door & Window Repair", image: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=400&q=80" },
+      { id: 4, name: "Wardrobe Installation", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80" },
+      { id: 5, name: "False Ceiling Work", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80" },
+      { id: 6, name: "Wooden Flooring", image: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&q=80" },
+      { id: 7, name: "Sofa & Chair Repair", image: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=400&q=80" },
+      { id: 8, name: "Bed & Cot Making", image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&q=80" },
+    ],
+  },
+  "gym-fitness": {
+    name: "Gym & Fitness Centers",
+    items: [
+      { id: 1, name: "Weight Training Gyms", image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80" },
+      { id: 2, name: "CrossFit Centers", image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80" },
+      { id: 3, name: "Yoga Centers", image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&q=80" },
+      { id: 4, name: "Zumba & Dance Fitness", image: "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=400&q=80" },
+      { id: 5, name: "Swimming Pools", image: "https://images.unsplash.com/photo-1600965962361-9035dbfd1c50?w=400&q=80" },
+      { id: 6, name: "Personal Trainers", image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80" },
+      { id: 7, name: "Aerobics Classes", image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&q=80" },
+      { id: 8, name: "Martial Arts Centers", image: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=80" },
+    ],
+  },
   "tours-travel": {
     name: "Tours / Travel",
     items: [
@@ -218,7 +283,7 @@ export default function SubCategory() {
           {/* Left: Home → Category */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate(`/category/${category.slug}`)}
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center",
                 width: "36px", height: "36px", background: "#f97316",
@@ -252,6 +317,7 @@ export default function SubCategory() {
           }}>
             {data.items.map((item) => (
               <div
+               onClick={() => navigate(`/category/${slug}`)}
                 key={item.id}
                 style={{
                   background: "white", borderRadius: "12px",
