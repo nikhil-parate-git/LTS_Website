@@ -5,7 +5,7 @@ import {
   BadgeCheck, Eye, Send, ChevronDown, SlidersHorizontal,
   Bookmark, Share2, Zap, TrendingUp, Users, Filter, X
 } from "lucide-react";
-import Navbar from "../components/Layouts/navbar";
+// navbar is now provided by MainLayout
 // import Navbar from "../components/Layouts/navbar";
 
 // ─── MOCK BUSINESS DATA ─────────────────────────────────────────
@@ -370,7 +370,7 @@ export default function Category() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {/* navbar rendered by MainLayout */}
 
       {/* ── Hero Banner ── */}
       <div className="relative h-44 overflow-hidden">
