@@ -55,7 +55,7 @@ function CategoryTile({ cat, index }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => navigate(`/category/${cat.slug}`)}
+      onClick={() => navigate(`/subcategory/${cat.slug}`)}
       className="flex flex-col items-center gap-2 cursor-pointer group"
       style={{
         animation: `fadeUp 0.35s ease both`,

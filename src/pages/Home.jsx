@@ -56,6 +56,75 @@ const slides = [
 
 // ─── TRENDING CATEGORIES (each with 4 sub-images) ──────────────
 const categories = [
+  // ─── PRIORITY CATEGORIES ───────────────────────────────────────
+{
+    id: 101,
+    slug: "ac-services",
+    name: "AC Repair & Services",
+    subImages: [
+      "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=300&q=80",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&q=80",
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=300&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80",
+    ],
+  },
+  {
+    id: 102,
+    slug: "electrician",
+    name: "Electrician",
+    subImages: [
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=300&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&q=80",
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=300&q=80",
+    ],
+  },
+  {
+    id: 103,
+    slug: "plumber",
+    name: "Plumber",
+    subImages: [
+      "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=300&q=80",
+      "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=300&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&q=80",
+    ],
+  },
+  {
+    id: 104,
+    slug: "carpenter",
+    name: "Carpenter",
+    subImages: [
+      "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=300&q=80",
+      "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=300&q=80",
+      "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=300&q=80",
+      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=300&q=80",
+    ],
+  },
+  {
+    id: 105,
+    slug: "hotels-resorts",
+    name: "Hotels & Resorts",
+    subImages: [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&q=80",
+      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300&q=80",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=300&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=300&q=80",
+    ],
+  },
+  {
+    id: 106,
+    slug: "gym-fitness",
+    name: "Gym & Fitness Centers",
+    subImages: [
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&q=80",
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&q=80",
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300&q=80",
+      "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=300&q=80",
+    ],
+  },
+
+  // ─── REMAINING CATEGORIES (unchanged) ─────────────────────────
   {
     id: 1,
     slug: "tours-travel",
@@ -157,17 +226,6 @@ const categories = [
   },
   {
     id: 10,
-    slug: "hotels-resorts",
-    name: "Hotels & Resorts",
-    subImages: [
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&q=80",
-      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300&q=80",
-      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=300&q=80",
-      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=300&q=80",
-    ],
-  },
-  {
-    id: 11,
     slug: "electronics-repair",
     name: "Electronics Repair Services",
     subImages: [
@@ -178,7 +236,7 @@ const categories = [
     ],
   },
   {
-    id: 12,
+    id: 11,
     slug: "caterers",
     name: "Caterers",
     subImages: [
@@ -189,7 +247,7 @@ const categories = [
     ],
   },
   {
-    id: 13,
+    id: 12,
     slug: "computer-training",
     name: "Computer Training Institutes",
     subImages: [
@@ -200,7 +258,7 @@ const categories = [
     ],
   },
   {
-    id: 14,
+    id: 13,
     slug: "hospitals-clinics",
     name: "Hospitals & Clinics",
     subImages: [
@@ -211,7 +269,7 @@ const categories = [
     ],
   },
   {
-    id: 15,
+    id: 14,
     slug: "legal-documents",
     name: "Legal Documents & License Agents",
     subImages: [
@@ -353,7 +411,7 @@ function CategoryCard({ category }) {
 
   return (
     <div
-      onClick={() => navigate(`/category/${category.slug}`)}
+      onClick={() => navigate(`/subcategory/${category.slug}`)}
     className="group cursor-pointer relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
 style={{ aspectRatio: "4/3" }}
     >
@@ -408,6 +466,7 @@ function TrendingCategories() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 ">
+      
       <Navbar />
       <HeroSlider />
       <TrendingCategories />
