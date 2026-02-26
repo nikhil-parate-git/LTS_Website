@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Home, Star, ChevronRight } from "lucide-react";
+import Banner from "./Ac banner/banner";
 // navbar provided by MainLayout
 
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
@@ -275,7 +276,7 @@ export default function SubCategory() {
 
       {/* Sticky Navbar */}
       {/* navbar rendered by MainLayout */}
-
+          <Banner />
       {/* Breadcrumb Bar */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
