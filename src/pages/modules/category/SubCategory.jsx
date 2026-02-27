@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Home, Star, ChevronRight } from "lucide-react";
-import Banner from "./Ac banner/Banner";
+// import Banner from "./Acbanner/banner";
+import Banner from "./Acbanner/Banner";
   
 // navbar provided by MainLayout
 
