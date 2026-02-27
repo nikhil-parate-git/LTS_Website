@@ -4,6 +4,7 @@ import Subscriptions from "../pages/Subscriptions";
 import Category from "../pages/modules/category/Category";
 import SubCategory from "../pages/modules/category/SubCategory";
 import MainLayout from "../components/Layouts/MainLayout";
+import Details from "../pages/modules/category/Details";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
 // const SubCategory = lazy(() => import("../pages/SubCategory"));
@@ -20,6 +21,7 @@ export default function PublicRoute() {
           <Route path="/category/:slug" element={<Category />} />
           <Route path="/subscriptions" element={<Subscriptions/>} />
           <Route path="/subcategory/:slug" element={<SubCategory />} />
+          <Route path="/business/:id" element={<Details />} />
         </Route>
         {/* <Route path="/register" element={<Register />} /> */}
       </Routes>

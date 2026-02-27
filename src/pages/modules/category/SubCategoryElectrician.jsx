@@ -1,7 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Home, Star, ChevronRight } from "lucide-react";
-import Banner from "./Ac banner/banner";
-  
 // navbar provided by MainLayout
 
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
@@ -19,18 +17,18 @@ const allSubCategories = {
       { id: 8, name: "Cassette AC Repair", image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80" },
     ],
   },
-  "electrician": {
-    name: "Electrician",
+  "ac-services": {
+    name: "AC Repair & Services",
     items: [
-    { id: 1, name: "Switch & Socket Repair", image: "/Images/Switchrepair.jpg"},
-    { id: 2, name: "Fan Installation", image: "/Images/fanInstallation.jpg"  },
-    { id: 3, name: "Light Installation",image: "/Images/lightInstallation.jpg" },
-    { id: 4, name: "Wiring & Rewiring",  image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
-    { id: 5, name: "MCB / Fuse Repair", image: "/Images/MCBorFuseRepair.avif" },
-    { id: 6, name: "Short Circuit Repair", image: "/Images/shortCircuitrepair.avif"},
-    { id: 7, name: "Inverter Installation", image: "/Images/InverterInstallation.webp" },
-    { id: 8, name: "Water Motor Repair", image: "/Images/waterMotorrepair.avif" }
-  ],
+      { id: 1, name: "AC Installation", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&q=80" },
+      { id: 2, name: "AC Gas Refilling", image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+      { id: 3, name: "AC Deep Cleaning", image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+      { id: 4, name: "AC PCB Repair", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
+      { id: 5, name: "Split AC Repair", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" },
+      { id: 6, name: "Window AC Repair", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+      { id: 7, name: "AC AMC Services", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&q=80" },
+      { id: 8, name: "Cassette AC Repair", image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80" },
+    ],
   },
   "plumber": {
     name: "Plumber",
@@ -277,7 +275,7 @@ export default function SubCategory() {
 
       {/* Sticky Navbar */}
       {/* navbar rendered by MainLayout */}
-          <Banner />
+
       {/* Breadcrumb Bar */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
