@@ -176,7 +176,7 @@ export default function Footer() {
         className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition-colors duration-200"
       >
         <EnvelopeIcon className="w-3.5 h-3.5 text-orange-500" />
-        <span>support@technoro.in</span>
+        <span>support@localtradestreet.com</span>
       </a>
     </li>
 
