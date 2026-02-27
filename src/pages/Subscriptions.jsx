@@ -3,8 +3,7 @@ import { useState } from "react";
 import silver from "../assets/silver.jpeg"
 import platinum from "../assets/platinum.jpeg";
 import gold from "../assets/gold.jpeg";
-import Navbar from "../components/Layouts/navbar";
-import Footer from "./Footer";
+// navbar/footer provided by MainLayout
 
 const plans = [
   {
@@ -257,7 +256,7 @@ export default function Subscription() {
 
   return (
     <>
-      <Navbar />
+      {/* navbar rendered by layout */}
       <div className="min-h-screen bg-white">
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
@@ -328,7 +327,7 @@ export default function Subscription() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* footer rendered by layout */}
     </>
   );
 }
