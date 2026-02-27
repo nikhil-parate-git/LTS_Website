@@ -14,9 +14,9 @@ const plans = [
     tag: null,
     featured: false,
     durations: [
-      { label: "1 Month", leads: 50, base: 2000, gst: 360, total: 2360 },
-      { label: "6 Months", leads: 300, base: 11000, gst: 1980, total: 12980 },
-      { label: "12 Months", leads: 600, base: 22000, gst: 3960, total: 25960 },
+      { label: "1 Month", leads: 50, base: 2749, gst: 495, total: 3244 },
+      { label: "6 Months", leads: 300, base: 14999, gst: 2700, total: 17699 },
+      { label: "12 Months", leads: 600, base: 24299, gst: 4374, total: 28673 },
     ],
     color: "from-slate-400 to-slate-300",
     dotColor: "bg-slate-400",
@@ -31,9 +31,9 @@ const plans = [
     tag: "Most Popular",
     featured: true,
     durations: [
-      { label: "1 Month", leads: 200, base: 5000, gst: 900, total: 5900 },
-      { label: "6 Months", leads: 1200, base: 25000, gst: 4500, total: 29500 },
-      { label: "12 Months", leads: 2400, base: 50000, gst: 9000, total: 59000 },
+      { label: "1 Month", leads: 200, base: 5999, gst: 1080, total: 7079 },
+      { label: "6 Months", leads: 1200, base: 29999, gst: 5400, total: 35399 },
+      { label: "12 Months", leads: 2400, base: 57599, gst: 10368, total: 67967 },
     ],
     color: "from-yellow-500 to-amber-600",
     dotColor: "bg-yellow-500",
@@ -48,9 +48,9 @@ const plans = [
     tag: null,
     featured: false,
     durations: [
-      { label: "1 Month", leads: "unlimited", base: 10000, gst: 1800, total: 11800 },
-      { label: "6 Months", leads: "unlimited", base: 50000, gst: 9000, total: 59000 },
-      { label: "12 Months", leads: "unlimited", base: 100000, gst: 18000, total: 118000 },
+      // { label: "1 Month", leads: "unlimited", base: 10000, gst: 1800, total: 11800 },
+      // { label: "6 Months", leads: "unlimited", base: 50000, gst: 9000, total: 59000 },
+      { label: "12 Months", leads: "unlimited", base: 109999, gst: 0, total: 109999 },
     ],
     color: "from-indigo-500 to-purple-500",
     dotColor: "bg-indigo-500",
@@ -113,16 +113,35 @@ function PrimeCard() {
 }
 
 /* ─── Lead Plan Card ─── */
-function PlanCard({ plan, durIdx, onDurChange, stepNum }) {
-  const dur = plan.durations[durIdx];
+// function PlanCard({ plan, durIdx, onDurChange, stepNum }) {
+//   const dur = plan.durations[durIdx];
   
-  // LOGIC: Sirf Silver (Dynamic) aur Gold ke liye custom progress
+//   // LOGIC: Sirf Silver (Dynamic) aur Gold ke liye custom progress
+//   let leadsPct;
+//   if (plan.id === "silver" || plan.id === "gold") {
+//     leadsPct = durIdx === 0 ? 25 : durIdx === 1 ? 50 : 100;
+//   } else {
+//     // Diamond ya any other plan ke liye purana logic ya 100%
+//     leadsPct = 100;
+//     leadsPct = dur.leads === "unlimited" ? 100 : Math.round((dur.leads / maxLeadsByDur[durIdx]) * 100);
+//   }
+
+
+function PlanCard({ plan, durIdx, onDurChange, stepNum }) {
+  // FIXED LOGIC: Agar plan Diamond (platinum) hai, toh hamesha index 0 (12 months) use karein
+  // Kyunki usme 1 ya 6 month ke options nahi hain.
+  const activeIdx = plan.id === "platinum" ? 0 : durIdx;
+  const dur = plan.durations[activeIdx];
+  
+  // Safety check: Agar dur abhi bhi undefined hai (just in case), toh crash na ho
+  if (!dur) return null;
+
+  // Progress Bar Logic
   let leadsPct;
   if (plan.id === "silver" || plan.id === "gold") {
-    leadsPct = durIdx === 0 ? 25 : durIdx === 1 ? 50 : 100;
+    leadsPct = activeIdx === 0 ? 25 : activeIdx === 1 ? 50 : 100;
   } else {
-    // Diamond ya any other plan ke liye purana logic ya 100%
-    leadsPct = dur.leads === "unlimited" ? 100 : Math.round((dur.leads / maxLeadsByDur[durIdx]) * 100);
+    leadsPct = 100; // Diamond ke liye full bar
   }
 
   return (
