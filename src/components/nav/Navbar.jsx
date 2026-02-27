@@ -1,10 +1,19 @@
 import { useState, useRef, useEffect } from "react";
 import { Mic, Search, Menu, User, MapPin, ChevronDown } from "lucide-react";
 import logo from "../../../src/assets/logo.png";
+import HamburgerDrawer from "./HamburgerDrawer";
 
 const locations = [
-  "Nagpur (Nagpur NCR)", "Mumbai", "Bangalore", "Chennai",
-  "Hyderabad", "Pune", "Kolkata", "Nagpur", "Ahmedabad", "Jaipur",
+  "Nagpur (Nagpur NCR)",
+  "Mumbai",
+  "Bangalore",
+  "Chennai",
+  "Hyderabad",
+  "Pune",
+  "Kolkata",
+  "Nagpur",
+  "Ahmedabad",
+  "Jaipur",
 ];
 
 export default function Navbar() {
@@ -13,6 +22,7 @@ export default function Navbar() {
   const [selectedLocation, setSelectedLocation] = useState(locations[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleMic = () => setIsListening((prev) => !prev);
 
@@ -29,7 +39,6 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white shadow-md border-b border-gray-200 px-4 py-2  top-0 z-50">
       <div className="max-w-screen-xl mx-auto flex items-center gap-3">
-
         {/* Logo */}
         <div className="flex items-center shrink-0 select-none ">
           <img
@@ -49,7 +58,9 @@ export default function Navbar() {
           >
             <MapPin className="w-4 h-4 text-orange-500" />
             <span className="max-w-[130px] truncate">{selectedLocation}</span>
-            <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+            />
           </button>
 
           {/* Dropdown List */}
@@ -58,11 +69,15 @@ export default function Navbar() {
               {locations.map((loc) => (
                 <button
                   key={loc}
-                  onClick={() => { setSelectedLocation(loc); setDropdownOpen(false); }}
+                  onClick={() => {
+                    setSelectedLocation(loc);
+                    setDropdownOpen(false);
+                  }}
                   className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition-colors
-                    ${selectedLocation === loc
-                      ? "text-orange-500 font-semibold bg-orange-50"
-                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                    ${
+                      selectedLocation === loc
+                        ? "text-orange-500 font-semibold bg-orange-50"
+                        : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                     }`}
                 >
                   <MapPin className="w-3 h-3 shrink-0" />
@@ -100,17 +115,22 @@ export default function Navbar() {
         <div className="flex items-center gap-3 shrink-0 ml-2">
           <button className="hidden lg:flex items-center gap-1 border border-gray-800 text-gray-800 font-semibold text-sm px-3 py-1.5 rounded hover:bg-gray-100 transition-colors whitespace-nowrap">
             List Your Business
-            <span className="bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">Free</span>
+            <span className="bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">
+              Free
+            </span>
           </button>
-          <button className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-700">
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-700"
+          >
             <Menu className="w-5 h-5" />
           </button>
           <button className="p-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors text-gray-700">
             <User className="w-5 h-5" />
           </button>
         </div>
-
       </div>
+      <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </nav>
   );
 }
