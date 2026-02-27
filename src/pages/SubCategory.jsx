@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Home, Star, ChevronRight } from "lucide-react";
 import Navbar from "../components/Layouts/navbar";
 
+
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
 const allSubCategories = {
   "tours-travel": {
