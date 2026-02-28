@@ -34,12 +34,13 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Subscriptions from "../pages/Subscriptions";
-import Category from "../pages/modules/category/Category";
-import SubCategory from "../pages/modules/category/SubCategory";
+import Category from "../pages/modules/trendingcategories/CategoriesDetails";
+import SubCategory from "../pages/modules/trendingcategories/Categories";
 import MainLayout from "../components/Layouts/MainLayout";
-import Details from "../pages/modules/category/Details";
+import Details from "../pages/modules/trendingcategories/CategoriesInfo";
 import About from "../pages/modules/about and contact/About";
 import Contact from "../pages/modules/about and contact/Contact";
+import SubmitEnquiry from "../pages/modules/trendingcategories/SubmitEnquiry";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
 
@@ -62,6 +63,8 @@ export default function PublicRoute() {
 
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+            <Route path="/submitenquiry" element={<SubmitEnquiry />} />
+
         </Route>
       </Routes>
     </Suspense>

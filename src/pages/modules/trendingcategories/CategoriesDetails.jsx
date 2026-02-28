@@ -1,0 +1,595 @@
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Home,
+  ChevronRight,
+  MapPin,
+  Phone,
+  Eye,
+  Send,
+  ChevronDown,
+  SlidersHorizontal,
+  BadgeCheck,
+  Star,
+  Clock,
+  Shield,
+  TrendingUp,
+  Users,
+  Zap,
+  Bookmark,
+  Share2,
+  ArrowLeft,
+  CheckCircle,
+} from "lucide-react";
+
+// ─── HELPER ─────────────────────────────────────────────────────
+function formatProfileCount(n) {
+  if (n >= 1000) {
+    const val = n / 1000;
+    return (Number.isInteger(val) ? val : val.toFixed(1)) + "k+";
+  }
+  return String(n);
+}
+
+// ─── DATA ────────────────────────────────────────────────────────
+const categoryData = {
+  "tours-travel": {
+    name: "Tours & Travel",
+    heroImage:
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80",
+    totalListings: 248,
+    businesses: [
+      {
+        id: 1,
+        name: "SS Rana Tours & Travels",
+        verified: true,
+        sponsored: true,
+        rating: 4.4,
+        reviews: 312,
+        since: 2008,
+        address:
+          "C-79/144 Arambagh Paharganj, New Delhi 110055- Paharganj, Delhi",
+        tags: [
+          "Trains & Bus Ticket Agents",
+          "Local Travel Agents & Toor Operators",
+          "International Travel Agents",
+          "SOTC Tour Agents",
+          "Domestic Travel Agents",
+          "IAIA Approved Travel Agents",
+          "Foreign Travel Agents & Toor Operators",
+          "24 Hours Travel Agents",
+          "Government Approved Travel Agents",
+          "MTDC Travel Agents",
+          "Travel Complaint Assistance Services",
+          "ASTA Approved Travel Agents",
+        ],
+        speciality: "Goa Tour Packages",
+        phone: "+91 98765 43210",
+        hours: "10:00 AM-10:00 PM - 24/7",
+        profileCount: 49,
+        image:
+          "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
+      },
+      {
+        id: 2,
+        name: "Horizon Travel Agency",
+        verified: true,
+        sponsored: true,
+        rating: 4.7,
+        reviews: 198,
+        since: 2012,
+        address: "Shop 14, Connaught Place, New Delhi 110001",
+        tags: [
+          "International Tours",
+          "Holiday Packages",
+          "Visa Assistance",
+          "Honeymoon Packages",
+          "Group Tours",
+          "Budget Travel",
+        ],
+        speciality: "Europe Tour Packages",
+        phone: "+91 99887 66554",
+        hours: "9:00 AM - 8:00 PM",
+        profileCount: 2100,
+        image:
+          "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=500&q=80",
+      },
+      {
+        id: 3,
+        name: "SwiftJet Air Ticketing",
+        verified: true,
+        sponsored: false,
+        rating: 4.2,
+        reviews: 87,
+        since: 2015,
+        address: "B-12, Lajpat Nagar II, New Delhi 110024",
+        tags: [
+          "Air Ticketing",
+          "Domestic Flights",
+          "Corporate Travel",
+          "Airport Transfer",
+        ],
+        speciality: null,
+        phone: "+91 97654 32109",
+        hours: "8:00 AM - 11:00 PM",
+        profileCount: 980,
+        image:
+          "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&q=80",
+      },
+      {
+        id: 4,
+        name: "Wanderlust Holidays",
+        verified: false,
+        sponsored: false,
+        rating: 3.9,
+        reviews: 54,
+        since: 2018,
+        address: "45, Karol Bagh Market, New Delhi 110005",
+        tags: ["Holiday Packages", "Honeymoon Tours", "Budget Travel"],
+        speciality: null,
+        phone: "+91 96543 21098",
+        hours: "10:00 AM - 7:00 PM",
+        profileCount: 620,
+        image:
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80",
+      },
+      {
+        id: 5,
+        name: "Royal Cab Services",
+        verified: true,
+        sponsored: false,
+        rating: 4.5,
+        reviews: 421,
+        since: 2010,
+        address: "Near ISBT, Kashmere Gate, Delhi 110006",
+        tags: ["Taxi Services", "Airport Transfer", "Outstation Cabs"],
+        speciality: null,
+        phone: "+91 95432 10987",
+        hours: "Open 24 Hours",
+        profileCount: 5300,
+        image:
+          "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500&q=80",
+      },
+    ],
+  },
+};
+
+const popularCategories = [
+  "Air & Bus Ticket Agents",
+  "Local Travel Agents & Tour Operators",
+  "Domestic Travel Agents",
+  "International Travel Agents",
+  "Holiday Package Dealers",
+];
+const nearbyAreas = [
+  { name: "All of CA", count: 14122 },
+  { name: "Delhi NCR", count: 73200 },
+  { name: "Mumbai", count: 41600 },
+  { name: "Ajmer Gate", count: 11000 },
+];
+const relatedKeywords = [
+  "Tour & Travel Agents in Delhi",
+  "Travel Agents near Me",
+  "Cheap Flight Ticket Booking",
+  "Bus Ticket Booking Delhi",
+  "Honeymoon Package Deals",
+  "International Tour Packages",
+];
+
+// ─── STARS ───────────────────────────────────────────────────────
+function Stars({ rating }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star
+          key={s}
+          size={13}
+          className={
+            s <= Math.round(rating)
+              ? "fill-amber-400 text-amber-400"
+              : "text-gray-300 fill-gray-200"
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── BUSINESS CARD ───────────────────────────────────────────────
+function BusinessCard({ biz }) {
+  const navigate = useNavigate();
+  const [saved, setSaved] = useState(false);
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  // First 2 tags visible by default, rest on See More
+  const VISIBLE = 2;
+  const visibleTags = showAllTags ? biz.tags : biz.tags.slice(0, VISIBLE);
+  const hiddenTags = showAllTags ? biz.tags.slice(VISIBLE) : [];
+  const hasMore = biz.tags.length > VISIBLE;
+
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
+      <div className="flex flex-col sm:flex-row">
+        {/* ── Image ── */}
+        <div
+          className="relative w-full sm:w-56 shrink-0 overflow-hidden"
+          style={{ minHeight: "180px" }}
+        >
+          <img
+            src={biz.image}
+            alt={biz.name}
+            className="w-full h-full object-cover"
+            style={{ minHeight: "180px" }}
+          />
+          {/* Since badge */}
+          <div className="absolute top-2.5 right-2.5 bg-white/90 text-gray-700 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
+            Since {biz.since}
+          </div>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="flex-1 p-4 flex flex-col gap-2">
+          {/* Name + verified */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h3 className="text-base font-bold text-blue-700 leading-tight hover:underline cursor-pointer">
+                {biz.name}
+              </h3>
+              {biz.verified && (
+                <BadgeCheck size={15} className="text-blue-500 shrink-0" />
+              )}
+            </div>
+            <button className="text-gray-400 hover:text-orange-500 transition-colors shrink-0">
+              <Share2 size={14} />
+            </button>
+          </div>
+
+          {/* Address */}
+          <div className="flex items-start gap-1.5 text-gray-500 text-xs">
+            <MapPin size={12} className="mt-0.5 text-orange-500 shrink-0" />
+            <span>{biz.address}</span>
+          </div>
+
+          {/* Tags — collapsed/expanded */}
+          <div>
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {visibleTags.map((tag, i) => (
+                <span
+                  key={i}
+                  className="text-[11px] border border-gray-300 text-gray-700 px-2.5 py-1 rounded-full bg-white font-medium"
+                >
+                  {tag}
+                </span>
+              ))}
+
+              {/* See More inline */}
+              {!showAllTags && hasMore && (
+                <button
+                  onClick={() => setShowAllTags(true)}
+                  className="text-[11px] text-blue-600 font-semibold hover:underline ml-1"
+                >
+                  See More
+                </button>
+              )}
+            </div>
+
+            {/* Extra tags shown after See More */}
+            {showAllTags && hiddenTags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
+                {hiddenTags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="text-[11px] border border-gray-300 text-gray-700 px-2.5 py-1 rounded-full bg-white font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {/* See Less — right aligned like image */}
+                <button
+                  onClick={() => setShowAllTags(false)}
+                  className="text-[11px] text-blue-600 font-semibold hover:underline ml-auto"
+                >
+                  See Less
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Speciality */}
+          {biz.speciality && (
+            <div className="flex items-center gap-1 text-xs text-orange-500 font-medium">
+              <CheckCircle size={12} className="text-orange-400" />
+              {biz.speciality}
+            </div>
+          )}
+
+          {/* Hours */}
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <Clock size={11} className="text-gray-400" />
+            <span className="font-medium text-gray-700">Open:</span>
+            <span>{biz.hours}</span>
+          </div>
+
+          {/* ── Action Row ── */}
+          <div className="flex items-center justify-between gap-2 mt-1 flex-wrap">
+            {/* Left: Show Number + Send Enquiry + Sponsored */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <a
+                href={`tel:${biz.phone}`}
+                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+              >
+                <Phone size={12} /> Show Number
+              </a>
+              <button className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                <Send size={12} /> Send Enquiry
+              </button>
+              {/* Sponsored button — on every card */}
+              <button
+                onClick={() => navigate(`/business/${biz.id}`)}
+                className="flex items-center gap-1 border border-orange-400 text-orange-500 hover:bg-orange-50 text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+              >
+                <Zap size={11} className="fill-orange-400" /> Sponsored
+              </button>
+            </div>
+
+            {/* Right: Profile Views */}
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <Eye size={12} className="text-orange-400" />
+              <span className="font-semibold text-gray-600">
+                {formatProfileCount(biz.profileCount)}
+              </span>
+              <span>Profile Views</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────
+function Sidebar({ cityName }) {
+  const [mobile, setMobile] = useState("");
+  const [name, setName] = useState("");
+  const [req, setReq] = useState("");
+
+  return (
+    <div className="space-y-5">
+      {/* Enquiry Form */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 px-4 py-3">
+          <p className="text-white font-bold text-sm">
+            Connect with Top Agents
+          </p>
+          <p className="text-orange-100 text-xs mt-0.5">
+            & Tour Operators in <span className="font-bold">{cityName}</span>
+          </p>
+        </div>
+        <div className="p-4 space-y-2.5">
+          <input
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+            placeholder="Enter your Mobile No."
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400"
+          />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your Name"
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400"
+          />
+          <textarea
+            value={req}
+            onChange={(e) => setReq(e.target.value)}
+            placeholder="What is your Requirements"
+            rows={3}
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400 resize-none"
+          />
+          <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md shadow-orange-200 hover:scale-[1.02]">
+            Send Enquiry
+          </button>
+        </div>
+      </div>
+
+      {/* Popular Categories */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+          <TrendingUp size={14} className="text-orange-500" /> Popular Category
+        </h3>
+        <div className="space-y-1.5">
+          {popularCategories.map((cat, i) => (
+            <button
+              key={i}
+              className="w-full text-left text-xs text-blue-600 hover:text-orange-500 hover:bg-orange-50 px-2 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <ChevronRight size={11} className="text-orange-400" /> {cat}
+            </button>
+          ))}
+        </div>
+        <button className="mt-2 text-xs font-bold text-orange-500 hover:underline">
+          Show More →
+        </button>
+      </div>
+
+      {/* Are You a Travel Agent */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-4">
+        <p className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
+          <Users size={13} className="text-blue-500" />
+          Are you a Travel Agent in your Operational City?
+        </p>
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors">
+          Add your Business Listings
+        </button>
+      </div>
+
+      {/* Nearby Areas */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+          <MapPin size={14} className="text-orange-500" /> Nearby Areas
+        </h3>
+        <div className="space-y-1.5">
+          {nearbyAreas.map((area, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between text-xs px-2 py-1.5 rounded-lg hover:bg-orange-50 cursor-pointer group transition-colors"
+            >
+              <span className="text-blue-600 group-hover:text-orange-500 font-medium">
+                {area.name}
+              </span>
+              <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {area.count.toLocaleString()}
+              </span>
+            </div>
+          ))}
+        </div>
+        <button className="mt-2 text-xs font-bold text-orange-500 hover:underline">
+          Show More →
+        </button>
+      </div>
+
+      {/* Related Keywords */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <h3 className="font-bold text-gray-800 text-sm mb-3">
+          Most Searched Related Keywords
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {relatedKeywords.map((kw, i) => (
+            <button
+              key={i}
+              className="text-[11px] text-blue-600 hover:text-white hover:bg-orange-500 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full transition-all font-medium"
+            >
+              {kw}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN PAGE ────────────────────────────────────────────────────
+export default function Category() {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const [sortBy, setSortBy] = useState("Relevance");
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const data = categoryData[slug] || categoryData["tours-travel"];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ── Hero Banner ── */}
+      <div className="relative h-44 overflow-hidden">
+        <img
+          src={data.heroImage}
+          alt={data.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+        <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-12">
+          <p className="text-orange-400 text-xs font-bold tracking-widest uppercase mb-1">
+            Category
+          </p>
+          <h1 className="text-white text-2xl md:text-3xl font-extrabold drop-shadow">
+            {data.name}
+          </h1>
+          <p className="text-white/70 text-sm mt-1">
+            {data.totalListings}+ businesses listed
+          </p>
+        </div>
+      </div>
+
+      {/* ── Breadcrumb / Header ── */}
+      <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
+        <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
+          {/* Left: back + home + breadcrumb */}
+          <div className="flex items-center gap-1.5 text-xs">
+            {/* Back Arrow */}
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors"
+            >
+              <ArrowLeft size={19} />
+            </button>
+
+            <ChevronRight size={13} className="text-gray-300" />
+            <span onClick={()=>navigate(-1)} className="text-gray-400 cursor-pointer text-base">Category</span>
+            <ChevronRight size={13} className="text-gray-300" />
+            <span className="bg-emerald-500 text-white text-base  px-3 py-1 rounded-lg font-semibold">
+              {data.name}
+            </span>
+          </div>
+
+          {/* Right: Sort + Filter */}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="text-xs border border-gray-200 rounded-xl px-3 py-1.5 pr-7 appearance-none bg-white focus:outline-none focus:border-orange-400 font-medium text-gray-600"
+              >
+                <option>Relevance</option>
+                <option>Rating: High to Low</option>
+                <option>Most Reviewed</option>
+                <option>Newest First</option>
+              </select>
+              <ChevronDown
+                size={12}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
+            </div>
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              className="flex items-center gap-1.5 text-xs border border-gray-200 rounded-xl px-3 py-1.5 hover:border-orange-400 hover:text-orange-500 transition-colors font-medium"
+            >
+              <SlidersHorizontal size={12} /> Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Content ── */}
+      <div className="max-w-screen-xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          {/* Listings */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-500">
+                Showing{" "}
+                <span className="font-bold text-gray-800">
+                  {data.businesses.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-bold text-orange-500">
+                  {data.totalListings}+
+                </span>{" "}
+                results
+              </p>
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <Shield size={11} className="text-green-500" />
+                <span>Verified listings only</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {data.businesses.map((biz) => (
+                <BusinessCard key={biz.id} biz={biz} />
+              ))}
+            </div>
+
+            <div className="mt-8 text-center">
+              <button className="bg-white border-2 border-orange-400 text-orange-500 hover:bg-orange-500 hover:text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 text-sm hover:shadow-lg hover:shadow-orange-200">
+                Load More Businesses
+              </button>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="hidden lg:block w-72 shrink-0">
+            <Sidebar cityName="Delhi" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
