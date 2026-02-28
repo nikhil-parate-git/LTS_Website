@@ -47,7 +47,7 @@ export default function Navbar() {
       <div className="h-[60px] md:h-[64px]" />
 
       <nav className="w-full bg-white  px-3 md:px-4 py-2 fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-screen-xl mx-auto flex items-center gap-2 md:gap-3">
+        <div className="w-full mx-auto flex items-center gap-2 md:gap-3">
           {/* Logo */}
           <div
             className="flex items-center shrink-0 select-none cursor-pointer"

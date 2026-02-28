@@ -1,238 +1,134 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LocationEdit, MapPinIcon, PhoneIcon, Share2 } from "lucide-react";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
-const importantLinks = [
-  { label: "Login / Register", path: "/login" },
-  { label: "India Directory", path: "/directory" },
-  { label: "India Guide", path: "/guide" },
-  { label: "Help your Community", path: "/community" },
-];
+import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from "lucide-react";
+import logo from "../../assets/logo.png";
 
-const businessLinks = [
-  { label: "List Your Business", path: "/list-business", highlight: false },
-  { label: "Advertise With Us", path: "/advertise", highlight: false },
-  { label: "Contact Us", path: "/contact", highlight: false },
-  { label: "About Us", path: "/about", highlight: false },
-  { 
-    label: "Subscriptions and Plans", 
-    path: "/subscriptions", // Change this to your actual URL if it's an external site
-    highlight: false,
-    isExternal: true // Custom flag to handle new tab
-  },
-  {
-    label: "Become our Sales Partner",
-    path: "/sales-partner",
-    highlight: true,
-  },
-];
-
-const legalLinks = [
-  "Privacy Policy",
-  "Terms of Service",
-  "Infringement Policy",
+const exploreLinks = [
+  { label: "Home", path: "/" },
+  { label: "About Us", path: "/about" },
+  { label: "Contact Us", path: "/contact" },
+  { label: "Submit Enquiry", path: "/submitenquiry" },
+  { label: "SubScriptions And Plans", path: "/subscriptions" },
 ];
 
 export default function Footer() {
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
-
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.origin).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
-    <footer
-      style={{
-        fontFamily: "'Poppins', sans-serif",
-        background: "#f9fafb",
-        borderTop: "1px solid #e5e7eb",
-      }}
-    >
-      <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
+    <footer className="w-full bg-[#1a2332]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
       {/* ── MAIN AREA ── */}
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {/* COL 1 — Important Links */}
-          <div>
-            <h4 className="text-gray-900 font-bold text-base mb-5">
-              Important Links
+      <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24 py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
+
+          {/* COL 1 — Logo + Description */}
+          <div className="flex flex-col items-center sm:items-start gap-4">
+            <img src={logo} alt="Local Trade Street" className="h-12 w-auto object-contain" />
+            <p className="text-white text-sm leading-relaxed text-center sm:text-left">
+              Local Trade Street Provides Leads to customer which are in search of local work in their nearby areas.
+            </p>
+          </div>
+
+          {/* COL 2 — Explore */}
+          <div className="flex flex-col items-center sm:items-start">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-5 pb-2 border-b-2 border-orange-500 w-full text-center sm:text-left">
+              Explore
             </h4>
-            <ul className="flex flex-col gap-3.5">
-              {importantLinks.map((link) => (
+            <ul className="flex  flex-col items-center sm:items-start gap-3">
+              {exploreLinks.map((link) => (
                 <li key={link.label}>
                   <button
                     onClick={() => navigate(link.path)}
-                    className="text-sm text-gray-600 hover:text-orange-500 transition-colors duration-200 text-left"
+                    className="text-white cursor-pointer text-sm hover:text-orange-400 transition-colors duration-200"
                   >
                     {link.label}
                   </button>
                 </li>
               ))}
-              <li>
-                <button
-                  onClick={handleShare}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition-colors duration-200"
+            </ul>
+          </div>
+
+          {/* COL 3 — Contact Us */}
+          <div className="flex flex-col items-center sm:items-start">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-5 pb-2 border-b-2 border-orange-500 w-full text-center sm:text-left">
+              Contact Us
+            </h4>
+            <ul className="flex flex-col gap-4">
+              <li className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-orange-400" />
+                </div>
+                <span className="text-white text-sm">+91-070307 72573</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4 text-orange-400" />
+                </div>
+                <a
+                  href="mailto:support@localtradestreet.com"
+                  className="text-white text-sm hover:text-orange-400 transition-colors duration-200 break-all"
                 >
-                  {copied ? (
-                    <span className="text-green-500 font-semibold text-sm">
-                      ✅ Link Copied!
-                    </span>
-                  ) : (
-                    <>
-                      {/* <span>Share</span> */}
-                      {/* <Share2 className="w-3.5 h-3.5" /> */}
-                    </>
-                  )}
-                </button>
+                  support@localtradestreet.com
+                </a>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4 text-orange-400" />
+                </div>
+                <span className="text-white text-sm leading-relaxed">
+                  4th floor, Prince Complex,<br />
+                  Chatrapati Nagar, Nagpur,<br />
+                  Maharashtra 440025
+                </span>
               </li>
             </ul>
           </div>
 
-          {/* COL 2 — Business Links */}
-          <div>
-            <h4 className="text-gray-900 font-bold text-base mb-5">
-              Business Links
+          {/* COL 4 — Follow Us */}
+          <div className="flex flex-col items-center sm:items-start">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-5 pb-2 border-b-2 border-orange-500 w-full text-center sm:text-left">
+              Follow Us
             </h4>
-            <ul className="flex flex-col gap-3.5">
-              {businessLinks.map((link) => (
-                <li key={link.label}>
-                  <button
-                    onClick={() => navigate(link.path)}
-                    className={`text-sm transition-colors duration-200 text-left ${
-                      link.highlight
-                        ? "text-orange-500 font-semibold hover:text-orange-600"
-                        : "text-gray-600 hover:text-orange-500"
-                    }`}
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <div className="flex gap-3">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-xl bg-[#1877f2] flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
+              >
+                <Facebook className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-xl flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
+                style={{ background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
+              >
+                <Instagram className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-xl bg-red-600 flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
+              >
+                <Youtube className="w-5 h-5 text-white" />
+              </a>
+            </div>
           </div>
 
-          {/* COL 3 — CTA Card */}
-          <div className="flex justify-end">
-            {/* person + image */}
-            {/* <div
-              className="relative rounded-2xl overflow-hidden w-full max-w-[300px] shadow"
-              style={{ background: "linear-gradient(135deg, #f87171 0%, #fb923c 100%)", minHeight: "148px" }}
-            >
-              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
-
-              
-              <div
-                className="absolute inset-y-0 right-0 w-[45%] opacity-25"
-                style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center top",
-                }}
-              />
-
-              <div className="relative z-10 p-5 pr-2 flex flex-col gap-3">
-                <p className="text-white font-bold text-[14px] leading-snug">
-                  Connect with Verified<br />Online Customers
-                </p>
-                <button
-                  onClick={() => navigate("/list-business")}
-                  className="bg-white text-gray-900 font-bold text-[11px] uppercase tracking-wide px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 w-fit shadow-sm"
-                >
-                  List Your Business for{" "}
-                  <span className="bg-yellow-400 text-gray-900 px-1.5 py-0.5 rounded font-extrabold text-[10px]">
-                    FREE
-                  </span>
-                </button>
-              </div>
-            </div> */}
-
-          
-{/* COL 3 — Contact Details */}
-<div className="flex flex-col">
-  <h4 className="text-gray-900 font-bold text-base mb-5">
-    Contact
-  </h4>
-  <ul className="flex flex-col gap-3.5">
-    {/* Phone */}
-    <li>
-      <div className="flex items-center gap-2 text-sm text-gray-600">
-        <PhoneIcon className="w-3.5 h-3.5 text-orange-500" />
-        <span>+91-070307 72573</span>
-      </div>
-    </li>
-
-    {/* Email */}
-    <li>
-      <a 
-        href="mailto:support@technoro.in"
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition-colors duration-200"
-      >
-        <EnvelopeIcon className="w-3.5 h-3.5 text-orange-500" />
-        <span>support@localtradestreet.com</span>
-      </a>
-    </li>
-
-    {/* Location */}
-    <li>
-      <div className="flex items-start gap-2 text-sm text-gray-600">
-        <MapPinIcon className="w-3.5 h-3.5 text-orange-500 mt-0.5 shrink-0" />
-        <span className="leading-snug">
-          4th floor, Prince Complex, <br />
-          Chatrapati Nagar, Nagpur, <br />
-          Maharastra 440025
-        </span>
-      </div>
-    </li>
-  </ul>
-</div>
-
-          </div>
         </div>
       </div>
 
       {/* ── BOTTOM BAR ── */}
-        <div style={{ borderTop: "1px solid #e5e7eb" }} >
-          <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-5 flex flex-col md:flex-row justify-center  gap-3">
-            {/* Left — copyright + legal */}
-            <div className="flex flex-col gap-1.5 ">
-              <p className="text-gray-600 text-xs">
-                Design and developed by Telentrise Technokrate Pvt.Ltd <br />
-                Copyright@ Local Trade Street
-              </p>
-              {/* <div className="flex flex-wrap gap-1 items-center">
-                {legalLinks.map((l, i) => (
-                  <span key={l} className="flex items-center gap-1">
-                    <button className="text-gray-500 hover:text-orange-500 text-xs transition-colors duration-200">
-                      {l}
-                    </button>
-                    {i < legalLinks.length - 1 && (
-                      <span className="text-gray-300 text-xs"> </span>
-                    )}
-                  </span>
-                ))}
-              </div> */}
-            </div>
-
-            {/* Right — disclaimer italic */}
-            {/* <p className="text-gray-400 text-[11px] leading-relaxed max-w-lg italic text-left md:text-right">
-              Third-party brand trademarks and logos appearing here are owned by
-              the respective third parties and are not affiliated with
-              localtradestreet.in. View our complete{" "}
-              <button className="text-gray-600 not-italic font-semibold underline underline-offset-2 hover:text-orange-500 transition-colors">
-                Disclaimer
-              </button>
-              .
-            </p> */}
-          </div>
+      <div className="border-t border-[#2d3f55]">
+        <div className="w-full px-6 py-4 text-center">
+          <p className="text-white text-xs">
+            Copyright © 2026 Local Trade Street. All Rights Reserved.
+          </p>
         </div>
+      </div>
     </footer>
   );
 }
