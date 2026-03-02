@@ -1,72 +1,49 @@
-// import { lazy, Suspense } from "react";
-// import { Route, Routes } from "react-router-dom";
-// import Subscriptions from "../pages/Subscriptions";
-// import Category from "../pages/modules/category/Category";
-// import SubCategory from "../pages/modules/category/SubCategory";
-// import MainLayout from "../components/Layouts/MainLayout";
-// import Details from "../pages/modules/category/Details";
-// import About from "../pages/modules/about and contact/About";
-
-// const Home = lazy(() => import("../pages/modules/home/Home"));
-// // const SubCategory = lazy(() => import("../pages/SubCategory"));
-// // const Category = lazy(()=> import ("../pages/Category"));
-// // const Login = lazy(() => import("../pages/Login"));
-// // const Register = lazy(() => import("../pages/Register"));
-
-// export default function PublicRoute() {
-//   return (
-//     <Suspense fallback={<div className="flex items-center justify-center h-screen text-orange-500 text-xl">Loading...</div>}>
-//       <Routes>
-//         <Route element={<MainLayout />}>
-//           <Route path="/" element={<Home />} />
-//           <Route path="/category/:slug" element={<Category />} />
-//           <Route path="/subscriptions" element={<Subscriptions/>} />
-//           <Route path="/subcategory/:slug" element={<SubCategory />} />
-//           <Route path="/business/:id" element={<Details />} />
-//         </Route>
-//         {/* <Route path="/register" element={<Register />} /> */}
-//       </Routes>
-//     </Suspense>
-//   );
-// }
-
-
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Subscriptions from "../pages/Subscriptions";
-import Category from "../pages/modules/trendingcategories/CategoriesDetails";
-import SubCategory from "../pages/modules/trendingcategories/Categories";
 import MainLayout from "../components/Layouts/MainLayout";
-import Details from "../pages/modules/trendingcategories/CategoriesInfo";
 import About from "../pages/modules/about and contact/About";
 import Contact from "../pages/modules/about and contact/Contact";
+import TopCategoryDetails from "../pages/modules/topcategorycity/TopCategoryDetails";
+import BusinessPage from "../pages/modules/businesslisting/BusinessPlans";
 import SubmitEnquiry from "../pages/modules/trendingcategories/SubmitEnquiry";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
-
+const Category = lazy(
+  () => import("../pages/modules/trendingcategories/CategoriesDetails"),
+);
+const SubCategory = lazy(
+  () => import("../pages/modules/trendingcategories/Categories"),
+);
+const Details = lazy(
+  () => import("../pages/modules/trendingcategories/CategoriesInfo"),
+);
 export default function PublicRoute() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center h-screen text-orange-500 text-xl">
-          Loading...
-        </div>
-      }
-    >
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/category/:slug" element={<Category />} />
-          <Route path="/subscriptions" element={<Subscriptions />} />
-          <Route path="/subcategory/:slug" element={<SubCategory />} />
-          <Route path="/business/:id" element={<Details />} />
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/category/:slug" element={<Category />} />
+        <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route path="/subcategory/:slug" element={<SubCategory />} />
+        <Route path="/business/:id" element={<Details />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/submitenquiry" element={<SubmitEnquiry />} />
 
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-            <Route path="/submitenquiry" element={<SubmitEnquiry />} />
+       <Route path="/top-category/:slug" element={<TopCategoryDetails />} />
+      <Route path="/business" element={<BusinessPage />} />
 
-        </Route>
-      </Routes>
-    </Suspense>
+
+        <Route
+          path="*"
+          element={
+            <div className="flex items-center justify-center h-screen text-2xl text-gray-500">
+              404 - Page Not Found
+            </div>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }

@@ -163,7 +163,7 @@ export default function ListBusiness() {
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4">
               <button
-                onClick={() => navigate("/list-business")}
+                onClick={() => navigate("/business")}
                 className="group relative bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 hover:scale-105 hover:shadow-orange-300 overflow-hidden"
               >
                 <span className="relative z-10">List Your Business Free →</span>
@@ -171,7 +171,7 @@ export default function ListBusiness() {
               </button>
 
               <button
-                onClick={() => navigate("/how-it-works")}
+                // onClick={() => navigate("/how-it-works")}
                 className="text-sm font-semibold text-gray-500 hover:text-orange-500 transition-colors underline underline-offset-4"
               >
                 How it works?

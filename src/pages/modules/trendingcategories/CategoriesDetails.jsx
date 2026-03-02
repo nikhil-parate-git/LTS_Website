@@ -1,4 +1,6 @@
-import { useState } from "react";
+
+
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -20,6 +22,8 @@ import {
   Share2,
   ArrowLeft,
   CheckCircle,
+  X,
+  Search,
 } from "lucide-react";
 
 // ─── HELPER ─────────────────────────────────────────────────────
@@ -176,6 +180,191 @@ const relatedKeywords = [
   "International Tour Packages",
 ];
 
+const locationOptions = [
+  { id: 1, name: "Delhi Race Club, 111003", checked: true },
+  { id: 2, name: "Lodhi Colony, 111003", checked: true },
+  { id: 3, name: "Lodhi Colony, 111003", checked: false },
+  { id: 4, name: "Lodhi Colony, 111003", checked: false },
+];
+
+// ─── FILTER OVERLAY ───────────────────────────────────────────────
+function FilterOverlay({ open, onClose }) {
+  const [rating, setRating] = useState("Customer Ratings");
+  const [verified, setVerified] = useState("Verified");
+  const [locationSearch, setLocationSearch] = useState("");
+  const [locations, setLocations] = useState(locationOptions);
+
+  const toggleLocation = (id) => {
+    setLocations((prev) =>
+      prev.map((loc) =>
+        loc.id === id ? { ...loc, checked: !loc.checked } : loc
+      )
+    );
+  };
+
+  const filteredLocations = locations.filter((loc) =>
+    loc.name.toLowerCase().includes(locationSearch.toLowerCase())
+  );
+
+  useEffect(() => {
+    if (open) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity touch-none"
+        onClick={onClose}
+      />
+
+      {/* Panel */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto animate-in"
+          style={{
+            animation: "popIn 0.2s ease-out",
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <h2 className="text-base font-bold text-gray-800">Filter Overlay</h2>
+            <button
+              onClick={onClose}
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="px-5 pb-5 space-y-4">
+            {/* Filter By Customer Ratings */}
+            <div>
+              <p className="text-sm font-semibold text-gray-800 mb-2">
+                Filter By Customer Ratings
+              </p>
+              <div className="relative">
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm appearance-none bg-white focus:outline-none focus:border-orange-400 text-gray-600 pr-8"
+                >
+                  <option>Customer Ratings</option>
+                  <option>4★ & above</option>
+                  <option>3★ & above</option>
+                  <option>2★ & above</option>
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+              </div>
+            </div>
+
+            {/* Search Nearby Location */}
+            <div>
+              <p className="text-sm font-semibold text-gray-800 mb-2">
+                Search Nearby Location
+              </p>
+
+              {/* Search box */}
+              <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 mb-3">
+                <Search size={14} className="text-gray-400 shrink-0" />
+                <input
+                  value={locationSearch}
+                  onChange={(e) => setLocationSearch(e.target.value)}
+                  placeholder="Search..."
+                  className="flex-1 text-sm focus:outline-none placeholder-gray-400"
+                />
+              </div>
+
+              {/* Location checkboxes */}
+              <div className="space-y-2.5">
+                {filteredLocations.map((loc) => (
+                  <label
+                    key={loc.id}
+                    className="flex items-center justify-between cursor-pointer group"
+                  >
+                    <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
+                      {loc.name}
+                    </span>
+                    <div
+                      onClick={() => toggleLocation(loc.id)}
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+                        loc.checked
+                          ? "bg-orange-500 border-orange-500"
+                          : "border-gray-300 bg-white"
+                      }`}
+                    >
+                      {loc.checked && (
+                        <svg
+                          width="10"
+                          height="8"
+                          viewBox="0 0 10 8"
+                          fill="none"
+                        >
+                          <path
+                            d="M1 4L3.5 6.5L9 1"
+                            stroke="white"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Verified dropdown */}
+            <div className="relative">
+              <select
+                value={verified}
+                onChange={(e) => setVerified(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm appearance-none bg-white focus:outline-none focus:border-orange-400 text-gray-600 pr-8"
+              >
+                <option>Verified</option>
+                <option>All</option>
+                <option>Unverified</option>
+              </select>
+              <ChevronDown
+                size={14}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
+            </div>
+
+            {/* Apply Filter button */}
+            <button
+              onClick={onClose}
+              className="w-full bg-orange-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl text-sm transition-colors"
+            >
+              Apply Filter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.95) translateY(8px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
+    </>
+  );
+}
+
 // ─── STARS ───────────────────────────────────────────────────────
 function Stars({ rating }) {
   return (
@@ -201,7 +390,6 @@ function BusinessCard({ biz }) {
   const [saved, setSaved] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
 
-  // First 2 tags visible by default, rest on See More
   const VISIBLE = 2;
   const visibleTags = showAllTags ? biz.tags : biz.tags.slice(0, VISIBLE);
   const hiddenTags = showAllTags ? biz.tags.slice(VISIBLE) : [];
@@ -221,7 +409,6 @@ function BusinessCard({ biz }) {
             className="w-full h-full object-cover"
             style={{ minHeight: "180px" }}
           />
-          {/* Since badge */}
           <div className="absolute top-2.5 right-2.5 bg-white/90 text-gray-700 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
             Since {biz.since}
           </div>
@@ -229,7 +416,6 @@ function BusinessCard({ biz }) {
 
         {/* ── Content ── */}
         <div className="flex-1 p-4 flex flex-col gap-2">
-          {/* Name + verified */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
               <h3 className="text-base font-bold text-blue-700 leading-tight hover:underline cursor-pointer">
@@ -244,13 +430,11 @@ function BusinessCard({ biz }) {
             </button>
           </div>
 
-          {/* Address */}
           <div className="flex items-start gap-1.5 text-gray-500 text-xs">
             <MapPin size={12} className="mt-0.5 text-orange-500 shrink-0" />
             <span>{biz.address}</span>
           </div>
 
-          {/* Tags — collapsed/expanded */}
           <div>
             <div className="flex flex-wrap gap-1.5 items-center">
               {visibleTags.map((tag, i) => (
@@ -261,8 +445,6 @@ function BusinessCard({ biz }) {
                   {tag}
                 </span>
               ))}
-
-              {/* See More inline */}
               {!showAllTags && hasMore && (
                 <button
                   onClick={() => setShowAllTags(true)}
@@ -273,7 +455,6 @@ function BusinessCard({ biz }) {
               )}
             </div>
 
-            {/* Extra tags shown after See More */}
             {showAllTags && hiddenTags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
                 {hiddenTags.map((tag, i) => (
@@ -284,7 +465,6 @@ function BusinessCard({ biz }) {
                     {tag}
                   </span>
                 ))}
-                {/* See Less — right aligned like image */}
                 <button
                   onClick={() => setShowAllTags(false)}
                   className="text-[11px] text-blue-600 font-semibold hover:underline ml-auto"
@@ -295,7 +475,6 @@ function BusinessCard({ biz }) {
             )}
           </div>
 
-          {/* Speciality */}
           {biz.speciality && (
             <div className="flex items-center gap-1 text-xs text-orange-500 font-medium">
               <CheckCircle size={12} className="text-orange-400" />
@@ -303,16 +482,13 @@ function BusinessCard({ biz }) {
             </div>
           )}
 
-          {/* Hours */}
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Clock size={11} className="text-gray-400" />
             <span className="font-medium text-gray-700">Open:</span>
             <span>{biz.hours}</span>
           </div>
 
-          {/* ── Action Row ── */}
           <div className="flex items-center justify-between gap-2 mt-1 flex-wrap">
-            {/* Left: Show Number + Send Enquiry + Sponsored */}
             <div className="flex items-center gap-2 flex-wrap">
               <a
                 href={`tel:${biz.phone}`}
@@ -320,19 +496,17 @@ function BusinessCard({ biz }) {
               >
                 <Phone size={12} /> Show Number
               </a>
-              <button className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+              {/* <button onClick={()=>navigate("/submitenquiry")} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
                 <Send size={12} /> Send Enquiry
-              </button>
-              {/* Sponsored button — on every card */}
+              </button> */}
               <button
                 onClick={() => navigate(`/business/${biz.id}`)}
-                className="flex items-center gap-1 border border-orange-400 text-orange-500 hover:bg-orange-50 text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+                className="flex cursor-pointer items-center gap-1 border border-orange-400 text-orange-500 hover:bg-orange-50 text-xs font-bold px-3 py-2 rounded-lg transition-colors"
               >
                 <Zap size={11} className="fill-orange-400" /> Sponsored
               </button>
             </div>
 
-            {/* Right: Profile Views */}
             <div className="flex items-center gap-1 text-xs text-gray-400">
               <Eye size={12} className="text-orange-400" />
               <span className="font-semibold text-gray-600">
@@ -355,7 +529,6 @@ function Sidebar({ cityName }) {
 
   return (
     <div className="space-y-5">
-      {/* Enquiry Form */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 px-4 py-3">
           <p className="text-white font-bold text-sm">
@@ -391,7 +564,6 @@ function Sidebar({ cityName }) {
         </div>
       </div>
 
-      {/* Popular Categories */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
         <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
           <TrendingUp size={14} className="text-orange-500" /> Popular Category
@@ -411,7 +583,6 @@ function Sidebar({ cityName }) {
         </button>
       </div>
 
-      {/* Are You a Travel Agent */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-4">
         <p className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
           <Users size={13} className="text-blue-500" />
@@ -422,7 +593,6 @@ function Sidebar({ cityName }) {
         </button>
       </div>
 
-      {/* Nearby Areas */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
         <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
           <MapPin size={14} className="text-orange-500" /> Nearby Areas
@@ -447,7 +617,6 @@ function Sidebar({ cityName }) {
         </button>
       </div>
 
-      {/* Related Keywords */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
         <h3 className="font-bold text-gray-800 text-sm mb-3">
           Most Searched Related Keywords
@@ -478,6 +647,9 @@ export default function Category() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* ── Filter Overlay ── */}
+      <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
+
       {/* ── Hero Banner ── */}
       <div className="relative h-44 overflow-hidden">
         <img
@@ -502,9 +674,7 @@ export default function Category() {
       {/* ── Breadcrumb / Header ── */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
-          {/* Left: back + home + breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs">
-            {/* Back Arrow */}
             <button
               onClick={() => navigate(-1)}
               className="flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors"
@@ -513,14 +683,18 @@ export default function Category() {
             </button>
 
             <ChevronRight size={13} className="text-gray-300" />
-            <span onClick={()=>navigate(-1)} className="text-gray-400 cursor-pointer text-base">Category</span>
+            <span
+              onClick={() => navigate(-1)}
+              className="text-gray-400 cursor-pointer text-base"
+            >
+              Category
+            </span>
             <ChevronRight size={13} className="text-gray-300" />
-            <span className="bg-emerald-500 text-white text-base  px-3 py-1 rounded-lg font-semibold">
+            <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold">
               {data.name}
             </span>
           </div>
 
-          {/* Right: Sort + Filter */}
           <div className="flex items-center gap-2">
             <div className="relative">
               <select
@@ -539,7 +713,7 @@ export default function Category() {
               />
             </div>
             <button
-              onClick={() => setFilterOpen(!filterOpen)}
+              onClick={() => setFilterOpen(true)}
               className="flex items-center gap-1.5 text-xs border border-gray-200 rounded-xl px-3 py-1.5 hover:border-orange-400 hover:text-orange-500 transition-colors font-medium"
             >
               <SlidersHorizontal size={12} /> Filters
