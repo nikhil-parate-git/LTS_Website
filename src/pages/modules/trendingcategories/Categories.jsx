@@ -1,8 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Home, Star, ChevronRight, Grid3X3, ArrowLeft } from "lucide-react";
+import {
+  Home,
+  Star,
+  ChevronRight,
+  Grid3X3,
+  ArrowLeft,
+  X,
+  Send,
+} from "lucide-react";
 import Banner from "./Acbanner/Banner";
-import SubmitEnquiry from "./SubmitEnquiry"; // ← imported
+import SubmitEnquiry from "./SubmitEnquiry";
+import Sidebar from "./MainSidebar"; // ← Sidebar import
 
 // ─── ALL SUBCATEGORIES DATA ─────────────────────────────────────
 const allSubCategories = {
@@ -600,11 +609,55 @@ function SubCategoryCard({ item, onCardClick, index }) {
   );
 }
 
+// ─── MOBILE SIDEBAR DRAWER ─────────────────────────────────────
+function MobileSidebarDrawer({ open, onClose, cityName }) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+      <div
+        className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-gray-50 z-50 overflow-y-auto shadow-2xl"
+        style={{ animation: "slideIn 0.25s ease-out" }}
+      >
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-10">
+          <span className="font-bold text-gray-800 text-sm">Quick Connect</span>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        <div className="p-4">
+          <Sidebar cityName={cityName} />
+        </div>
+      </div>
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to   { transform: translateX(0); }
+        }
+      `}</style>
+    </>
+  );
+}
+
 // ─── SUBCATEGORY PAGE ──────────────────────────────────────────
 export default function SubCategory() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const data = allSubCategories[slug] || {
     name: "Category",
@@ -617,10 +670,18 @@ export default function SubCategory() {
     <div className="min-h-screen bg-gray-50">
       <Banner />
 
-      {/* Breadcrumb */}
+      {/* Mobile Sidebar Drawer */}
+      <MobileSidebarDrawer
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        cityName="Delhi"
+      />
+
+      {/* ── Breadcrumb / Header ── */}
       <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Left: Back + Breadcrumb */}
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
             <button
               onClick={() => navigate(-1)}
               className="group flex items-center justify-center w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 hover:bg-orange-500 hover:border-orange-500 transition-all duration-200 flex-shrink-0"
@@ -646,14 +707,16 @@ export default function SubCategory() {
               size={14}
               className="text-gray-300 hidden sm:block flex-shrink-0"
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="text-sm">{data.icon}</span>
-              <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm shadow-orange-200">
+              <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm shadow-orange-200 truncate max-w-[140px] sm:max-w-none">
                 {data.name}
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
+
+          {/* Right: stats + star + mobile connect btn */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg">
               <Grid3X3 size={12} className="text-gray-400" />
               <span className="font-semibold text-gray-700">
@@ -662,60 +725,77 @@ export default function SubCategory() {
               services
             </span>
             <StarRating rating={3.6} />
+            {/* Mobile: Connect button to open sidebar drawer */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden flex items-center gap-1.5 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-3 py-1.5 font-bold transition-colors"
+            >
+              <Send size={12} /> Connect
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Grid */}
+      {/* ── Main Content ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {data.items.length > 0 ? (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm text-gray-500">
-                Showing{" "}
-                <span className="font-semibold text-gray-800">
-                  {data.items.length}
-                </span>{" "}
-                services in{" "}
-                <span className="text-orange-500 font-semibold">
-                  {data.name}
-                </span>
-              </p>
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span>Live listings</span>
+        <div className="flex gap-6">
+          {/* ── Grid ── */}
+          <div className="flex-1 min-w-0">
+            {data.items.length > 0 ? (
+              <>
+                <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+                  <p className="text-sm text-gray-500">
+                    Showing{" "}
+                    <span className="font-semibold text-gray-800">
+                      {data.items.length}
+                    </span>{" "}
+                    services in{" "}
+                    <span className="text-orange-500 font-semibold">
+                      {data.name}
+                    </span>
+                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span>Live listings</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                  {data.items.map((item, index) => (
+                    <SubCategoryCard
+                      key={item.id}
+                      item={item}
+                      onCardClick={() => navigate(`/category/${slug}`)}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl mb-4 border border-orange-100">
+                  🔍
+                </div>
+                <h3 className="text-lg font-bold text-gray-700 mb-2">
+                  No services found
+                </h3>
+                <p className="text-sm text-gray-400 max-w-xs">
+                  We couldn't find any subcategories for this section.
+                </p>
+                <button
+                  onClick={() => navigate(-1)}
+                  className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
+                >
+                  ← Go Back
+                </button>
               </div>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-              {data.items.map((item, index) => (
-                <SubCategoryCard
-                  key={item.id}
-                  item={item}
-                  onCardClick={() => navigate(`/category/${slug}`)}
-                  index={index}
-                />
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl mb-4 border border-orange-100">
-              🔍
-            </div>
-            <h3 className="text-lg font-bold text-gray-700 mb-2">
-              No services found
-            </h3>
-            <p className="text-sm text-gray-400 max-w-xs">
-              We couldn't find any subcategories for this section.
-            </p>
-            <button
-              onClick={() => navigate(-1)}
-              className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
-            >
-              ← Go Back
-            </button>
+            )}
           </div>
-        )}
+
+          {/* ── Desktop Sidebar ── */}
+          <div className="hidden lg:block w-72 shrink-0">
+            <Sidebar cityName="Delhi" />
+          </div>
+        </div>
       </div>
 
       {/* Modal — imported SubmitEnquiry, auto opens on load */}

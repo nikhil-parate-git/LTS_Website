@@ -1,9 +1,6 @@
-
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Home,
   ChevronRight,
   MapPin,
   Phone,
@@ -15,16 +12,14 @@ import {
   Star,
   Clock,
   Shield,
-  TrendingUp,
-  Users,
   Zap,
-  Bookmark,
   Share2,
   ArrowLeft,
   CheckCircle,
   X,
   Search,
 } from "lucide-react";
+import Sidebar from "./MainSidebar";
 
 // ─── HELPER ─────────────────────────────────────────────────────
 function formatProfileCount(n) {
@@ -158,28 +153,6 @@ const categoryData = {
   },
 };
 
-const popularCategories = [
-  "Air & Bus Ticket Agents",
-  "Local Travel Agents & Tour Operators",
-  "Domestic Travel Agents",
-  "International Travel Agents",
-  "Holiday Package Dealers",
-];
-const nearbyAreas = [
-  { name: "All of CA", count: 14122 },
-  { name: "Delhi NCR", count: 73200 },
-  { name: "Mumbai", count: 41600 },
-  { name: "Ajmer Gate", count: 11000 },
-];
-const relatedKeywords = [
-  "Tour & Travel Agents in Delhi",
-  "Travel Agents near Me",
-  "Cheap Flight Ticket Booking",
-  "Bus Ticket Booking Delhi",
-  "Honeymoon Package Deals",
-  "International Tour Packages",
-];
-
 const locationOptions = [
   { id: 1, name: "Delhi Race Club, 111003", checked: true },
   { id: 2, name: "Lodhi Colony, 111003", checked: true },
@@ -197,13 +170,13 @@ function FilterOverlay({ open, onClose }) {
   const toggleLocation = (id) => {
     setLocations((prev) =>
       prev.map((loc) =>
-        loc.id === id ? { ...loc, checked: !loc.checked } : loc
-      )
+        loc.id === id ? { ...loc, checked: !loc.checked } : loc,
+      ),
     );
   };
 
   const filteredLocations = locations.filter((loc) =>
-    loc.name.toLowerCase().includes(locationSearch.toLowerCase())
+    loc.name.toLowerCase().includes(locationSearch.toLowerCase()),
   );
 
   useEffect(() => {
@@ -221,23 +194,19 @@ function FilterOverlay({ open, onClose }) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/40 z-40 transition-opacity touch-none"
         onClick={onClose}
       />
-
-      {/* Panel */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto animate-in"
-          style={{
-            animation: "popIn 0.2s ease-out",
-          }}
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto"
+          style={{ animation: "popIn 0.2s ease-out" }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
-            <h2 className="text-base font-bold text-gray-800">Filter Overlay</h2>
+            <h2 className="text-base font-bold text-gray-800">
+              Filter Overlay
+            </h2>
             <button
               onClick={onClose}
               className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
@@ -247,7 +216,6 @@ function FilterOverlay({ open, onClose }) {
           </div>
 
           <div className="px-5 pb-5 space-y-4">
-            {/* Filter By Customer Ratings */}
             <div>
               <p className="text-sm font-semibold text-gray-800 mb-2">
                 Filter By Customer Ratings
@@ -270,13 +238,10 @@ function FilterOverlay({ open, onClose }) {
               </div>
             </div>
 
-            {/* Search Nearby Location */}
             <div>
               <p className="text-sm font-semibold text-gray-800 mb-2">
                 Search Nearby Location
               </p>
-
-              {/* Search box */}
               <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 mb-3">
                 <Search size={14} className="text-gray-400 shrink-0" />
                 <input
@@ -286,8 +251,6 @@ function FilterOverlay({ open, onClose }) {
                   className="flex-1 text-sm focus:outline-none placeholder-gray-400"
                 />
               </div>
-
-              {/* Location checkboxes */}
               <div className="space-y-2.5">
                 {filteredLocations.map((loc) => (
                   <label
@@ -327,7 +290,6 @@ function FilterOverlay({ open, onClose }) {
               </div>
             </div>
 
-            {/* Verified dropdown */}
             <div className="relative">
               <select
                 value={verified}
@@ -344,7 +306,6 @@ function FilterOverlay({ open, onClose }) {
               />
             </div>
 
-            {/* Apply Filter button */}
             <button
               onClick={onClose}
               className="w-full bg-orange-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl text-sm transition-colors"
@@ -358,7 +319,7 @@ function FilterOverlay({ open, onClose }) {
       <style>{`
         @keyframes popIn {
           from { opacity: 0; transform: scale(0.95) translateY(8px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
     </>
@@ -387,7 +348,6 @@ function Stars({ rating }) {
 // ─── BUSINESS CARD ───────────────────────────────────────────────
 function BusinessCard({ biz }) {
   const navigate = useNavigate();
-  const [saved, setSaved] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
 
   const VISIBLE = 2;
@@ -398,7 +358,7 @@ function BusinessCard({ biz }) {
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
       <div className="flex flex-col sm:flex-row">
-        {/* ── Image ── */}
+        {/* Image */}
         <div
           className="relative w-full sm:w-56 shrink-0 overflow-hidden"
           style={{ minHeight: "180px" }}
@@ -414,11 +374,14 @@ function BusinessCard({ biz }) {
           </div>
         </div>
 
-        {/* ── Content ── */}
+        {/* Content */}
         <div className="flex-1 p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 className="text-base font-bold text-blue-700 leading-tight hover:underline cursor-pointer">
+              <h3
+                onClick={() => navigate(`/business/${biz.id}`)}
+                className="text-base font-bold text-blue-700 leading-tight hover:underline cursor-pointer"
+              >
                 {biz.name}
               </h3>
               {biz.verified && (
@@ -454,7 +417,6 @@ function BusinessCard({ biz }) {
                 </button>
               )}
             </div>
-
             {showAllTags && hiddenTags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
                 {hiddenTags.map((tag, i) => (
@@ -496,9 +458,6 @@ function BusinessCard({ biz }) {
               >
                 <Phone size={12} /> Show Number
               </a>
-              {/* <button onClick={()=>navigate("/submitenquiry")} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
-                <Send size={12} /> Send Enquiry
-              </button> */}
               <button
                 onClick={() => navigate(`/business/${biz.id}`)}
                 className="flex cursor-pointer items-center gap-1 border border-orange-400 text-orange-500 hover:bg-orange-50 text-xs font-bold px-3 py-2 rounded-lg transition-colors"
@@ -521,118 +480,46 @@ function BusinessCard({ biz }) {
   );
 }
 
-// ─── SIDEBAR ─────────────────────────────────────────────────────
-function Sidebar({ cityName }) {
-  const [mobile, setMobile] = useState("");
-  const [name, setName] = useState("");
-  const [req, setReq] = useState("");
+// ─── MOBILE SIDEBAR DRAWER ────────────────────────────────────────
+function MobileSidebarDrawer({ open, onClose }) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
 
   return (
-    <div className="space-y-5">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 px-4 py-3">
-          <p className="text-white font-bold text-sm">
-            Connect with Top Agents
-          </p>
-          <p className="text-orange-100 text-xs mt-0.5">
-            & Tour Operators in <span className="font-bold">{cityName}</span>
-          </p>
-        </div>
-        <div className="p-4 space-y-2.5">
-          <input
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-            placeholder="Enter your Mobile No."
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400"
-          />
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your Name"
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400"
-          />
-          <textarea
-            value={req}
-            onChange={(e) => setReq(e.target.value)}
-            placeholder="What is your Requirements"
-            rows={3}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 placeholder-gray-400 resize-none"
-          />
-          <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md shadow-orange-200 hover:scale-[1.02]">
-            Send Enquiry
+    <>
+      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+      <div
+        className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-gray-50 z-50 overflow-y-auto shadow-2xl"
+        style={{ animation: "slideIn 0.25s ease-out" }}
+      >
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-10">
+          <span className="font-bold text-gray-800 text-sm">Quick Connect</span>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+          >
+            <X size={16} />
           </button>
         </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
-          <TrendingUp size={14} className="text-orange-500" /> Popular Category
-        </h3>
-        <div className="space-y-1.5">
-          {popularCategories.map((cat, i) => (
-            <button
-              key={i}
-              className="w-full text-left text-xs text-blue-600 hover:text-orange-500 hover:bg-orange-50 px-2 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <ChevronRight size={11} className="text-orange-400" /> {cat}
-            </button>
-          ))}
-        </div>
-        <button className="mt-2 text-xs font-bold text-orange-500 hover:underline">
-          Show More →
-        </button>
-      </div>
-
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-4">
-        <p className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
-          <Users size={13} className="text-blue-500" />
-          Are you a Travel Agent in your Operational City?
-        </p>
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors">
-          Add your Business Listings
-        </button>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
-          <MapPin size={14} className="text-orange-500" /> Nearby Areas
-        </h3>
-        <div className="space-y-1.5">
-          {nearbyAreas.map((area, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between text-xs px-2 py-1.5 rounded-lg hover:bg-orange-50 cursor-pointer group transition-colors"
-            >
-              <span className="text-blue-600 group-hover:text-orange-500 font-medium">
-                {area.name}
-              </span>
-              <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-                {area.count.toLocaleString()}
-              </span>
-            </div>
-          ))}
-        </div>
-        <button className="mt-2 text-xs font-bold text-orange-500 hover:underline">
-          Show More →
-        </button>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-        <h3 className="font-bold text-gray-800 text-sm mb-3">
-          Most Searched Related Keywords
-        </h3>
-        <div className="flex flex-wrap gap-1.5">
-          {relatedKeywords.map((kw, i) => (
-            <button
-              key={i}
-              className="text-[11px] text-blue-600 hover:text-white hover:bg-orange-500 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full transition-all font-medium"
-            >
-              {kw}
-            </button>
-          ))}
+        <div className="p-4">
+          <Sidebar cityName="Delhi" />
         </div>
       </div>
-    </div>
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to   { transform: translateX(0); }
+        }
+      `}</style>
+    </>
   );
 }
 
@@ -642,13 +529,20 @@ export default function Category() {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState("Relevance");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const data = categoryData[slug] || categoryData["tours-travel"];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ── Filter Overlay ── */}
+      {/* Filter Overlay */}
       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
+
+      {/* Mobile Sidebar Drawer */}
+      <MobileSidebarDrawer
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       {/* ── Hero Banner ── */}
       <div className="relative h-44 overflow-hidden">
@@ -674,28 +568,29 @@ export default function Category() {
       {/* ── Breadcrumb / Header ── */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs">
+          {/* Left: Back + Breadcrumb */}
+          <div className="flex items-center gap-1.5 text-xs min-w-0">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors"
+              className="flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors shrink-0"
             >
               <ArrowLeft size={19} />
             </button>
-
-            <ChevronRight size={13} className="text-gray-300" />
+            <ChevronRight size={13} className="text-gray-300 shrink-0" />
             <span
               onClick={() => navigate(-1)}
-              className="text-gray-400 cursor-pointer text-base"
+              className="text-gray-400 cursor-pointer text-base truncate"
             >
               Category
             </span>
-            <ChevronRight size={13} className="text-gray-300" />
-            <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold">
+            <ChevronRight size={13} className="text-gray-300 shrink-0" />
+            <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold truncate">
               {data.name}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Right: Sort + Filter + Connect (mobile) */}
+          <div className="flex items-center gap-2 shrink-0">
             <div className="relative">
               <select
                 value={sortBy}
@@ -718,6 +613,13 @@ export default function Category() {
             >
               <SlidersHorizontal size={12} /> Filters
             </button>
+            {/* Mobile: Connect button to open sidebar drawer */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden flex items-center gap-1.5 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-3 py-1.5 font-bold transition-colors"
+            >
+              <Send size={12} /> Connect
+            </button>
           </div>
         </div>
       </div>
@@ -725,9 +627,9 @@ export default function Category() {
       {/* ── Main Content ── */}
       <div className="max-w-screen-xl mx-auto px-4 py-6">
         <div className="flex gap-6">
-          {/* Listings */}
+          {/* ── Listings ── */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <p className="text-sm text-gray-500">
                 Showing{" "}
                 <span className="font-bold text-gray-800">
@@ -758,7 +660,7 @@ export default function Category() {
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* ── Desktop Sidebar ── */}
           <div className="hidden lg:block w-72 shrink-0">
             <Sidebar cityName="Delhi" />
           </div>
