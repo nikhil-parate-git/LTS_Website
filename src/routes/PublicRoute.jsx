@@ -9,7 +9,7 @@ import BusinessPage from "../pages/modules/businesslisting/BusinessPlans";
 import SubmitEnquiry from "../pages/modules/trendingcategories/SubmitEnquiry";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
-const Category = lazy(
+const CategoryDetails = lazy(
   () => import("../pages/modules/trendingcategories/CategoriesDetails"),
 );
 const SubCategory = lazy(
@@ -23,7 +23,7 @@ export default function PublicRoute() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/category/:slug" element={<Category />} />
+        <Route path="/category/:slug" element={<CategoryDetails />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
         <Route path="/subcategory/:slug" element={<SubCategory />} />
         <Route path="/business/:id" element={<Details />} />
@@ -31,9 +31,12 @@ export default function PublicRoute() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/submitenquiry" element={<SubmitEnquiry />} />
 
-       <Route path="/top-category/:slug" element={<TopCategoryDetails />} />
-      <Route path="/business" element={<BusinessPage />} />
-
+        <Route path="/top-category/:slug" element={<TopCategoryDetails />} />
+        <Route path="/business" element={<BusinessPage />} />
+        <Route
+          path="/service/:categoryId/:subcategoryId"
+          element={<CategoryDetails />}
+        />
 
         <Route
           path="*"
