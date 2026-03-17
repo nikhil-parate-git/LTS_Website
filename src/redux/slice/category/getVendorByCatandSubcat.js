@@ -7,18 +7,26 @@ export const fetchVendorsByCatAndSubcat = createAsyncThunk(
   "vendors/fetchByCatAndSubcat",
   async ({ categoryId, subcategoryId }, { rejectWithValue }) => {
     try {
-      
       const response = await axios.get(
         `${BASE_URL}/customer/vendor/getallvendor/${categoryId}/${subcategoryId}`
       );
-      
-      console.log("Response data.data:", response.data?.data);
-      
       return response.data.data;
     } catch (error) {
-      console.error("API Error:", error);
-      console.error("Error response:", error.response?.data);
       return rejectWithValue(error.response?.data || { message: error.message });
+    }
+  }
+);
+
+export const fetchSubCategoryBanners = createAsyncThunk(
+  "vendors/fetchSubCategoryBanners",
+  async ({ categoryId, subcategoryId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/customer/banner-management/getallbannersubcategory/${categoryId}/${subcategoryId}`
+      );
+      return response.data; 
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch subcategory banners");
     }
   }
 );
@@ -27,42 +35,54 @@ const vendorSlice = createSlice({
   name: "vendors",
   initialState: {
     vendors: [],
+    banners: [],
     loading: false,
+    bannerLoading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearVendorData: (state) => {
+      state.vendors = [];
+      state.banners = [];
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchVendorsByCatAndSubcat.pending, (state) => {
-        console.log("Pending state");
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchVendorsByCatAndSubcat.fulfilled, (state, action) => {
-        console.log("Fulfilled action:", action);
-        console.log("Fulfilled payload:", action.payload);
-        
         state.loading = false;
-        
-        // Handle different response structures
         if (action.payload?.data && Array.isArray(action.payload.data)) {
           state.vendors = action.payload.data;
         } else if (Array.isArray(action.payload)) {
           state.vendors = action.payload;
         } else {
-          console.warn("Unexpected response structure:", action.payload);
           state.vendors = [];
         }
-        
-        console.log("Updated vendors in state:", state.vendors);
       })
       .addCase(fetchVendorsByCatAndSubcat.rejected, (state, action) => {
-        console.log("Rejected action:", action);
         state.loading = false;
         state.error = action.payload?.message || "Something went wrong";
         state.vendors = [];
+      })
+      .addCase(fetchSubCategoryBanners.pending, (state) => {
+        state.bannerLoading = true;
+      })
+      .addCase(fetchSubCategoryBanners.fulfilled, (state, action) => {
+        state.bannerLoading = false;
+        state.banners = action.payload.data.map(banner => ({
+          ...banner,
+          image: banner.bannerImage 
+        }));
+      })
+      .addCase(fetchSubCategoryBanners.rejected, (state) => {
+        state.bannerLoading = false;
       });
   },
 });
 
+export const { clearVendorData } = vendorSlice.actions;
 export default vendorSlice.reducer;

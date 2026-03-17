@@ -1,10 +1,208 @@
+// import { useState, useRef, useEffect } from "react";
+// import { Mic, Search, Menu, User, MapPin, ChevronDown, X } from "lucide-react";
+// import logo from "../../../src/assets/logo.png";
+// import HamburgerDrawer from "./HamburgerDrawer";
+// import { useNavigate } from "react-router-dom";
+// import ProfileLogin from "../../pages/modules/profilelogin/ProfileLogin";
+// import About from "../../pages/modules/about and contact/About";
+
+// const locations = [
+//   "Nagpur (Nagpur NCR)",
+//   "Mumbai",
+//   "Bangalore",
+//   "Chennai",
+//   "Hyderabad",
+//   "Pune",
+//   "Kolkata",
+//   "Nagpur",
+//   "Ahmedabad",
+//   "Jaipur",
+// ];
+
+// export default function Navbar() {
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const [isListening, setIsListening] = useState(false);
+//   const [selectedLocation, setSelectedLocation] = useState(locations[0]);
+//   const [dropdownOpen, setDropdownOpen] = useState(false);
+//   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const [profileOpen, setProfileOpen] = useState(false);
+//   const navigate = useNavigate();
+
+//   const handleMic = () => setIsListening((prev) => !prev);
+
+//   useEffect(() => {
+//     const handler = (e) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(e.target))
+//         setDropdownOpen(false);
+//     };
+//     document.addEventListener("mousedown", handler);
+//     return () => document.removeEventListener("mousedown", handler);
+//   }, []);
+
+//   return (
+//     <>
+//       {/* Spacer so content doesn't hide behind fixed navbar */}
+//       <div className="h-[60px] md:h-[64px]" />
+
+//       <nav className="w-full bg-white  px-3 md:px-4 py-2 fixed top-0 left-0 right-0 z-50">
+//         <div className="w-full mx-auto flex items-center gap-2 md:gap-3">
+//           {/* Logo */}
+//           <div
+//             className="flex items-center shrink-0 select-none cursor-pointer"
+//             onClick={() => navigate("/")}
+//           >
+//             <img
+//               src={logo}
+//               alt="Local Trade Street Logo"
+//               className="h-9 md:h-10 w-auto object-contain"
+//             />
+//           </div>
+
+//           <div className="hidden md:block h-8 w-px bg-gray-300 mx-1" />
+
+//           {/* Location Dropdown — hidden on mobile */}
+//           <div className="relative hidden md:block shrink-0" ref={dropdownRef}>
+//             <button
+//               onClick={() => setDropdownOpen(!dropdownOpen)}
+//               className="flex items-center gap-1 text-gray-700 font-medium text-sm whitespace-nowrap hover:text-orange-500 transition-colors border border-gray-200 rounded-lg px-3 py-1.5"
+//             >
+//               <MapPin className="w-4 h-4 text-orange-500" />
+//               <span className="max-w-[130px] truncate">{selectedLocation}</span>
+//               <ChevronDown
+//                 className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+//               />
+//             </button>
+
+//             {dropdownOpen && (
+//               <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 w-52 max-h-64 overflow-y-auto">
+//                 {locations.map((loc) => (
+//                   <button
+//                     key={loc}
+//                     onClick={() => {
+//                       setSelectedLocation(loc);
+//                       setDropdownOpen(false);
+//                     }}
+//                     className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition-colors ${
+//                       selectedLocation === loc
+//                         ? "text-orange-500 font-semibold bg-orange-50"
+//                         : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+//                     }`}
+//                   >
+//                     <MapPin className="w-3 h-3 shrink-0" />
+//                     {loc}
+//                   </button>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="hidden md:block h-8 w-px bg-gray-300 mx-1" />
+
+//           {/* Search Bar — hidden on mobile, shown on md+ */}
+//           <div className="hidden md:flex flex-1 items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-300 transition-all">
+//             <input
+//               type="text"
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//               placeholder={`Search in ${selectedLocation}`}
+//               className="flex-1 px-4 py-2 text-sm text-gray-700 placeholder-gray-400 outline-none bg-transparent"
+//             />
+//             <button
+//               onClick={handleMic}
+//               className={`p-2 transition-colors ${isListening ? "text-red-500" : "text-pink-500 hover:text-pink-600"}`}
+//               title="Voice Search"
+//             >
+//               <Mic className="w-5 h-5" />
+//             </button>
+//             <button className="bg-orange-500 hover:bg-orange-600 transition-colors px-4 py-2 flex items-center justify-center">
+//               <Search className="w-5 h-5 text-white" />
+//             </button>
+//           </div>
+
+//           {/* Mobile: Search icon button */}
+//           <button
+//             onClick={() => setMobileSearchOpen(true)}
+//             className="md:hidden ml-auto p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-700"
+//           >
+//             <Search className="w-5 h-5" />
+//           </button>
+
+//           {/* Right Actions */}
+//           <div className="flex items-center  gap-1 lg:gap-3 shrink-0 md:ml-2">
+//             <button onClick={() => navigate("/about")} className="hidden cursor-pointer lg:block text-orange-400 font-medium text-lg px-3 py-1.5 rounded  hover:text-black transition-colors whitespace-nowrap">
+//               About Us
+//             </button>
+
+//             <button  onClick={() => navigate("/contact")} className="hidden cursor-pointer lg:block text-gray-700 font-medium text-lg px-3 py-1.5 rounded  hover:text-orange-500 transition-colors whitespace-nowrap">
+//               Contact Us
+//             </button>
+
+//             <button
+//               onClick={() => setMenuOpen(true)}
+//               className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-700"
+//             >
+//               <Menu className="w-5 h-5" />
+//             </button>
+
+//             <button
+//               onClick={() => setProfileOpen(true)}
+//               className="p-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors text-gray-700"
+//             >
+//               <User className="w-5 h-5" />
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* Mobile Search Expandable Bar */}
+//         {mobileSearchOpen && (
+//           <div className="md:hidden mt-2 flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-300 transition-all">
+//             <input
+//               type="text"
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//               placeholder="Search businesses..."
+//               autoFocus
+//               className="flex-1 px-4 py-2 text-sm text-gray-700 placeholder-gray-400 outline-none bg-transparent"
+//             />
+//             <button
+//               onClick={handleMic}
+//               className={`p-2 transition-colors ${isListening ? "text-red-500" : "text-pink-500 hover:text-pink-600"}`}
+//             >
+//               <Mic className="w-5 h-5" />
+//             </button>
+//             <button className="bg-orange-500 hover:bg-orange-600 transition-colors px-3 py-2 flex items-center justify-center">
+//               <Search className="w-5 h-5 text-white" />
+//             </button>
+//             <button
+//               onClick={() => setMobileSearchOpen(false)}
+//               className="px-3 py-2 text-gray-400 hover:text-gray-700 transition-colors"
+//             >
+//               <X className="w-4 h-4" />
+//             </button>
+//           </div>
+//         )}
+//       </nav>
+
+//       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+//       {profileOpen && <ProfileLogin onClose={() => setProfileOpen(false)} />}
+//     </>
+//   );
+// }
+
+
+
+
+
+
 import { useState, useRef, useEffect } from "react";
 import { Mic, Search, Menu, User, MapPin, ChevronDown, X } from "lucide-react";
 import logo from "../../../src/assets/logo.png";
 import HamburgerDrawer from "./HamburgerDrawer";
 import { useNavigate } from "react-router-dom";
 import ProfileLogin from "../../pages/modules/profilelogin/ProfileLogin";
-import About from "../../pages/modules/about and contact/About";
+import ProfileDropdown from "./ProfileDropdown"; // Naya component jo humne create kiya
 
 const locations = [
   "Nagpur (Nagpur NCR)",
@@ -28,9 +226,36 @@ export default function Navbar() {
   const dropdownRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
   const navigate = useNavigate();
 
+  // Check login status on mount and when profile modal/dropdown state changes
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("token"); 
+      setIsLoggedIn(!!token);
+    };
+    checkAuth();
+    // Listen for storage changes from other tabs
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
+  }, [profileOpen]);
+
   const handleMic = () => setIsListening((prev) => !prev);
+
+  const handleProfileClick = () => {
+    setProfileOpen(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setProfileOpen(false);
+    window.location.reload();
+    // navigate("/");
+  };
 
   useEffect(() => {
     const handler = (e) => {
@@ -46,7 +271,7 @@ export default function Navbar() {
       {/* Spacer so content doesn't hide behind fixed navbar */}
       <div className="h-[60px] md:h-[64px]" />
 
-      <nav className="w-full bg-white  px-3 md:px-4 py-2 fixed top-0 left-0 right-0 z-50">
+      <nav className="w-full bg-white px-3 md:px-4 py-2 fixed top-0 left-0 right-0 z-50 shadow-sm">
         <div className="w-full mx-auto flex items-center gap-2 md:gap-3">
           {/* Logo */}
           <div
@@ -62,7 +287,7 @@ export default function Navbar() {
 
           <div className="hidden md:block h-8 w-px bg-gray-300 mx-1" />
 
-          {/* Location Dropdown — hidden on mobile */}
+          {/* Location Dropdown */}
           <div className="relative hidden md:block shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -100,7 +325,7 @@ export default function Navbar() {
 
           <div className="hidden md:block h-8 w-px bg-gray-300 mx-1" />
 
-          {/* Search Bar — hidden on mobile, shown on md+ */}
+          {/* Search Bar */}
           <div className="hidden md:flex flex-1 items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-300 transition-all">
             <input
               type="text"
@@ -121,7 +346,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile: Search icon button */}
+          {/* Mobile Search icon */}
           <button
             onClick={() => setMobileSearchOpen(true)}
             className="md:hidden ml-auto p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-700"
@@ -130,12 +355,12 @@ export default function Navbar() {
           </button>
 
           {/* Right Actions */}
-          <div className="flex items-center  gap-1 lg:gap-3 shrink-0 md:ml-2">
-            <button onClick={() => navigate("/about")} className="hidden cursor-pointer lg:block text-orange-400 font-medium text-lg px-3 py-1.5 rounded  hover:text-black transition-colors whitespace-nowrap">
+          <div className="flex items-center gap-1 lg:gap-3 shrink-0 md:ml-2">
+            <button onClick={() => navigate("/about")} className="hidden cursor-pointer lg:block text-orange-400 font-medium text-lg px-3 py-1.5 rounded hover:text-black transition-colors whitespace-nowrap">
               About Us
             </button>
 
-            <button  onClick={() => navigate("/contact")} className="hidden cursor-pointer lg:block text-gray-700 font-medium text-lg px-3 py-1.5 rounded  hover:text-orange-500 transition-colors whitespace-nowrap">
+            <button onClick={() => navigate("/contact")} className="hidden cursor-pointer lg:block text-gray-700 font-medium text-lg px-3 py-1.5 rounded hover:text-orange-500 transition-colors whitespace-nowrap">
               Contact Us
             </button>
 
@@ -146,39 +371,30 @@ export default function Navbar() {
               <Menu className="w-5 h-5" />
             </button>
 
+            {/* Profile Icon Button */}
             <button
-              onClick={() => setProfileOpen(true)}
-              className="p-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors text-gray-700"
+              onClick={handleProfileClick}
+              className={`p-1.5 rounded-full border transition-all ${
+                isLoggedIn ? "border-orange-500 bg-orange-50" : "border-gray-300 hover:bg-gray-100"
+              } text-gray-700`}
             >
-              <User className="w-5 h-5" />
+              <User className={`w-5 h-5 ${isLoggedIn ? "text-orange-600" : ""}`} />
             </button>
           </div>
         </div>
 
         {/* Mobile Search Expandable Bar */}
         {mobileSearchOpen && (
-          <div className="md:hidden mt-2 flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-300 transition-all">
+          <div className="md:hidden mt-2 flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 transition-all">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search businesses..."
               autoFocus
-              className="flex-1 px-4 py-2 text-sm text-gray-700 placeholder-gray-400 outline-none bg-transparent"
+              className="flex-1 px-4 py-2 text-sm text-gray-700 outline-none bg-transparent"
             />
-            <button
-              onClick={handleMic}
-              className={`p-2 transition-colors ${isListening ? "text-red-500" : "text-pink-500 hover:text-pink-600"}`}
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-            <button className="bg-orange-500 hover:bg-orange-600 transition-colors px-3 py-2 flex items-center justify-center">
-              <Search className="w-5 h-5 text-white" />
-            </button>
-            <button
-              onClick={() => setMobileSearchOpen(false)}
-              className="px-3 py-2 text-gray-400 hover:text-gray-700 transition-colors"
-            >
+            <button onClick={() => setMobileSearchOpen(false)} className="px-3 py-2 text-gray-400">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -186,7 +402,18 @@ export default function Navbar() {
       </nav>
 
       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-      {profileOpen && <ProfileLogin onClose={() => setProfileOpen(false)} />}
+
+      {/* Auth UI Logic */}
+      {profileOpen && (
+        isLoggedIn ? (
+          <ProfileDropdown 
+            onClose={() => setProfileOpen(false)} 
+            onLogout={handleLogout} 
+          />
+        ) : (
+          <ProfileLogin onClose={() => setProfileOpen(false)} />
+        )
+      )}
     </>
   );
 }
