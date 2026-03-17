@@ -1,92 +1,125 @@
-import React, { useEffect } from "react";
-import { X } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { X, Loader2 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { verifyOtp } from "../../../redux/slice/customerAuth/verifyOtpSlice";
 
-const ProfileVerifyOtp = ({ phone = "8998786844", onClose }) => {
-  // 🔒 Scroll lock
+const ProfileVerifyOtp = ({ phone = "", onClose }) => {
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const inputRefs = useRef([]);
+  
+  const dispatch = useDispatch();
+  const { loading, success } = useSelector((state) => state.verifyOtp);
+
+  const handleChange = (value, index) => {
+    if (isNaN(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    if (value && index < 3) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
+
+  const handleVerify = () => {
+    const otpString = otp.join("");
+    if (otpString.length < 4) {
+      return;
+    }
+    dispatch(verifyOtp({ phone: phone, otp: otpString }));
+  };
+
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    }
+  }, [success, onClose]);
+
+
+  // Inside ProfileVerifyOtp.js handleVerify success logic:
+// useEffect(() => {
+//   if (success) {
+//     // Maan lijiye aapke API response mein token aur user info hai
+//     localStorage.setItem("token", "token"); 
+//     localStorage.setItem("user", JSON.stringify({ name: "Aniket" })); // Example
+    
+//     setTimeout(() => {
+//       onClose(); // Modal close hoga aur Navbar automatic update ho jayega
+//     }, 1000);
+//   }
+// }, [success]);
+
+
   useEffect(() => {
     const scrollY = window.scrollY;
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
     document.body.style.width = "100%";
-
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
       window.scrollTo(0, scrollY);
     };
   }, []);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{
-        backgroundColor: "rgba(0,0,0,0.55)",
-        backdropFilter: "blur(4px)",
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose?.();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose?.()}
     >
-      {/* Modal */}
       <div
         className="relative w-full max-w-[500px] bg-white rounded-2xl shadow-2xl px-6 py-8 sm:px-8 sm:py-10"
         style={{ animation: "slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-all duration-200 hover:rotate-90"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-all hover:rotate-90"
         >
           <X size={16} strokeWidth={2.5} />
         </button>
 
-        {/* Heading */}
-        <h2 className="text-center text-base sm:text-lg font-bold text-gray-900 leading-snug mb-7 px-2">
-          Enter 4-digit OTP sent on{" "}
-          <span className="whitespace-nowrap">+91-{phone}</span>
+        <h2 className="text-center text-base sm:text-lg font-bold text-gray-900 mb-7 px-2">
+          Enter 4-digit OTP sent on <span className="whitespace-nowrap">+91-{phone}</span>
         </h2>
 
-        {/* OTP Boxes - Static */}
         <div className="flex justify-center gap-3 sm:gap-4 mb-5">
-          {[0, 1, 2, 3].map((idx) => (
-            <div
+          {otp.map((digit, idx) => (
+            <input
               key={idx}
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-gray-200 bg-white"
+              ref={(el) => (inputRefs.current[idx] = el)}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(e.target.value, idx)}
+              onKeyDown={(e) => handleKeyDown(e, idx)}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-gray-200 bg-white text-center text-2xl font-bold text-gray-800 focus:border-orange-500 outline-none transition-all"
             />
           ))}
         </div>
 
-        {/* Resend */}
         <p className="text-center text-sm text-gray-500 mb-6">
-          Didn't receive OTP?{" "}
-          <span className="text-gray-400">Resend SMS in 60 sec</span>
+          Didn't receive OTP? <span className="text-gray-400">Resend SMS in 60 sec</span>
         </p>
 
-        {/* Verify Button */}
         <button
-          className="w-full h-12 rounded-xl text-white font-semibold text-sm tracking-wide transition-all duration-200 shadow-lg active:scale-95"
+          onClick={handleVerify}
+          disabled={loading || otp.join("").length < 4}
+          className="w-full h-12 rounded-xl text-white font-semibold text-sm tracking-wide transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
           style={{
-            background: "linear-gradient(135deg, #f97316, #ea580c)",
-            boxShadow: "0 4px 14px rgba(234,88,12,0.35)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "linear-gradient(135deg, #2563eb, #1d4ed8)";
-            e.currentTarget.style.boxShadow = "0 6px 20px rgba(37,99,235,0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background =
-              "linear-gradient(135deg, #f97316, #ea580c)";
-            e.currentTarget.style.boxShadow = "0 4px 14px rgba(234,88,12,0.35)";
+            background: loading ? "#cbd5e1" : "linear-gradient(135deg, #f97316, #ea580c)",
           }}
         >
-          Verify
+          {loading ? <Loader2 className="animate-spin" size={20} /> : "Verify"}
         </button>
       </div>
 

@@ -101,7 +101,7 @@ function Stars({ count = 5, size = 16, filled = 5 }) {
 }
 
 export default function Details() {
-  const { id } = useParams(); // URL se vendorId (/business/:id)
+  const { id } = useParams(); 
   const dispatch = useDispatch();
 const [showPhone, setShowPhone] = useState(false);
   // Redux selection
@@ -182,7 +182,7 @@ const [showPhone, setShowPhone] = useState(false);
               <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
                 <Stars filled={5} size={14} />
                 <span className="ml-1 text-gray-600 font-medium">5.0</span>
-                <span className="text-gray-400 ml-1">| {vendor.category}</span>
+                <span className="text-gray-400 ml-1">| {vendor.category?.name}</span>
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-500">
                 <MapPin size={14} className="text-orange-500" />
@@ -242,7 +242,8 @@ const [showPhone, setShowPhone] = useState(false);
                   key={i}
                   className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200"
                 >
-                  {sub}
+                  {/* {sub} */}
+                  {typeof sub === 'object' ? sub.name : sub}
                 </span>
               ))
             ) : (
@@ -363,14 +364,14 @@ const [showPhone, setShowPhone] = useState(false);
 
           <div className="space-y-4">
             <div className="sticky top-4">
-              {/* Sidebar ko pura vendor data bhej diya */}
               <CatgInfoRightSideBar vendorData={vendor} />
             </div>
           </div>
         </div>
       </div>
 
-      <StickyFooter businessName={vendor.companyName} phone={vendor.phone} />
+{/* hide this footer for submit button of rating and reviews */}
+      {/* <StickyFooter businessName={vendor.companyName} phone={vendor.phone} /> */}
     </div>
   );
 }

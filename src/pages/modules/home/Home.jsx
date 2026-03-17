@@ -520,9 +520,15 @@
 
 
 
+
+
+
+
+
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
+import { fetchHomeBanners } from "../../../redux/slice/homecityBanner/getAllCityBanner";
 import {
   MapPin,
   Mic,
@@ -530,7 +536,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  Loader2, // Optional loading spinner ke liye
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ListBusiness from "../businesslisting/ListBusiness";
@@ -552,67 +558,39 @@ const locations = [
   "Jaipur",
 ];
 
-const slides = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80",
-    title: "India's No. 1 Local Search Engine",
-    subtitle: "Hungry? Find the Best Restaurants Near You",
-    cta: "EXPLORE TOP RESTAURANTS IN NAGPUR",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=80",
-    title: "India's No. 1 Local Search Engine",
-    subtitle: "Need Financial Advise? Planning to invest in Mutual Funds or Insurance?",
-    cta: "CONNECT WITH TOP INVESTMENT ADVISORS IN NAGPUR",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1600&q=80",
-    title: "India's No. 1 Local Search Engine",
-    subtitle: "Looking for Quality Healthcare & Trusted Doctors?",
-    cta: "FIND TOP HOSPITALS AND CLINICS IN YOUR CITY",
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&q=80",
-    title: "India's No. 1 Local Search Engine",
-    subtitle: "Planning to Build Your Dream Home?",
-    cta: "DISCOVER TOP ARCHITECTS AND INTERIOR DESIGNERS",
-  },
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1523289333742-be1143f6b766?w=1600&q=80",
-    title: "India's No. 1 Local Search Engine",
-    subtitle: "Looking for the Best Shopping Deals in Your City?",
-    cta: "EXPLORE TOP SHOPPING MALLS AND STORES NEAR YOU",
-  },
-];
-
-// ─── HERO SLIDER ── (Keep existing code) ────────────────────────
+// ─── HERO SLIDER ── (Integrated with Redux) ────────────────────────
 function HeroSlider() {
+  const dispatch = useDispatch();
+  const { banners, loading, error } = useSelector((state) => state.cityBanners);
+  
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(locations[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    dispatch(fetchHomeBanners());
+  }, [dispatch]);
+
   const goTo = (index) => {
-    if (animating) return;
+    if (animating || !banners.length) return;
     setAnimating(true);
     setTimeout(() => {
       setCurrent(index);
       setAnimating(false);
     }, 400);
   };
-  const prev = () => goTo((current - 1 + slides.length) % slides.length);
-  const next = () => goTo((current + 1) % slides.length);
+
+  const prev = () => goTo((current - 1 + banners.length) % banners.length);
+  const next = () => goTo((current + 1) % banners.length);
 
   useEffect(() => {
-    const timer = setInterval(next, 5000);
-    return () => clearInterval(timer);
-  }, [current]);
+    if (banners.length > 0) {
+      const timer = setInterval(next, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [current, banners.length]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -623,20 +601,37 @@ function HeroSlider() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const slide = slides[current];
+  if (loading && banners.length === 0) {
+    return (
+      <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
+        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+      </div>
+    );
+  }
+
+  // Static content because API only provides images
+  const staticContent = {
+    title: "India's No. 1 Local Search Engine",
+    subtitle: "Find the Best Services & Businesses Near You",
+    cta: "EXPLORE NOW",
+  };
 
   return (
-    <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[92vh] overflow-hidden">
-      {slides.map((s, i) => (
+    <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[65vh] overflow-hidden">
+      {banners.map((s, i) => (
         <div
-          key={s.id}
+          key={s._id}
           className="absolute inset-0 w-full h-full transition-opacity duration-700"
           style={{
             opacity: i === current ? 1 : 0,
             zIndex: i === current ? 1 : 0,
           }}
         >
-          <img src={s.image} alt={s.title} className="w-full h-full object-cover" />
+          <img
+            src={s.bannerImage}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-black/55" />
         </div>
       ))}
@@ -650,7 +645,7 @@ function HeroSlider() {
         }}
       >
         <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 md:mb-6 drop-shadow-lg leading-tight">
-          {slide.title}
+          {staticContent.title}
         </h1>
 
         <div className="flex items-center bg-white rounded-xl overflow-visible shadow-2xl w-full max-w-xs sm:max-w-lg md:max-w-2xl mb-5 md:mb-8 relative">
@@ -663,7 +658,9 @@ function HeroSlider() {
               <span className="text-gray-700 font-semibold text-xs md:text-sm max-w-[90px] md:max-w-[140px] truncate">
                 {selectedLocation}
               </span>
-              <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`w-3 h-3 text-gray-500 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+              />
             </button>
             {dropdownOpen && (
               <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 w-52 max-h-60 overflow-y-auto">
@@ -698,26 +695,40 @@ function HeroSlider() {
         </div>
 
         <h2 className="text-white text-sm sm:text-xl md:text-3xl font-bold mb-4 md:mb-5 max-w-xs sm:max-w-xl md:max-w-2xl leading-snug drop-shadow px-2">
-          {slide.subtitle}
+          {staticContent.subtitle}
         </h2>
 
         <button className="bg-black/60 hover:bg-black/80 border border-yellow-400 text-yellow-400 font-bold text-[9px] sm:text-xs md:text-sm tracking-widest uppercase px-4 sm:px-6 md:px-8 py-2.5 md:py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
-          {slide.cta}
+          {staticContent.cta}
         </button>
       </div>
 
-      <button onClick={prev} className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1.5 md:p-2 transition-all">
-        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-      </button>
-      <button onClick={next} className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1.5 md:p-2 transition-all">
-        <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-      </button>
+      {banners.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1.5 md:p-2 transition-all"
+          >
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1.5 md:p-2 transition-all"
+          >
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {slides.map((_, i) => (
-          <button key={i} onClick={() => goTo(i)} className={`rounded-full transition-all duration-300 ${i === current ? "bg-orange-500 w-6 h-2.5" : "bg-white/60 hover:bg-white w-2.5 h-2.5"}`} />
-        ))}
-      </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {banners.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`rounded-full transition-all duration-300 ${i === current ? "bg-orange-500 w-6 h-2.5" : "bg-white/60 hover:bg-white w-2.5 h-2.5"}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -725,16 +736,15 @@ function HeroSlider() {
 // ─── CATEGORY CARD ─────────────────────────────────────────────
 function CategoryCard({ category }) {
   const navigate = useNavigate();
-  const categoryImage = category.image || "https://via.placeholder.com/300x200?text=Category";
+  const categoryImage =
+    category.image || "https://via.placeholder.com/300x200?text=Category";
 
   return (
     <div
       onClick={() => navigate(`/subcategory/${category.id}`)}
-      
       className="group cursor-pointer relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
       style={{ aspectRatio: "4/3" }}
     >
-    
       <img
         src={categoryImage}
         alt={category.name}
@@ -757,10 +767,8 @@ function CategoryCard({ category }) {
 // ─── TRENDING CATEGORIES ───────────────────────────────────────
 function TrendingCategories() {
   const dispatch = useDispatch();
-  // 2. Redux state se data extract karein
   const { categories, loading, error } = useSelector((state) => state.categories);
 
-  // 3. API Call trigger karein jab component mount ho
   useEffect(() => {
     dispatch(fetchAllCategories());
   }, [dispatch]);
@@ -774,20 +782,28 @@ function TrendingCategories() {
           </h2>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
           </div>
         )}
 
-        {/* Error State */}
         {error && <p className="text-center text-red-500">{error}</p>}
 
-        {/* Grid Display */}
-        {!loading && !error && (
+        {!loading && !error && (!categories || categories.length === 0) && (
+          <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-gray-50 p-4 rounded-full mb-4">
+              <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+            </div>
+            <p className="text-lg font-semibold text-gray-600">No Categories available</p>
+          </div>
+        )}
+
+        {!loading && !error && categories?.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-            {categories?.map((cat) => (
+            {categories.map((cat) => (
               <CategoryCard key={cat._id || cat.id} category={cat} />
             ))}
           </div>

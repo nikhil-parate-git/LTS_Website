@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVendorsByCatAndSubcat } from "../../../redux/slice/category/getVendorByCatandSubcat";
+import { fetchVendorsByCatAndSubcat,fetchSubCategoryBanners,
+  clearVendorData } from "../../../redux/slice/category/getVendorByCatandSubcat";
 
 import {
   ChevronRight,
@@ -23,6 +24,7 @@ import {
   Search,
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
+import Banner from "./Acbanner/Banner";
 
 // ─── HELPER ─────────────────────────────────────────────────────
 function formatProfileCount(n) {
@@ -212,7 +214,7 @@ export default function CategoryDetails() {
   const [sortBy, setSortBy] = useState("Relevance");
 
   // Redux Data
-  const { vendors, loading, error } = useSelector((state) => state.vendorStore);
+  const { vendors, loading, banners,error } = useSelector((state) => state.vendorStore);
   console.log("vendors", vendors);
   console.log(loading);
   console.log(error);
@@ -220,6 +222,7 @@ export default function CategoryDetails() {
   useEffect(() => {
     if (categoryId && subcategoryId) {
       dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId }));
+      dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
     } else {
       console.log("Missing categoryId or subcategoryId");
     }
@@ -228,9 +231,11 @@ export default function CategoryDetails() {
   return (
     <div className="min-h-screen bg-gray-50">
       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
-      <div className="relative h-44 overflow-hidden">
+
+        {/* Banner section */}
+      {/* <div className="relative h-44 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80"
+          src={vendors.bannerImage}
           alt="Banner"
           className="w-full h-full object-cover"
         />
@@ -246,7 +251,8 @@ export default function CategoryDetails() {
             {vendors.length} businesses matching your search
           </p>
         </div>
-      </div>
+      </div> */}
+      <Banner banners={banners} />
 
       {/* Header Sticky Bar */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
@@ -260,7 +266,7 @@ export default function CategoryDetails() {
             </button>
             <ChevronRight size={13} className="text-gray-300" />
             <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold truncate">
-              Business Directory
+              Vendors
             </span>
           </div>
 
@@ -348,7 +354,8 @@ export default function CategoryDetails() {
 
           {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 shrink-0">
-            <Sidebar cityName="Delhi" />
+            <Sidebar cityName="Delhi" categoryId={categoryId} 
+  subcategoryId={subcategoryId} />
           </div>
         </div>
       </div>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
+import { sendEnquiryOtp, resetEnquiryState } from "../../../redux/slice/enquiryform/enquirySentOtpSlice";
 import EnquiryOtp from "./EnquiryOtp";
 
 const countryCodes = [
@@ -10,19 +13,11 @@ const countryCodes = [
   { code: "+971", flag: "🇦🇪" },
 ];
 
-// ─── Universal usage ───────────────────────────────────────────────
-// 1. As modal with isOpen prop (anywhere in app):
-//    <SubmitEnquiry isOpen={showModal} onClose={() => setShowModal(false)} />
-//
-// 2. As a Route (no props needed — closes via navigate(-1)):
-//    <Route path="/submitenquiry" element={<SubmitEnquiry />} />
-//
-// 3. Legacy (auto-open after 2s delay):
-//    <SubmitEnquiry onClose={() => setShowModal(false)} />
-// ──────────────────────────────────────────────────────────────────
-
 const SubmitEnquiry = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { slug } = useParams();
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [enquiry, setEnquiry] = useState("");
@@ -31,50 +26,52 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
   const [visible, setVisible] = useState(false);
   const [animate, setAnimate] = useState(false);
 
-  // ── Detect if opened as a standalone route (no onClose prop) ──
+  const { loading, success } = useSelector((state) => state.enquiryOtp);
   const isRoutePage = isOpen === undefined && onClose === undefined;
 
-  // ── Unified close handler ──
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else if (isRoutePage) {
-      navigate(-1);
-    }
+    setAnimate(false);
+    
+    setTimeout(() => {
+      dispatch(resetEnquiryState());
+      if (onClose) {
+        onClose();}
+      else if (isRoutePage) navigate(-1);
+      else setVisible(false);
+    }, 400);
   };
 
   useEffect(() => {
+    if (success) setShowOtp(true);
+  }, [success]);
+
+  useEffect(() => {
+    let timer;
+
     if (isRoutePage) {
-      // Route mode: show immediately
       setVisible(true);
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setAnimate(true)),
-      );
-    } else if (isOpen !== undefined) {
-      // Controlled mode
-      if (isOpen) {
-        setVisible(true);
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => setAnimate(true)),
-        );
-      } else {
-        setAnimate(false);
-        const t = setTimeout(() => setVisible(false), 450);
-        return () => clearTimeout(t);
-      }
+      timer = setTimeout(() => setAnimate(true), 100);
+
+    } else if (isOpen !== undefined && isOpen === true) {
+      setVisible(true);
+      timer = setTimeout(() => setAnimate(true), 100);
+
+    } else if (isOpen === false) {
+      setAnimate(false);
+      timer = setTimeout(() => setVisible(false), 450);
+
     } else {
-      // Legacy mode: 2s delay
-      const showTimer = setTimeout(() => {
+      timer = setTimeout(() => {
         setVisible(true);
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => setAnimate(true)),
-        );
+        setTimeout(() => setAnimate(true), 100);
       }, 2000);
-      return () => clearTimeout(showTimer);
     }
+
+    return () => clearTimeout(timer);
   }, [isOpen, isRoutePage]);
 
-  // ── Body scroll lock — only when used as modal (not route) ──
+
+
   useEffect(() => {
     if (!visible || isRoutePage) return;
     const scrollY = window.scrollY;
@@ -93,7 +90,15 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setShowOtp(true);
+    if (!name || !phone || !enquiry) return;
+    dispatch(
+      sendEnquiryOtp({
+        name,
+        phone: `${phone}`,
+        enquiry,
+        categoryId:slug
+      })
+    );
   };
 
   if (showOtp) {
@@ -101,14 +106,16 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
       <EnquiryOtp
         phone={`${countryCode}-${phone}`}
         onClose={handleClose}
-        onBack={() => setShowOtp(false)}
+        onBack={() => {
+          setShowOtp(false);
+          dispatch(resetEnquiryState());
+        }}
       />
     );
   }
 
   if (!visible) return null;
 
-  // ── Route mode: render as full page (no fixed overlay) ──
   if (isRoutePage) {
     return (
       <>
@@ -129,7 +136,6 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
           <div
             className={`enquiry-modal relative w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 sm:p-10 ${animate ? "show" : ""}`}
           >
-            {/* Close / Back Button */}
             <button
               onClick={handleClose}
               className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 text-lg font-bold"
@@ -149,6 +155,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                 </label>
                 <input
                   type="text"
+                  required
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -190,6 +197,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                   <div className="w-px bg-gray-200 my-3" />
                   <input
                     type="tel"
+                    required
                     placeholder="Enter Contact Number"
                     value={phone}
                     onChange={(e) =>
@@ -206,6 +214,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                   Enter Your Enquiry
                 </label>
                 <textarea
+                  required
                   placeholder="Describe your issue..."
                   value={enquiry}
                   onChange={(e) => setEnquiry(e.target.value)}
@@ -216,9 +225,10 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 
               <button
                 type="submit"
-                className="w-full bg-orange-500 hover:bg-blue-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide"
+                disabled={loading}
+                className="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide flex items-center justify-center gap-2"
               >
-                Send Enquiry
+                {loading ? <Loader2 className="animate-spin" size={20} /> : "Send Enquiry"}
               </button>
             </form>
           </div>
@@ -227,7 +237,6 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
     );
   }
 
-  // ── Modal mode: fixed overlay ──
   return (
     <>
       <style>{`
@@ -236,13 +245,17 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
           transition: opacity 0.45s ease;
         }
         .enquiry-backdrop.show { opacity: 1; }
+
         .enquiry-modal {
           opacity: 0;
           transform: translateY(-130px);
           transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .enquiry-modal.show { opacity: 1; transform: translateY(0); }
+        .enquiry-modal.show {
+          opacity: 1;
+          transform: translateY(0);
+        }
       `}</style>
 
       <div
@@ -271,6 +284,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
               </label>
               <input
                 type="text"
+                required
                 placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -312,9 +326,12 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                 <div className="w-px bg-gray-200 my-3" />
                 <input
                   type="tel"
+                  required
                   placeholder="Enter Contact Number"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) =>
+                    setPhone(e.target.value.replace(/\D/g, ""))
+                  }
                   maxLength={12}
                   className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 py-3 pr-4 pl-3"
                 />
@@ -326,6 +343,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                 Enter Your Enquiry
               </label>
               <textarea
+                required
                 placeholder="Describe your issue..."
                 value={enquiry}
                 onChange={(e) => setEnquiry(e.target.value)}
@@ -336,9 +354,10 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 
             <button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-blue-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide"
+              disabled={loading}
+              className="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide flex items-center justify-center gap-2"
             >
-              Send Enquiry
+              {loading ? <Loader2 className="animate-spin" size={20} /> : "Send Enquiry"}
             </button>
           </form>
         </div>

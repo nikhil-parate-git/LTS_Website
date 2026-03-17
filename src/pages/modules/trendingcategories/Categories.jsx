@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubcategories,clearSubcategories } from "../../../redux/slice/category/getAllSubcategorySlice";
+import { fetchSubcategories,clearSubcategories,fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
 import {
   Home,
   Star,
@@ -92,7 +92,7 @@ function MobileSidebarDrawer({ open, onClose, cityName }) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/0 z-40" onClick={onClose()} />
       <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-gray-50 z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300">
         <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-10">
           <span className="font-bold text-gray-800 text-sm">Quick Connect</span>
@@ -112,12 +112,14 @@ export default function SubCategory() {
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(true);
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { subcategories, categoryName, loading, error } = useSelector((state) => state.subcategory);
+  const { subcategories, categoryName,banners, loading, error } = useSelector((state) => state.subcategory);
 
   useEffect(() => {
     if (slug) {
       dispatch(fetchSubcategories(slug));
+      dispatch(fetchCategoryBanners(slug));
     }
     return () => {
       dispatch(clearSubcategories());
@@ -126,7 +128,7 @@ export default function SubCategory() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Banner />
+      <Banner banners={banners}/>
 
       <MobileSidebarDrawer
         open={sidebarOpen}

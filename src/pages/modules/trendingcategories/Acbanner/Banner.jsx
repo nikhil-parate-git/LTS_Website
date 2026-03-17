@@ -215,7 +215,7 @@ const INTERVAL = 4500;
 function LazySlide({ slide, isActive, isPrev }) {
   const [loaded, setLoaded] = useState(false);
   // API se image 'image' key mein aa rahi hai, fallback ke liye static url rakha hai
-  const imageUrl = slide.image || slide.url;
+  const imageUrl = slide.bannerImage || slide.url;
 
   return (
     <div

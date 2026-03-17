@@ -5,7 +5,7 @@ const Dashboard = lazy(() => import("../pages/Dashboard"));
 
 // Auth guard component
 function RequireAuth({ children }) {
-  const token = localStorage.getItem("token"); // or from redux store
+  const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" replace />;
 }
 
