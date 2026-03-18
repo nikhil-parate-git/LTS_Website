@@ -207,6 +207,8 @@
 
 
 
+
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -277,8 +279,8 @@ export default function Banner({ banners = [] }) {
 
   return (
     <div
-      className="relative w-full overflow-hidden select-none"
-      style={{ height: "clamp(200px, 44vw, 460px)" }}
+      className="relative w-full overflow-hidden select-none "
+      style={{ height: "clamp(200px, 44vw, 440px)" }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

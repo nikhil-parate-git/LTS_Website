@@ -20,7 +20,6 @@ import {
   Calendar,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
-import StickyFooter from "./EnquiryFooter";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
 import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";

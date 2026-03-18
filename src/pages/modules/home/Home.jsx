@@ -617,7 +617,7 @@ function HeroSlider() {
   };
 
   return (
-    <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[65vh] overflow-hidden">
+    <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[60vh] overflow-hidden">
       {banners.map((s, i) => (
         <div
           key={s._id}

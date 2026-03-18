@@ -218,15 +218,16 @@ export default function CategoryDetails() {
   console.log("vendors", vendors);
   console.log(loading);
   console.log(error);
+  const { selectedCity } = useSelector((state) => state.location);
 
   useEffect(() => {
     if (categoryId && subcategoryId) {
-      dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId }));
+      dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId,city: selectedCity }));
       dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
     } else {
       console.log("Missing categoryId or subcategoryId");
     }
-  }, [dispatch, categoryId, subcategoryId]);
+  }, [dispatch, categoryId, subcategoryId,selectedCity]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -354,7 +355,8 @@ export default function CategoryDetails() {
 
           {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 shrink-0">
-            <Sidebar cityName="Delhi" categoryId={categoryId} 
+            <Sidebar  categoryId={categoryId} 
+            cityName={selectedCity}
   subcategoryId={subcategoryId} />
           </div>
         </div>
