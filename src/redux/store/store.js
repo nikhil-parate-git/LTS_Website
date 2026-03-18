@@ -9,6 +9,8 @@ import verifyOtpReducer from "../slice/customerAuth/verifyOtpSlice"
 import enquiryOtpReducer from "../slice/enquiryform/enquirySentOtpSlice"
 import verifyEnquiryReducer from "../slice/enquiryform/verifyEnquirySlice"
 import getProfileReducer from "../slice/profile/getProfile"
+import cityReducer from "../slice/citydropdown/getCityDropdownSlice"
+import locationReducer from "../slice/locationSlice"
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -25,6 +27,10 @@ const store = configureStore({
 
     // profile
     profile: getProfileReducer,
+
+    // citydropdown
+    cityDropdown: cityReducer,
+    location: locationReducer,
   },
 });
 export default store;

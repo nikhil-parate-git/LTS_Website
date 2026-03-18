@@ -5,10 +5,10 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchVendorsByCatAndSubcat = createAsyncThunk(
   "vendors/fetchByCatAndSubcat",
-  async ({ categoryId, subcategoryId }, { rejectWithValue }) => {
+  async ({ categoryId, subcategoryId,city }, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/vendor/getallvendor/${categoryId}/${subcategoryId}`
+        `${BASE_URL}/customer/vendor/getallvendor/${categoryId}/${subcategoryId}?city=${city}`
       );
       return response.data.data;
     } catch (error) {

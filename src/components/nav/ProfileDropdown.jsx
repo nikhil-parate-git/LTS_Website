@@ -58,7 +58,6 @@ const ProfileDropdown = ({ onClose, onLogout }) => {
                   <h3 className="text-xl font-bold text-gray-900 truncate max-w-[150px]">
                     {userName}
                   </h3>
-                  <Pencil size={14} className="text-gray-400 cursor-pointer hover:text-orange-500" />
                 </div>
                 <p className="text-sm text-gray-500 font-medium">{userPhone}</p>
               </div>
