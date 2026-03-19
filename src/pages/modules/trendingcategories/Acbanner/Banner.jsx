@@ -210,14 +210,13 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Beaker, ChevronLeft, ChevronRight } from "lucide-react";
 
 const INTERVAL = 4500;
 
 function LazySlide({ slide, isActive, isPrev }) {
   const [loaded, setLoaded] = useState(false);
-  // API se image 'image' key mein aa rahi hai, fallback ke liye static url rakha hai
-  const imageUrl = slide.bannerImage || slide.url;
+  const imageUrl = slide.image || slide.bannerImage || slide.url;
 
   return (
     <div
@@ -246,7 +245,7 @@ function LazySlide({ slide, isActive, isPrev }) {
 }
 
 export default function Banner({ banners = [] }) {
-  // Agar API se banners nahi aaye toh default slides dikhayega
+  console.log("Banner: ",banners)
   const displaySlides = banners.length > 0 ? banners : [
     { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80", title: "Welcome", tag: "Local Trade" }
   ];
@@ -313,16 +312,37 @@ export default function Banner({ banners = [] }) {
         </h2>
       </div>
 
+      {/* Navigation Arrows */}
       {displaySlides.length > 1 && (
         <>
-          <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-md transition-all">
+          <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
             <ChevronLeft size={20} />
           </button>
-          <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-md transition-all">
+          <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
             <ChevronRight size={20} />
           </button>
         </>
       )}
+
+      {/* Slider Dots (Pagination Progress) */}
+      {displaySlides.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+          {displaySlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                i === current 
+                  ? "w-8 bg-orange-500 shadow-lg" 
+                  : "w-2 bg-white/40 hover:bg-white/70"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+      
+
     </div>
   );
 }

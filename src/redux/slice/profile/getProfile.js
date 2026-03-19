@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://local-trade-street-be.onrender.com/api/customer/auth/profile",
+        `${BASE_URL}/customer/auth/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

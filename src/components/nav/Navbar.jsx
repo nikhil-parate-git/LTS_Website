@@ -220,6 +220,10 @@
 //   );
 // }
 
+
+
+
+
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Search, Menu, User, MapPin, ChevronDown, Loader2 } from "lucide-react";
 import logo from "../../../src/assets/logo.png";
@@ -360,22 +364,9 @@ export default function Navbar() {
                   ) : displayCities.length > 0 ? (
                     <>
                       {displayCities.map((city, index) => (
-                        // <button
-                        //   key={`${city.name}-${index}`}
-                        //   onClick={() => {
-                        //     setSelectedLocation(city?.name);
-                        //     setDropdownOpen(false);
-                        //     setCitySearch("");
-                        //   }}
-                        //   className="w-full text-left px-4 py-2.5 text-sm cursor-pointer hover:bg-orange-50 flex items-center"
-                        // >
-                        //   <MapPin className="w-3 h-3 text-gray-400 cursor-pointer " />
-                        //   {city?.name}
-                        // </button>
-
                         <button
                           key={`${city.name}-${index}`}
-                          onClick={() => handleCitySelect(city?.name)} // <--- Local function call karein
+                          onClick={() => handleCitySelect(city?.name)}
                           className="w-full text-left px-4 py-2.5 text-sm cursor-pointer hover:bg-orange-50 flex items-center"
                         >
                           <MapPin className="w-3 h-3 text-gray-400" />
