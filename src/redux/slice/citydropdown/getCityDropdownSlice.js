@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchCities = createAsyncThunk('cities/fetchCities', async () => {
-  const response = await axios.get('https://local-trade-street-be.onrender.com/api/customer/dropdown');
-  // API response structure ke hisaab se data return karein
+  const response = await axios.get(`${BASE_URL}/customer/dropdown`);
   return response.data.data; 
 });
 
@@ -15,6 +14,7 @@ const getCityDropdownSlice = createSlice({
     error: null,
   },
   reducers: {},
+  
   extraReducers: (builder) => {
     builder
       .addCase(fetchCities.pending, (state) => {

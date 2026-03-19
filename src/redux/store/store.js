@@ -11,6 +11,7 @@ import verifyEnquiryReducer from "../slice/enquiryform/verifyEnquirySlice"
 import getProfileReducer from "../slice/profile/getProfile"
 import cityReducer from "../slice/citydropdown/getCityDropdownSlice"
 import locationReducer from "../slice/locationSlice"
+import topRatedVendorsReducer from "../slice/topRatedVendor/getAllTopRatedVendorSlice"
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -31,6 +32,9 @@ const store = configureStore({
     // citydropdown
     cityDropdown: cityReducer,
     location: locationReducer,
+
+    // toprated vendor
+    topRatedVendors: topRatedVendorsReducer,
   },
 });
 export default store;
