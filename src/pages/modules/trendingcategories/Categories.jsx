@@ -233,7 +233,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubcategories, clearSubcategories, fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
+import { fetchSubcategories, fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
+// ── clearSubcategories import bhi hata diya ──
 import {
   Home,
   Star,
@@ -313,7 +314,6 @@ function MobileSidebarDrawer({ open, onClose, cityName }) {
 
   return (
     <>
-      {/* FIX: onClose() → onClose (function reference, call nahi) */}
       <div className="fixed inset-0 bg-black/0 z-40" onClick={onClose} />
       <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-gray-50 z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300">
         <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-10">
@@ -352,7 +352,7 @@ export default function SubCategory() {
       dispatch(fetchSubcategories(slug));
       dispatch(fetchCategoryBanners(slug));
     }
-    // FIX: clearSubcategories hata diya — yahi white page ka reason tha
+    // ── clearSubcategories BILKUL nahi — yahi white page ka reason tha ──
   }, [dispatch, slug]);
 
   const bannerTitle = categoryName ? `Top 20 ${categoryName}` : "";

@@ -256,7 +256,7 @@ const FALLBACK = [
   {
     url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
     title: null,
-    tag: "Local Trade",
+    tag: null,
   },
 ];
 
@@ -335,19 +335,17 @@ function LazySlide({ slide, isActive, isPrev }) {
   );
 }
 
-// ── pageTitle — name of the category/subcategory passed from parent ──
-// ── selectedCity — currently selected city from context/store (e.g. "Pune") ──
 export default function Banner({ banners, loading = false, pageTitle = "", selectedCity = "" }) {
   const hasRealBanners = Array.isArray(banners) && banners.length > 0;
 
-  // Filter banners by selected city (case-insensitive). If no city selected, show all.
+  // City wise filter
   const cityFilteredBanners = hasRealBanners && selectedCity
     ? banners.filter(
         (b) => b.city && b.city.toLowerCase() === selectedCity.toLowerCase()
       )
     : banners;
 
-  // If city filtering returns empty (no banners for this city), fall back to all banners
+  // Agar city ke liye koi banner nahi mila toh sab dikhao, warna FALLBACK
   const filteredBanners =
     Array.isArray(cityFilteredBanners) && cityFilteredBanners.length > 0
       ? cityFilteredBanners
@@ -355,13 +353,13 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
       ? banners
       : FALLBACK;
 
-  const displaySlides = filteredBanners;
+  // Extra safety — kabhi bhi empty array nahi hoga
+  const displaySlides = filteredBanners.length > 0 ? filteredBanners : FALLBACK;
 
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Reset to slide 0 whenever the filtered list changes (city switch)
   useEffect(() => {
     setCurrent(0);
     setPrev(null);
@@ -391,9 +389,9 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
 
   if (loading) return <BannerSkeleton />;
 
-  const activeSlide = displaySlides[current];
+  // ── Safe activeSlide — kabhi undefined nahi hoga ──
+  const activeSlide = displaySlides[current] || displaySlides[0] || FALLBACK[0];
 
-  // Title priority: pageTitle prop → slide.title → nothing
   const displayTitle = pageTitle || activeSlide.title || null;
 
   return (
