@@ -1,8 +1,95 @@
-
-// import React, { useState, useEffect, useCallback, useRef } from "react";
-// import { Beaker, ChevronLeft, ChevronRight } from "lucide-react";
+// import React, { useState, useEffect, useCallback } from "react";
+// import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // const INTERVAL = 4500;
+
+// const FALLBACK = [
+//   {
+//     url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
+//     title: null,
+//     tag: "Local Trade",
+//   },
+// ];
+
+// function BannerSkeleton() {
+//   return (
+//     <div
+//       className="relative w-full overflow-hidden"
+//       style={{ height: "clamp(200px, 44vw, 440px)" }}
+//     >
+//       <style>{`
+//         @keyframes skshimmer {
+//           0%   { background-position: -800px 0; }
+//           100% { background-position:  800px 0; }
+//         }
+//         .sk-base {
+//           background: #e2e8f0;
+//           background-image: linear-gradient(
+//             90deg,
+//             #e2e8f0 0px,
+//             #edf2f7 200px,
+//             #e2e8f0 400px
+//           );
+//           background-size: 800px 100%;
+//           animation: skshimmer 1.4s infinite linear;
+//         }
+//       `}</style>
+
+//       <div className="absolute inset-0 sk-base" />
+
+//       <div className="absolute bottom-0 left-0 right-0 px-5 sm:px-10 pb-7 sm:pb-12 flex flex-col gap-2.5">
+//         <div
+//           className="sk-base rounded-full"
+//           style={{ width: 72, height: 22, opacity: 0.7 }}
+//         />
+//         <div
+//           className="sk-base rounded-md"
+//           style={{
+//             width: "clamp(160px, 32vw, 380px)",
+//             height: "clamp(18px, 3.2vw, 34px)",
+//             opacity: 0.6,
+//           }}
+//         />
+//         <div
+//           className="sk-base rounded-md"
+//           style={{
+//             width: "clamp(100px, 20vw, 240px)",
+//             height: "clamp(12px, 2vw, 22px)",
+//             opacity: 0.45,
+//           }}
+//         />
+//       </div>
+
+//       <div
+//         className="sk-base absolute left-3 top-1/2 -translate-y-1/2 rounded-full"
+//         style={{ width: 40, height: 40, opacity: 0.5 }}
+//       />
+//       <div
+//         className="sk-base absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
+//         style={{ width: 40, height: 40, opacity: 0.5 }}
+//       />
+
+//       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+//         <div
+//           className="sk-base rounded-full"
+//           style={{ width: 32, height: 10, opacity: 0.6 }}
+//         />
+//         <div
+//           className="sk-base rounded-full"
+//           style={{ width: 10, height: 10, opacity: 0.4 }}
+//         />
+//         <div
+//           className="sk-base rounded-full"
+//           style={{ width: 10, height: 10, opacity: 0.4 }}
+//         />
+//         <div
+//           className="sk-base rounded-full"
+//           style={{ width: 10, height: 10, opacity: 0.4 }}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
 
 // function LazySlide({ slide, isActive, isPrev }) {
 //   const [loaded, setLoaded] = useState(false);
@@ -34,21 +121,27 @@
 //   );
 // }
 
-// export default function Banner({ banners = [] }) {
-//   console.log("Banner: ",banners)
-//   const displaySlides = banners.length > 0 ? banners : [
-//     { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80", title: "Welcome", tag: "Local Trade" }
-//   ];
+// // ── pageTitle — name of the category/subcategory passed from parent ──
+// export default function Banner({ banners, loading = false, pageTitle = "" }) {
+//   const hasRealBanners = Array.isArray(banners) && banners.length > 0;
+//   const displaySlides = hasRealBanners ? banners : FALLBACK;
 
 //   const [current, setCurrent] = useState(0);
 //   const [prev, setPrev] = useState(null);
 //   const [isPaused, setIsPaused] = useState(false);
-//   const timerRef = useRef(null);
 
-//   const goTo = useCallback((index) => {
-//     setPrev(current);
-//     setCurrent(index);
-//   }, [current]);
+//   useEffect(() => {
+//     setCurrent(0);
+//     setPrev(null);
+//   }, [hasRealBanners]);
+
+//   const goTo = useCallback(
+//     (index) => {
+//       setPrev(current);
+//       setCurrent(index);
+//     },
+//     [current],
+//   );
 
 //   const goNext = useCallback(() => {
 //     goTo((current + 1) % displaySlides.length);
@@ -60,15 +153,20 @@
 
 //   useEffect(() => {
 //     if (isPaused || displaySlides.length <= 1) return;
-//     timerRef.current = setInterval(goNext, INTERVAL);
-//     return () => clearInterval(timerRef.current);
+//     const t = setInterval(goNext, INTERVAL);
+//     return () => clearInterval(t);
 //   }, [goNext, isPaused, displaySlides.length]);
+
+//   if (loading) return <BannerSkeleton />;
 
 //   const activeSlide = displaySlides[current];
 
+//   // Title priority: pageTitle prop → slide.title → nothing
+//   const displayTitle = pageTitle || activeSlide.title || null;
+
 //   return (
 //     <div
-//       className="relative w-full overflow-hidden select-none "
+//       className="relative w-full overflow-hidden select-none"
 //       style={{ height: "clamp(200px, 44vw, 440px)" }}
 //       onMouseEnter={() => setIsPaused(true)}
 //       onMouseLeave={() => setIsPaused(false)}
@@ -91,30 +189,44 @@
 //       ))}
 
 //       {/* Text Content */}
-//       <div key={current} className="absolute inset-0 z-10 flex flex-col justify-end px-5 sm:px-10 pb-7 sm:pb-12 pointer-events-none">
+//       <div
+//         key={current}
+//         className="absolute inset-0 z-10 flex flex-col justify-end px-5 sm:px-10 pb-7 sm:pb-12 pointer-events-none"
+//       >
 //         {activeSlide.tag && (
 //           <span className="slide-text inline-flex self-start bg-orange-500 text-white text-[10px] font-bold uppercase px-3 py-1.5 rounded-full mb-2">
 //             {activeSlide.tag}
 //           </span>
 //         )}
-//         <h2 className="slide-text text-white font-extrabold" style={{ fontSize: "clamp(18px, 4vw, 36px)" }}>
-//           {activeSlide.title || "Quality Services Near You"}
-//         </h2>
+//         {displayTitle && (
+//           <h2
+//             className="slide-text text-white font-extrabold"
+//             style={{ fontSize: "clamp(18px, 4vw, 36px)" }}
+//           >
+//             {displayTitle}
+//           </h2>
+//         )}
 //       </div>
 
 //       {/* Navigation Arrows */}
 //       {displaySlides.length > 1 && (
 //         <>
-//           <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
+//           <button
+//             onClick={goPrev}
+//             className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+//           >
 //             <ChevronLeft size={20} />
 //           </button>
-//           <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
+//           <button
+//             onClick={goNext}
+//             className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+//           >
 //             <ChevronRight size={20} />
 //           </button>
 //         </>
 //       )}
 
-//       {/* Slider Dots (Pagination Progress) */}
+//       {/* Slider Dots */}
 //       {displaySlides.length > 1 && (
 //         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
 //           {displaySlides.map((_, i) => (
@@ -122,8 +234,8 @@
 //               key={i}
 //               onClick={() => goTo(i)}
 //               className={`h-2.5 rounded-full transition-all duration-300 ${
-//                 i === current 
-//                   ? "w-8 bg-orange-500 shadow-lg" 
+//                 i === current
+//                   ? "w-8 bg-orange-500 shadow-lg"
 //                   : "w-2 bg-white/40 hover:bg-white/70"
 //               }`}
 //               aria-label={`Go to slide ${i + 1}`}
@@ -131,12 +243,9 @@
 //           ))}
 //         </div>
 //       )}
-      
-
 //     </div>
 //   );
 // }
-
 
 import React, { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -227,18 +336,36 @@ function LazySlide({ slide, isActive, isPrev }) {
 }
 
 // ── pageTitle — name of the category/subcategory passed from parent ──
-export default function Banner({ banners, loading = false, pageTitle = "" }) {
+// ── selectedCity — currently selected city from context/store (e.g. "Pune") ──
+export default function Banner({ banners, loading = false, pageTitle = "", selectedCity = "" }) {
   const hasRealBanners = Array.isArray(banners) && banners.length > 0;
-  const displaySlides = hasRealBanners ? banners : FALLBACK;
+
+  // Filter banners by selected city (case-insensitive). If no city selected, show all.
+  const cityFilteredBanners = hasRealBanners && selectedCity
+    ? banners.filter(
+        (b) => b.city && b.city.toLowerCase() === selectedCity.toLowerCase()
+      )
+    : banners;
+
+  // If city filtering returns empty (no banners for this city), fall back to all banners
+  const filteredBanners =
+    Array.isArray(cityFilteredBanners) && cityFilteredBanners.length > 0
+      ? cityFilteredBanners
+      : hasRealBanners
+      ? banners
+      : FALLBACK;
+
+  const displaySlides = filteredBanners;
 
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Reset to slide 0 whenever the filtered list changes (city switch)
   useEffect(() => {
     setCurrent(0);
     setPrev(null);
-  }, [hasRealBanners]);
+  }, [selectedCity, hasRealBanners]);
 
   const goTo = useCallback(
     (index) => {
@@ -286,7 +413,7 @@ export default function Banner({ banners, loading = false, pageTitle = "" }) {
 
       {displaySlides.map((slide, i) => (
         <LazySlide
-          key={slide.id || i}
+          key={slide.id || slide._id || i}
           slide={slide}
           isActive={i === current}
           isPrev={i === prev}
