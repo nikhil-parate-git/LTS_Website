@@ -1,7 +1,8 @@
+
 // import { useState, useEffect } from "react";
 // import { useParams, useNavigate } from "react-router-dom";
 // import { useDispatch, useSelector } from "react-redux";
-// import { fetchSubcategories,clearSubcategories,fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
+// import { fetchSubcategories, clearSubcategories, fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
 // import {
 //   Home,
 //   Star,
@@ -16,7 +17,6 @@
 // import SubmitEnquiry from "./SubmitEnquiry";
 // import Sidebar from "./MainSidebar";
 
-// // ─── STAR RATING ───────────────────────────────────────────────
 // function StarRating({ rating = 3.6 }) {
 //   return (
 //     <div className="flex items-center gap-1">
@@ -34,7 +34,6 @@
 //   );
 // }
 
-// // ─── SUBCATEGORY CARD ──────────────────────────────────────────
 // function SubCategoryCard({ item, onCardClick, index }) {
 //   return (
 //     <div
@@ -68,13 +67,11 @@
 //         <p className="text-sm font-semibold text-gray-800 group-hover:text-orange-500 leading-snug transition-colors duration-200 text-center">
 //           {item.name}
 //         </p>
-      
 //       </div>
 //     </div>
 //   );
 // }
 
-// // ─── MOBILE SIDEBAR DRAWER ─────────────────────────────────────
 // function MobileSidebarDrawer({ open, onClose, cityName }) {
 //   useEffect(() => {
 //     if (open) document.body.style.overflow = "hidden";
@@ -105,9 +102,16 @@
 //   const dispatch = useDispatch();
 
 //   const [showModal, setShowModal] = useState(true);
-  
 //   const [sidebarOpen, setSidebarOpen] = useState(false);
-//   const { subcategories, categoryName,banners, loading, error } = useSelector((state) => state.subcategory);
+
+//   const {
+//     subcategories,
+//     categoryName,
+//     banners,
+//     loading,
+//     bannerLoading,
+//     error,
+//   } = useSelector((state) => state.subcategory);
 
 //   useEffect(() => {
 //     if (slug) {
@@ -119,10 +123,16 @@
 //     };
 //   }, [dispatch, slug]);
 
+//   // ── "Top 20 Pest Control Services" format ──
+//   const bannerTitle = categoryName ? `Top 20 ${categoryName}` : "";
+
 //   return (
 //     <div className="min-h-screen bg-gray-50">
-//       {/* <Banner banners={banners}/> */}
-//       <Banner banners={banners} loading={loading} pageTitle={categoryName} />
+//       <Banner
+//         banners={banners}
+//         loading={bannerLoading}
+//         pageTitle={bannerTitle}
+//       />
 
 //       <MobileSidebarDrawer
 //         open={sidebarOpen}
@@ -303,7 +313,8 @@ function MobileSidebarDrawer({ open, onClose, cityName }) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/0 z-40" onClick={onClose()} />
+      {/* FIX: onClose() → onClose (function reference, call nahi) */}
+      <div className="fixed inset-0 bg-black/0 z-40" onClick={onClose} />
       <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-gray-50 z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300">
         <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-10">
           <span className="font-bold text-gray-800 text-sm">Quick Connect</span>
@@ -334,17 +345,16 @@ export default function SubCategory() {
     error,
   } = useSelector((state) => state.subcategory);
 
+  const { selectedCity } = useSelector((state) => state.location);
+
   useEffect(() => {
     if (slug) {
       dispatch(fetchSubcategories(slug));
       dispatch(fetchCategoryBanners(slug));
     }
-    return () => {
-      dispatch(clearSubcategories());
-    };
+    // FIX: clearSubcategories hata diya — yahi white page ka reason tha
   }, [dispatch, slug]);
 
-  // ── "Top 20 Pest Control Services" format ──
   const bannerTitle = categoryName ? `Top 20 ${categoryName}` : "";
 
   return (
@@ -353,12 +363,13 @@ export default function SubCategory() {
         banners={banners}
         loading={bannerLoading}
         pageTitle={bannerTitle}
+        selectedCity={selectedCity}
       />
 
       <MobileSidebarDrawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        cityName="Delhi"
+        cityName={selectedCity}
       />
 
       {/* ── Breadcrumb / Header ── */}
@@ -440,7 +451,7 @@ export default function SubCategory() {
           </div>
 
           <div className="hidden lg:block w-72 shrink-0">
-            <Sidebar cityName="Delhi" />
+            <Sidebar cityName={selectedCity} />
           </div>
         </div>
       </div>

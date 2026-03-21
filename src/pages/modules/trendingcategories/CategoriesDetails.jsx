@@ -1,7 +1,8 @@
+
 // import { useState, useEffect } from "react";
 // import { useParams, useNavigate } from "react-router-dom";
 // import { useDispatch, useSelector } from "react-redux";
-// import { fetchVendorsByCatAndSubcat,fetchSubCategoryBanners, } from "../../../redux/slice/category/getVendorByCatandSubcat";
+// import { fetchVendorsByCatAndSubcat, fetchSubCategoryBanners } from "../../../redux/slice/category/getVendorByCatandSubcat";
 
 // import {
 //   ChevronRight,
@@ -25,7 +26,6 @@
 // import Sidebar from "./MainSidebar";
 // import Banner from "./Acbanner/Banner";
 
-// // ─── HELPER ─────────────────────────────────────────────────────
 // function formatProfileCount(n) {
 //   if (!n) return "0";
 //   if (n >= 1000) {
@@ -35,7 +35,6 @@
 //   return String(n);
 // }
 
-// // ─── STARS COMPONENT ───────────────────────────────────────────
 // function Stars({ rating }) {
 //   return (
 //     <div className="flex items-center gap-0.5">
@@ -54,7 +53,6 @@
 //   );
 // }
 
-// // ─── FILTER OVERLAY ─────────────────────────────────────────────
 // function FilterOverlay({ open, onClose }) {
 //   if (!open) return null;
 //   return (
@@ -66,7 +64,6 @@
 //             <h2 className="font-bold">Filters</h2>
 //             <X onClick={onClose} className="cursor-pointer" size={18} />
 //           </div>
-//           {/* Add your filter UI logic here if needed */}
 //           <button
 //             onClick={onClose}
 //             className="w-full bg-orange-500 text-white py-3 rounded-xl font-bold"
@@ -79,14 +76,12 @@
 //   );
 // }
 
-// // ─── BUSINESS CARD ──────────────────────────────────────────────
 // function BusinessCard({ biz }) {
 //   const [showNumber, setShowNumber] = useState(false);
 //   const navigate = useNavigate();
 //   const [showAllTags, setShowAllTags] = useState(false);
 
 //   const VISIBLE = 2;
-//   // const tags = Array.isArray(biz.tags) ? biz.tags : [];
 //   const tags = Array.isArray(biz.subcategories) ? biz.subcategories : [];
 //   const visibleTags = showAllTags ? tags : tags.slice(0, VISIBLE);
 //   const hasMore = tags.length > VISIBLE;
@@ -167,8 +162,8 @@
 //               <button
 //                 onClick={() => setShowNumber(!showNumber)}
 //                 className={`flex items-center justify-center gap-2 min-w-[140px] px-4 py-3 rounded-lg text-xs font-bold transition-all duration-300 ${
-//                   showNumber 
-//                     ? "bg-green-600 text-white border-green-700 shadow-inner" 
+//                   showNumber
+//                     ? "bg-green-600 text-white border-green-700 shadow-inner"
 //                     : "bg-orange-500 text-white hover:bg-orange-600"
 //                 }`}
 //               >
@@ -202,7 +197,6 @@
 //   );
 // }
 
-// // ─── MAIN PAGE ────────────────────────────────────────────────────
 // export default function CategoryDetails() {
 //   const { categoryId, subcategoryId } = useParams();
 //   const navigate = useNavigate();
@@ -212,47 +206,33 @@
 //   const [sidebarOpen, setSidebarOpen] = useState(false);
 //   const [sortBy, setSortBy] = useState("Relevance");
 
-//   // Redux Data
-//   const { vendors, loading, banners,error } = useSelector((state) => state.vendorStore);
-//   console.log("vendors", vendors);
-//   console.log(loading);
-//   console.log(error);
+//   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
+//     useSelector((state) => state.vendorStore);
+
 //   const { selectedCity } = useSelector((state) => state.location);
 
 //   useEffect(() => {
 //     if (categoryId && subcategoryId) {
-//       dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId,city: selectedCity }));
+//       dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId, city: selectedCity }));
 //       dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
 //     } else {
 //       console.log("Missing categoryId or subcategoryId");
 //     }
-//   }, [dispatch, categoryId, subcategoryId,selectedCity]);
+//   }, [dispatch, categoryId, subcategoryId, selectedCity]);
+
+//   // ── "Top 20 Residential Pest Control" format ──
+//   const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName}` : "";
 
 //   return (
 //     <div className="min-h-screen bg-gray-50">
 //       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
 
-//         {/* Banner section */}
-//       {/* <div className="relative h-44 overflow-hidden">
-//         <img
-//           src={vendors.bannerImage}
-//           alt="Banner"
-//           className="w-full h-full object-cover"
-//         />
-//         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-//         <div className="absolute inset-0 flex flex-col justify-center px-6">
-//           <p className="text-orange-400 text-xs font-bold uppercase mb-1">
-//             Results
-//           </p>
-//           <h1 className="text-white text-2xl md:text-3xl font-extrabold">
-//             {vendors.length > 0 ? "Local Experts Found" : "Search Results"}
-//           </h1>
-//           <p className="text-white/70 text-sm mt-1">
-//             {vendors.length} businesses matching your search
-//           </p>
-//         </div>
-//       </div> */}
-//       <Banner banners={banners} />
+//       {/* ── bannerLoading prevents welcome blink, subcategoryName as title ── */}
+//       <Banner
+//         banners={banners}
+//         loading={bannerLoading}
+//         pageTitle={bannerTitle}
+//       />
 
 //       {/* Header Sticky Bar */}
 //       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
@@ -322,12 +302,13 @@
 //                         image:
 //                           biz.image ||
 //                           "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
-//                         address: typeof biz.address === 'object' && Object.keys(biz.address).length === 0 
-//                ? "Address not available" 
-//                : biz.address,
+//                         address:
+//                           typeof biz.address === "object" &&
+//                           Object.keys(biz.address).length === 0
+//                             ? "Address not available"
+//                             : biz.address,
 //                         since: biz.yearOfEstablishment || "2024",
 //                         subcategories: biz.subcategories || [],
-//                         // tags: biz.subcategories || [],
 //                         verified: biz.isVerified || true,
 //                         profileCount: biz.views || 0,
 //                         hours: biz.openingTime || "9:00 AM - 9:00 PM",
@@ -354,9 +335,11 @@
 
 //           {/* Desktop Sidebar */}
 //           <div className="hidden lg:block w-72 shrink-0">
-//             <Sidebar  categoryId={categoryId} 
-//             cityName={selectedCity}
-//   subcategoryId={subcategoryId} />
+//             <Sidebar
+//               categoryId={categoryId}
+//               cityName={selectedCity}
+//               subcategoryId={subcategoryId}
+//             />
 //           </div>
 //         </div>
 //       </div>
@@ -575,29 +558,27 @@ export default function CategoryDetails() {
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
 
+  // ── City filter ke liye ──
   const { selectedCity } = useSelector((state) => state.location);
 
   useEffect(() => {
     if (categoryId && subcategoryId) {
       dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId, city: selectedCity }));
       dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
-    } else {
-      console.log("Missing categoryId or subcategoryId");
     }
   }, [dispatch, categoryId, subcategoryId, selectedCity]);
 
-  // ── "Top 20 Residential Pest Control" format ──
   const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName}` : "";
 
   return (
     <div className="min-h-screen bg-gray-50">
       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
 
-      {/* ── bannerLoading prevents welcome blink, subcategoryName as title ── */}
       <Banner
         banners={banners}
         loading={bannerLoading}
         pageTitle={bannerTitle}
+        selectedCity={selectedCity}
       />
 
       {/* Header Sticky Bar */}
