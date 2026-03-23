@@ -568,7 +568,7 @@ export default function CategoryDetails() {
     }
   }, [dispatch, categoryId, subcategoryId, selectedCity]);
 
-  const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName}` : "";
+  const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName} in ${selectedCity}` : "";
 
   return (
     <div className="min-h-screen bg-gray-50">

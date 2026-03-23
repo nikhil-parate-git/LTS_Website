@@ -43,6 +43,7 @@ import {
   Grid3X3,
   ChevronUp,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const categories = [
   { id: 1, slug: "daily-home-needs", name: "Daily Home Needs", Icon: Home },
@@ -363,6 +364,7 @@ function ViewLessTile({ onClick }) {
 
 export default function TopCategoryCity({ city = "Nagpur" }) {
   const [showAll, setShowAll] = useState(false);
+  const { selectedCity } = useSelector((state) => state.location);
   const visibleCats = showAll ? categories : categories.slice(0, INITIAL_SHOW);
 
   return (
@@ -378,7 +380,7 @@ export default function TopCategoryCity({ city = "Nagpur" }) {
       <div className="max-w-screen-xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Top Categories in <span className="text-orange-500">{city}</span>
+            Top Categories in <span className="text-orange-500">{selectedCity}</span>
           </h2>
           <div className="mt-2 mx-auto w-16 h-1 rounded-full bg-orange-500" />
         </div>

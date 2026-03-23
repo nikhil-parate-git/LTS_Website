@@ -110,7 +110,6 @@ export const fetchVendorsByCatAndSubcat = createAsyncThunk(
       );
       subcategoryName = matched?.name || "";
 
-      // 2. If not found (e.g. page refresh), fetch subcategories for this category
       if (!subcategoryName) {
         try {
           const subRes = await axios.get(

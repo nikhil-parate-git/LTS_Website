@@ -355,7 +355,7 @@ export default function SubCategory() {
     // ── clearSubcategories BILKUL nahi — yahi white page ka reason tha ──
   }, [dispatch, slug]);
 
-  const bannerTitle = categoryName ? `Top 20 ${categoryName}` : "";
+  const bannerTitle = categoryName ? `Top 20 ${categoryName} in ${selectedCity}` : "";
 
   return (
     <div className="min-h-screen bg-gray-50">

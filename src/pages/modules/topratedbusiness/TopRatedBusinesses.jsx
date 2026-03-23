@@ -47,8 +47,14 @@ function BusinessCard({ business, index }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => navigate(`/business/${cardData.id}`)}
-      className="group bg-white rounded-2xl overflow-hidden cursor-pointer border border-gray-100/80 flex flex-col"
+      // for go to vendor id page
+      // onClick={() => navigate(`/business/${cardData.id}`)}
+
+      // for go to no vendor found page
+      onClick={() => navigate(`/business/${business.id}`)}
+
+      
+      className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300"
       style={{
         transition:
           "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
@@ -158,9 +164,8 @@ function SkeletonCard() {
 
 export default function TopRatedBusinesses() {
   const dispatch = useDispatch();
-  const { vendors, loading, error } = useSelector(
-    (state) => state.topRatedVendors,
-  );
+  const { selectedCity } = useSelector((state) => state.location);
+  const { vendors, loading, error } = useSelector((state) => state.topRatedVendors);
 
   useEffect(() => {
     dispatch(fetchTopRatedVendors());
@@ -184,8 +189,8 @@ export default function TopRatedBusinesses() {
             Top Picks
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-            Top Rated Businesses{" "}
-            <span className="text-orange-500">in Nagpur</span>
+            Top Rated Businesses in  
+            <span className="text-orange-500"> {selectedCity}</span>
           </h2>
           <p className="text-gray-400 text-sm mt-2 max-w-md mx-auto">
             Handpicked and trusted by thousands of local customers
