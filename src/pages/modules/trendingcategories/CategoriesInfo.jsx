@@ -23,6 +23,7 @@ import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
 import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
+import StickyFooter from "./EnquiryFooter";
 
 function slugToLabel(slug) {
   if (!slug) return "";

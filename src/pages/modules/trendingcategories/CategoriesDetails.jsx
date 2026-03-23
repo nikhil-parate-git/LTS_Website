@@ -374,6 +374,7 @@ import {
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
+import StickyFooter from "./EnquiryFooter";
 
 function formatProfileCount(n) {
   if (!n) return "0";
@@ -690,6 +691,7 @@ export default function CategoryDetails() {
           </div>
         </div>
       </div>
+      {/* <StickyFooter/> */}
     </div>
   );
 }
