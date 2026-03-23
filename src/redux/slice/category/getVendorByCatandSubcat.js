@@ -1,3 +1,93 @@
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// import axios from "axios";
+
+// const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// export const fetchVendorsByCatAndSubcat = createAsyncThunk(
+//   "vendors/fetchByCatAndSubcat",
+//   async ({ categoryId, subcategoryId,city }, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(
+//         `${BASE_URL}/customer/vendor/getallvendor/${categoryId}/${subcategoryId}?city=${city}`
+//       );
+//       return response.data.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || { message: error.message });
+//     }
+//   }
+// );
+
+// export const fetchSubCategoryBanners = createAsyncThunk(
+//   "vendors/fetchSubCategoryBanners",
+//   async ({ categoryId, subcategoryId }, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(
+//         `${BASE_URL}/customer/banner-management/getallbannersubcategory/${categoryId}/${subcategoryId}`
+//       );
+//       return response.data; 
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || "Failed to fetch subcategory banners");
+//     }
+//   }
+// );
+
+// const vendorSlice = createSlice({
+//   name: "vendors",
+//   initialState: {
+//     vendors: [],
+//     banners: [],
+//     loading: false,
+//     bannerLoading: false,
+//     error: null,
+//   },
+//   reducers: {
+//     clearVendorData: (state) => {
+//       state.vendors = [];
+//       state.banners = [];
+//       state.error = null;
+//     }
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchVendorsByCatAndSubcat.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchVendorsByCatAndSubcat.fulfilled, (state, action) => {
+//         state.loading = false;
+//         if (action.payload?.data && Array.isArray(action.payload.data)) {
+//           state.vendors = action.payload.data;
+//         } else if (Array.isArray(action.payload)) {
+//           state.vendors = action.payload;
+//         } else {
+//           state.vendors = [];
+//         }
+//       })
+//       .addCase(fetchVendorsByCatAndSubcat.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload?.message || "Something went wrong";
+//         state.vendors = [];
+//       })
+//       .addCase(fetchSubCategoryBanners.pending, (state) => {
+//         state.bannerLoading = true;
+//       })
+//       .addCase(fetchSubCategoryBanners.fulfilled, (state, action) => {
+//         state.bannerLoading = false;
+//         state.banners = action.payload.data.map(banner => ({
+//           ...banner,
+//           image: banner.bannerImage 
+//         }));
+//       })
+//       .addCase(fetchSubCategoryBanners.rejected, (state) => {
+//         state.bannerLoading = false;
+//       });
+//   },
+// });
+
+// export const { clearVendorData } = vendorSlice.actions;
+// export default vendorSlice.reducer;
+
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -5,12 +95,35 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchVendorsByCatAndSubcat = createAsyncThunk(
   "vendors/fetchByCatAndSubcat",
-  async ({ categoryId, subcategoryId,city }, { rejectWithValue }) => {
+  async ({ categoryId, subcategoryId, city }, { rejectWithValue, getState }) => {
     try {
       const response = await axios.get(
         `${BASE_URL}/customer/vendor/getallvendor/${categoryId}/${subcategoryId}?city=${city}`
       );
-      return response.data.data;
+
+      // ── Resolve subcategory name ──
+      // 1. Try from already-loaded subcategories in Redux
+      let subcategoryName = "";
+      const allSubcategories = getState()?.subcategory?.subcategories || [];
+      const matched = allSubcategories.find(
+        (s) => (s._id || s.id) === subcategoryId
+      );
+      subcategoryName = matched?.name || "";
+
+      if (!subcategoryName) {
+        try {
+          const subRes = await axios.get(
+            `${BASE_URL}/customer/subcategory/${categoryId}`
+          );
+          const subs = subRes.data?.data || [];
+          const found = subs.find((s) => (s._id || s.id) === subcategoryId);
+          subcategoryName = found?.name || "";
+        } catch (_) {
+          subcategoryName = "";
+        }
+      }
+
+      return { vendorData: response.data.data, subcategoryName };
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: error.message });
     }
@@ -24,9 +137,11 @@ export const fetchSubCategoryBanners = createAsyncThunk(
       const response = await axios.get(
         `${BASE_URL}/customer/banner-management/getallbannersubcategory/${categoryId}/${subcategoryId}`
       );
-      return response.data; 
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch subcategory banners");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch subcategory banners"
+      );
     }
   }
 );
@@ -36,6 +151,7 @@ const vendorSlice = createSlice({
   initialState: {
     vendors: [],
     banners: [],
+    subcategoryName: "",
     loading: false,
     bannerLoading: false,
     error: null,
@@ -44,8 +160,9 @@ const vendorSlice = createSlice({
     clearVendorData: (state) => {
       state.vendors = [];
       state.banners = [];
+      state.subcategoryName = "";
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -55,10 +172,12 @@ const vendorSlice = createSlice({
       })
       .addCase(fetchVendorsByCatAndSubcat.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload?.data && Array.isArray(action.payload.data)) {
-          state.vendors = action.payload.data;
-        } else if (Array.isArray(action.payload)) {
-          state.vendors = action.payload;
+        state.subcategoryName = action.payload.subcategoryName || "";
+        const vendorData = action.payload.vendorData;
+        if (vendorData?.data && Array.isArray(vendorData.data)) {
+          state.vendors = vendorData.data;
+        } else if (Array.isArray(vendorData)) {
+          state.vendors = vendorData;
         } else {
           state.vendors = [];
         }
@@ -68,14 +187,15 @@ const vendorSlice = createSlice({
         state.error = action.payload?.message || "Something went wrong";
         state.vendors = [];
       })
+
       .addCase(fetchSubCategoryBanners.pending, (state) => {
         state.bannerLoading = true;
       })
       .addCase(fetchSubCategoryBanners.fulfilled, (state, action) => {
         state.bannerLoading = false;
-        state.banners = action.payload.data.map(banner => ({
+        state.banners = (action.payload.data || []).map((banner) => ({
           ...banner,
-          image: banner.bannerImage 
+          image: banner.bannerImage,
         }));
       })
       .addCase(fetchSubCategoryBanners.rejected, (state) => {

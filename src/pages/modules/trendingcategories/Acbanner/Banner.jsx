@@ -2,6 +2,59 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Beaker, ChevronLeft, ChevronRight } from "lucide-react";
 const INTERVAL = 1500;
 
+const FALLBACK = [
+  {
+    url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
+    title: null,
+    tag: null,
+  },
+];
+
+function BannerSkeleton() {
+  return (
+    <div
+      className="relative w-full overflow-hidden"
+      style={{ height: "clamp(200px, 44vw, 440px)" }}
+    >
+      <style>{`
+        @keyframes skshimmer {
+          0%   { background-position: -800px 0; }
+          100% { background-position:  800px 0; }
+        }
+        .sk-base {
+          background: #e2e8f0;
+          background-image: linear-gradient(
+            90deg,
+            #e2e8f0 0px,
+            #edf2f7 200px,
+            #e2e8f0 400px
+          );
+          background-size: 800px 100%;
+          animation: skshimmer 1.4s infinite linear;
+        }
+      `}</style>
+
+      <div className="absolute inset-0 sk-base" />
+
+      <div className="absolute bottom-0 left-0 right-0 px-5 sm:px-10 pb-7 sm:pb-12 flex flex-col gap-2.5">
+        <div className="sk-base rounded-full" style={{ width: 72, height: 22, opacity: 0.7 }} />
+        <div className="sk-base rounded-md" style={{ width: "clamp(160px, 32vw, 380px)", height: "clamp(18px, 3.2vw, 34px)", opacity: 0.6 }} />
+        <div className="sk-base rounded-md" style={{ width: "clamp(100px, 20vw, 240px)", height: "clamp(12px, 2vw, 22px)", opacity: 0.45 }} />
+      </div>
+
+      <div className="sk-base absolute left-3 top-1/2 -translate-y-1/2 rounded-full" style={{ width: 40, height: 40, opacity: 0.5 }} />
+      <div className="sk-base absolute right-3 top-1/2 -translate-y-1/2 rounded-full" style={{ width: 40, height: 40, opacity: 0.5 }} />
+
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div className="sk-base rounded-full" style={{ width: 32, height: 10, opacity: 0.6 }} />
+        <div className="sk-base rounded-full" style={{ width: 10, height: 10, opacity: 0.4 }} />
+        <div className="sk-base rounded-full" style={{ width: 10, height: 10, opacity: 0.4 }} />
+        <div className="sk-base rounded-full" style={{ width: 10, height: 10, opacity: 0.4 }} />
+      </div>
+    </div>
+  );
+}
+
 function LazySlide({ slide, isActive, isPrev }) {
   const [loaded, setLoaded] = useState(false);
   const imageUrl = slide.image || slide.bannerImage || slide.url;
@@ -32,21 +85,43 @@ function LazySlide({ slide, isActive, isPrev }) {
   );
 }
 
-export default function Banner({ banners = [] }) {
-  console.log("Banner: ",banners)
-  const displaySlides = banners.length > 0 ? banners : [
-    { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80", title: "Welcome", tag: "Local Trade" }
-  ];
+export default function Banner({ banners, loading = false, pageTitle = "", selectedCity = "" }) {
+  const hasRealBanners = Array.isArray(banners) && banners.length > 0;
+
+  // City wise filter
+  const cityFilteredBanners = hasRealBanners && selectedCity
+    ? banners.filter(
+        (b) => b.city && b.city.toLowerCase() === selectedCity.toLowerCase()
+      )
+    : banners;
+
+  // Agar city ke liye koi banner nahi mila toh sab dikhao, warna FALLBACK
+  const filteredBanners =
+    Array.isArray(cityFilteredBanners) && cityFilteredBanners.length > 0
+      ? cityFilteredBanners
+      : hasRealBanners
+      ? banners
+      : FALLBACK;
+
+  // Extra safety — kabhi bhi empty array nahi hoga
+  const displaySlides = filteredBanners.length > 0 ? filteredBanners : FALLBACK;
 
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef(null);
 
-  const goTo = useCallback((index) => {
-    setPrev(current);
-    setCurrent(index);
-  }, [current]);
+  useEffect(() => {
+    setCurrent(0);
+    setPrev(null);
+  }, [selectedCity, hasRealBanners]);
+
+  const goTo = useCallback(
+    (index) => {
+      setPrev(current);
+      setCurrent(index);
+    },
+    [current],
+  );
 
   const goNext = useCallback(() => {
     goTo((current + 1) % displaySlides.length);
@@ -58,15 +133,20 @@ export default function Banner({ banners = [] }) {
 
   useEffect(() => {
     if (isPaused || displaySlides.length <= 1) return;
-    timerRef.current = setInterval(goNext, INTERVAL);
-    return () => clearInterval(timerRef.current);
+    const t = setInterval(goNext, INTERVAL);
+    return () => clearInterval(t);
   }, [goNext, isPaused, displaySlides.length]);
 
-  const activeSlide = displaySlides[current];
+  if (loading) return <BannerSkeleton />;
+
+  // ── Safe activeSlide — kabhi undefined nahi hoga ──
+  const activeSlide = displaySlides[current] || displaySlides[0] || FALLBACK[0];
+
+  const displayTitle = pageTitle || activeSlide.title || null;
 
   return (
     <div
-      className="relative w-full overflow-hidden select-none "
+      className="relative w-full overflow-hidden select-none"
       style={{ height: "clamp(200px, 44vw, 440px)" }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -81,7 +161,7 @@ export default function Banner({ banners = [] }) {
 
       {displaySlides.map((slide, i) => (
         <LazySlide
-          key={slide.id || i}
+          key={slide.id || slide._id || i}
           slide={slide}
           isActive={i === current}
           isPrev={i === prev}
@@ -89,30 +169,44 @@ export default function Banner({ banners = [] }) {
       ))}
 
       {/* Text Content */}
-      <div key={current} className="absolute inset-0 z-10 flex flex-col justify-end px-5 sm:px-10 pb-7 sm:pb-12 pointer-events-none">
+      <div
+        key={current}
+        className="absolute inset-0 z-10 flex flex-col justify-end px-5 sm:px-10 pb-7 sm:pb-12 pointer-events-none"
+      >
         {activeSlide.tag && (
           <span className="slide-text inline-flex self-start bg-orange-500 text-white text-[10px] font-bold uppercase px-3 py-1.5 rounded-full mb-2">
             {activeSlide.tag}
           </span>
         )}
-        <h2 className="slide-text text-white font-extrabold" style={{ fontSize: "clamp(18px, 4vw, 36px)" }}>
-          {activeSlide.title || "Quality Services Near You"}
-        </h2>
+        {displayTitle && (
+          <h2
+            className="slide-text text-white font-extrabold"
+            style={{ fontSize: "clamp(18px, 4vw, 36px)" }}
+          >
+            {displayTitle}
+          </h2>
+        )}
       </div>
 
       {/* Navigation Arrows */}
       {displaySlides.length > 1 && (
         <>
-          <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
+          <button
+            onClick={goPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+          >
             <ChevronLeft size={20} />
           </button>
-          <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all">
+          <button
+            onClick={goNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/20 hover:bg-orange-500 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+          >
             <ChevronRight size={20} />
           </button>
         </>
       )}
 
-      {/* Slider Dots (Pagination Progress) */}
+      {/* Slider Dots */}
       {displaySlides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
           {displaySlides.map((_, i) => (
@@ -120,8 +214,8 @@ export default function Banner({ banners = [] }) {
               key={i}
               onClick={() => goTo(i)}
               className={`h-2.5 rounded-full transition-all duration-300 ${
-                i === current 
-                  ? "w-8 bg-orange-500 shadow-lg" 
+                i === current
+                  ? "w-8 bg-orange-500 shadow-lg"
                   : "w-2 bg-white/40 hover:bg-white/70"
               }`}
               aria-label={`Go to slide ${i + 1}`}
@@ -129,8 +223,6 @@ export default function Banner({ banners = [] }) {
           ))}
         </div>
       )}
-      
-
     </div>
   );
 }
