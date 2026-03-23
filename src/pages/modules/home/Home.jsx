@@ -22,6 +22,7 @@ import TopRatedBusinesses from "../topratedbusiness/TopRatedBusinesses";
 import TopCategoryCity from "../topcategorycity/TopCategoryCity";
 import WhyChooseUs from "./WhyChooseUs";
 import CustomerReviews from "./CustomerReviews";
+import StickyFooter from "../trendingcategories/EnquiryFooter";
 
 // ─── HERO SLIDER ─────────────────────────────────────────────────
 function HeroSlider() {
@@ -274,6 +275,7 @@ export default function Home() {
       <TopCategoryCity />
       <CustomerReviews />
       <WhyChooseUs />
+      {/* <StickyFooter/> */}
     </div>
   );
 }

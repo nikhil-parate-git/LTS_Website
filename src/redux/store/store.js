@@ -12,6 +12,8 @@ import getProfileReducer from "../slice/profile/getProfile"
 import cityReducer from "../slice/citydropdown/getCityDropdownSlice"
 import locationReducer from "../slice/locationSlice"
 import topRatedVendorsReducer from "../slice/topRatedVendor/getAllTopRatedVendorSlice"
+import topCategoriesReducer from "../slice/topCategory/getTopCategorySlice"
+import topcategoryByIdReducer from "../slice/topCategory/getTopCateogoryByIdSlice"
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -35,6 +37,10 @@ const store = configureStore({
 
     // toprated vendor
     topRatedVendors: topRatedVendorsReducer,
+
+    // topcategory
+    topCategories: topCategoriesReducer,
+    topcategoryById:topcategoryByIdReducer,
   },
 });
 export default store;

@@ -234,7 +234,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSubcategories, fetchCategoryBanners } from "../../../redux/slice/category/getAllSubcategorySlice";
-// ── clearSubcategories import bhi hata diya ──
 import {
   Home,
   Star,
@@ -248,6 +247,7 @@ import {
 import Banner from "./Acbanner/Banner";
 import SubmitEnquiry from "./SubmitEnquiry";
 import Sidebar from "./MainSidebar";
+import StickyFooter from "./EnquiryFooter";
 
 function StarRating({ rating = 3.6 }) {
   return (
@@ -457,6 +457,7 @@ export default function SubCategory() {
       </div>
 
       {showModal && <SubmitEnquiry onClose={() => setShowModal(false)} />}
+        {/* <StickyFooter/> */}
     </div>
   );
 }

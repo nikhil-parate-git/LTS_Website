@@ -48,10 +48,10 @@ function BusinessCard({ business, index }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       // for go to vendor id page
-      // onClick={() => navigate(`/business/${cardData.id}`)}
+      onClick={() => navigate(`/business/${cardData.id}`)}
 
       // for go to no vendor found page
-      onClick={() => navigate(`/business/${business.id}`)}
+      // onClick={() => navigate(`/business/${business.id}`)}
 
       
       className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300"
