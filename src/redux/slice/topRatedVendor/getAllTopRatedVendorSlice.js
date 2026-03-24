@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchTopRatedVendors = createAsyncThunk(
   "topRatedVendors/fetchTopRatedVendors",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        "https://local-trade-street-be.onrender.com/api/customer/vendor/getalltoprating"
+        `${BASE_URL}/customer/vendor/getalltoprating`
       );
-      return response.data.data; // API response ka 'data' array
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || "Something went wrong");
     }
