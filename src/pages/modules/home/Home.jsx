@@ -88,7 +88,11 @@ function HeroSlider() {
   if (loading && (!banners || banners.length === 0)) {
     return (
       <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
-        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+       <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-15 w-15 border-b-3 border-orange-500"></div>
+        </div>
+      </div>
       </div>
     );
   }
@@ -135,7 +139,7 @@ function HeroSlider() {
                   <input
                     type="text"
                     placeholder="Search city..."
-                    className="w-full px-3 py-1.5 text-sm border rounded-xl outline-none focus:border-orange-400"
+                    className="w-full px-3 py-1.5 text-sm border  rounded-xl outline-none focus:border-orange-400"
                     value={citySearch}
                     onChange={(e) => setCitySearch(e.target.value)}
                     autoFocus
@@ -239,7 +243,14 @@ function TrendingCategories() {
         </h2>
 
         {loading ? (
-          <div className="flex justify-center py-10"><Loader2 className="w-10 h-10 text-orange-500 animate-spin" /></div>
+           <div className="min-h-screen">
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-15 w-15 border-b-3 border-orange-500"></div>
+          <p className="mt-4 text-gray-500 font-medium">
+            Fetching Best Subcategory And Keywords For You...
+          </p>
+        </div>
+      </div>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (

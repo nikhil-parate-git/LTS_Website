@@ -14,6 +14,7 @@ import locationReducer from "../slice/locationSlice"
 import topRatedVendorsReducer from "../slice/topRatedVendor/getAllTopRatedVendorSlice"
 import topCategoriesReducer from "../slice/topCategory/getTopCategorySlice"
 import topcategoryByIdReducer from "../slice/topCategory/getTopCateogoryByIdSlice"
+import topRightCatSubReducer from "../slice/rightSidebar/getTopRightCatSubSlice"
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -30,6 +31,7 @@ const store = configureStore({
 
     // profile
     profile: getProfileReducer,
+    topRightCatSub: topRightCatSubReducer,
 
     // citydropdown
     cityDropdown: cityReducer,
