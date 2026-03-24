@@ -14,6 +14,7 @@ import locationReducer from "../slice/locationSlice"
 import topRatedVendorsReducer from "../slice/topRatedVendor/getAllTopRatedVendorSlice"
 import topCategoriesReducer from "../slice/topCategory/getTopCategorySlice"
 import topcategoryByIdReducer from "../slice/topCategory/getTopCateogoryByIdSlice"
+import planReducer from "../slice/plansSlice"
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -41,6 +42,7 @@ const store = configureStore({
     // topcategory
     topCategories: topCategoriesReducer,
     topcategoryById:topcategoryByIdReducer,
+    plans: planReducer
   },
 });
 export default store;

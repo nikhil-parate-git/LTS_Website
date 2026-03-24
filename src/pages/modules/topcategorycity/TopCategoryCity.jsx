@@ -587,7 +587,7 @@ export default function TopCategoryCity() {
 
   const visibleCats = showAll
     ? apiCategories
-    : apiCategories.slice(0, INITIAL_SHOW);
+    : (apiCategories||[]).slice(0, INITIAL_SHOW);
 
   return (
     <section
@@ -613,7 +613,7 @@ export default function TopCategoryCity() {
             <CategoryTile key={cat._id} cat={cat} index={i} />
           ))}
 
-          {apiCategories.length > INITIAL_SHOW &&
+          {(apiCategories||[]).length > INITIAL_SHOW &&
             (!showAll ? (
               <ActionTile
                 Icon={Grid3X3}
@@ -635,7 +635,7 @@ export default function TopCategoryCity() {
             ))}
         </div>
 
-        {apiCategories.length > INITIAL_SHOW && (
+        {(apiCategories ||[]).length > INITIAL_SHOW && (
           <div className="flex justify-center mt-10">
             <button
               onClick={() => setShowAll(!showAll)}

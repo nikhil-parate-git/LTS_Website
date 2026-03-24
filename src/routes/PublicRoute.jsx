@@ -1,12 +1,13 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import Subscriptions from "../pages/Subscriptions";
+import Subscriptions from "../pages/modules/subscription/index";
 import MainLayout from "../components/Layouts/MainLayout";
 import About from "../pages/modules/about and contact/About";
 import Contact from "../pages/modules/about and contact/Contact";
 import TopCategoryDetails from "../pages/modules/topcategorycity/TopCategoryDetails";
 import BusinessPage from "../pages/modules/businesslisting/BusinessPlans";
 import SubmitEnquiry from "../pages/modules/trendingcategories/SubmitEnquiry";
+import PaymentSuccessMessage from "../pages/modules/subscription/PaymentSuccessMessage";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
 const CategoryDetails = lazy(
@@ -25,6 +26,7 @@ export default function PublicRoute() {
         <Route path="/" element={<Home />} />
         <Route path="/category/:slug" element={<CategoryDetails />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route path="/subscriptions/success" element={<PaymentSuccessMessage />} />
         <Route path="/subcategory/:slug" element={<SubCategory />} />
         <Route path="/business/:id" element={<Details />} />
         <Route path="/about" element={<About />} />
