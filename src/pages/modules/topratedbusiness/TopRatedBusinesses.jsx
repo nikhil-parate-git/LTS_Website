@@ -213,13 +213,13 @@ export default function TopRatedBusinesses() {
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
           {loading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            : vendors.map((vendor, i) => (
+            : (vendors||[]).map((vendor, i) => (
                 <BusinessCard key={vendor._id} business={vendor} index={i} />
               ))}
         </div>
 
         {/* Empty State */}
-        {!loading && !error && vendors.length === 0 && (
+        {!loading && !error && (vendors||[]).length === 0 && (
           <div className="text-center py-16 text-gray-400">
             <p className="text-sm">No top rated businesses found.</p>
           </div>
