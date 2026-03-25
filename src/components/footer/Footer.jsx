@@ -7,9 +7,10 @@ import {
   Instagram,
   Youtube,
   Linkedin,
+  Twitter,
 } from "lucide-react";
 import logo from "../../assets/logo.png";
-
+import { FaPinterest } from "react-icons/fa";
 const exploreLinks = [
   { label: "Home", path: "/" },
   { label: "About Us", path: "/about" },
@@ -56,8 +57,7 @@ export default function Footer() {
               className="h-12 w-auto object-contain"
             />
             <p className="text-white text-sm leading-relaxed text-center sm:text-left">
-              Local Trade Street Provides Leads to customer which are in search
-              of local work in their nearby areas.
+             Local Trade Street is a modern digital platform designed to connect local businesses, traders, and customers in one unified marketplace. Our goal is to empower small and medium enterprises by providing them with a powerful online presence and easy access to potential buyers.
             </p>
           </div>
 
@@ -87,10 +87,10 @@ export default function Footer() {
             </h4>
             <ul className="flex flex-col gap-4">
               <li className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0">
+                {/* <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0">
                   <Phone className="w-4 h-4 text-orange-400" />
                 </div>
-                <span className="text-white text-sm">+91-070307 72573</span>
+                <span className="text-white text-sm">+91-070307 72573</span> */}
               </li>
               <li className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-[#243650] flex items-center justify-center shrink-0">
@@ -126,7 +126,7 @@ export default function Footer() {
             <div className="flex flex-wrap gap-3">
               {/* Facebook */}
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=61588305046925"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-xl bg-[#1877f2] flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
@@ -136,7 +136,7 @@ export default function Footer() {
 
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/localtradestreetn?igsh=bm1oMWI1YW5uanR1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-xl flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
@@ -149,13 +149,33 @@ export default function Footer() {
               </a>
 
               {/* YouTube */}
-              <a
+              {/* <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-xl bg-red-600 flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
               >
                 <Youtube className="w-5 h-5 text-white" />
+              </a> */}
+
+              {/* twitter */}
+              <a
+                href="https://x.com/Local_Trade26"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-xl bg-black flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
+              >
+                <Twitter className="w-5 h-5 text-white" />
+              </a>
+
+              {/* pinterest */}
+              <a
+                href="https://pin.it/6VHEmZRaN"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-xl bg-[#E60023] flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
+              >
+                <FaPinterest className="w-5 h-5 text-white" />
               </a>
 
               {/* WhatsApp */}
@@ -170,7 +190,7 @@ export default function Footer() {
 
               {/* LinkedIn */}
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/company/local-trade-street-nagpur/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-xl bg-[#0a66c2] flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
@@ -186,7 +206,8 @@ export default function Footer() {
       <div className="border-t border-[#2d3f55]">
         <div className="w-full px-6 py-4 text-center">
           <p className="text-white text-xs">
-            Copyright © 2026 Local Trade Street. All Rights Reserved.
+            Design And Developed By Talentrise Technokrate Copyright © 2026
+            Local Trade Street. All Rights Reserved.
           </p>
         </div>
       </div>

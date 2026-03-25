@@ -116,6 +116,7 @@ function HeroSlider() {
         <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg leading-tight">
           India's No. 1 Local Search Engine
         </h1>
+        
 
         {/* Search Bar Container */}
         <div className="flex items-center bg-white rounded-xl shadow-2xl w-full max-w-xs sm:max-w-lg md:max-w-2xl mb-5 relative">
@@ -183,6 +184,7 @@ function HeroSlider() {
             <Search className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </button>
         </div>
+
 
         <h2 className="text-white text-sm sm:text-xl md:text-3xl font-bold mb-4 drop-shadow">
           Find the Best Services & Businesses Near You
