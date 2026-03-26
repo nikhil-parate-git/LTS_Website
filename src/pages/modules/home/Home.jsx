@@ -119,9 +119,10 @@ function HeroSlider() {
         
 
         {/* Search Bar Container */}
-        <div className="flex items-center bg-white rounded-xl shadow-2xl w-full max-w-xs sm:max-w-lg md:max-w-2xl mb-5 relative">
+
+
+        {/* <div className="flex items-center bg-white rounded-xl shadow-2xl w-full max-w-xs sm:max-w-lg md:max-w-2xl mb-5 relative">
           
-          {/* City Dropdown */}
           <div className="relative shrink-0 hidden sm:block" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -172,7 +173,6 @@ function HeroSlider() {
             )}
           </div>
 
-          {/* Service Search Input */}
           <input
             type="text"
             placeholder={`Search services in ${selectedCityFromRedux || "your city"}...`}
@@ -183,10 +183,12 @@ function HeroSlider() {
           <button className="bg-orange-500 hover:bg-orange-600 px-3 md:px-5 py-3 rounded-r-xl">
             <Search className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </button>
-        </div>
+        </div> */}
 
 
-        <h2 className="text-white text-sm sm:text-xl md:text-3xl font-bold mb-4 drop-shadow">
+
+
+        <h2 className="text-white text-sm sm:text-xl md:text-3xl font-bold mb-5 drop-shadow">
           Find the Best Services & Businesses Near You
         </h2>
 
