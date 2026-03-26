@@ -57,7 +57,11 @@ export default function Footer() {
               className="h-12 w-auto object-contain"
             />
             <p className="text-white text-sm leading-relaxed text-center sm:text-left">
-             Local Trade Street is a modern digital platform designed to connect local businesses, traders, and customers in one unified marketplace. Our goal is to empower small and medium enterprises by providing them with a powerful online presence and easy access to potential buyers.
+              Local Trade Street is a modern digital platform designed to
+              connect local businesses, traders, and customers in one unified
+              marketplace. Our goal is to empower small and medium enterprises
+              by providing them with a powerful online presence and easy access
+              to potential buyers.
             </p>
           </div>
 
@@ -149,14 +153,14 @@ export default function Footer() {
               </a>
 
               {/* YouTube */}
-              {/* <a
+              <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-xl bg-red-600 flex items-center justify-center hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
               >
                 <Youtube className="w-5 h-5 text-white" />
-              </a> */}
+              </a>
 
               {/* twitter */}
               <a
@@ -203,11 +207,21 @@ export default function Footer() {
       </div>
 
       {/* ── BOTTOM BAR ── */}
-      <div className="border-t border-[#2d3f55]">
-        <div className="w-full px-6 py-4 text-center">
-          <p className="text-white text-xs">
-            Design And Developed By Talentrise Technokrate Copyright © 2026
-            Local Trade Street. All Rights Reserved.
+      <div className="border-t border-white/20 mt-auto">
+        <div className="w-full px-4 py-4 text-center">
+          <p className="text-white text-[12px] flex items-center justify-center gap-1 flex-wrap whitespace-nowrap">
+            <span>Design And Developed By</span>
+            <a
+              href="https://www.talentrisetechnokrate.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-md  text-white  hover:shadow-lg transition-all duration-200 font-medium hover:underline"
+            >
+              Talentrise Technokrate
+            </a>
+            <span className="ml-1">
+              Copyright © 2026 Local Trade Street. All Rights Reserved.
+            </span>
           </p>
         </div>
       </div>

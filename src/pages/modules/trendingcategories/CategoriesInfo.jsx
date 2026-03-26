@@ -158,6 +158,7 @@ const [showPhone, setShowPhone] = useState(false);
 
       {/* Dynamic Banner - API data pass kiya */}
       <Banner banners={vendor.banners} />
+      {/* pageTitle="Default Title" */}
 
       <BreadcrumbBar businessName={vendor.companyName} />
 
