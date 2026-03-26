@@ -142,7 +142,8 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
   // ── Safe activeSlide — kabhi undefined nahi hoga ──
   const activeSlide = displaySlides[current] || displaySlides[0] || FALLBACK[0];
 
-  const displayTitle = pageTitle || activeSlide.title || null;
+  // const displayTitle = pageTitle || activeSlide.title || null;
+  const displayTitle = activeSlide.title || pageTitle || null;
 
   return (
     <div
