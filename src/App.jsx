@@ -4,10 +4,12 @@ import ScrollToTop from "../src/components/Layouts/ScrollableToTop";
 import PublicRoute from "./routes/PublicRoute";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CallNowOverlay from "./CallNowOverlay";
 
 function App() {
   return (
     <Router>
+      <CallNowOverlay/>
       <ToastContainer
         position="top-right"
         autoClose={5000}
