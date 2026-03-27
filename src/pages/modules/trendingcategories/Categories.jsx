@@ -362,7 +362,8 @@ export default function SubCategory() {
       <Banner
         banners={banners}
         loading={bannerLoading}
-        pageTitle={bannerTitle}
+        // pageTitle={bannerTitle}
+        pageTitle=""
         selectedCity={selectedCity}
       />
 

@@ -578,7 +578,8 @@ export default function CategoryDetails() {
       <Banner
         banners={banners}
         loading={bannerLoading}
-        pageTitle={bannerTitle}
+        // pageTitle={bannerTitle}
+        pageTitle=""
         selectedCity={selectedCity}
       />
 

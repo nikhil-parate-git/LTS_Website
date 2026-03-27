@@ -125,20 +125,7 @@ const Contact = () => {
 
             {/* Contact Info Cards */}
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-100">
-                <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
-                  <Phone size={15} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-[11px] text-gray-400 font-medium">
-                    Call Us
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    +91-070307 72573
-                  </p>
-                </div>
-              </div>
-
+             
               <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-100">
                 <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
                   <Mail size={15} className="text-white" />
