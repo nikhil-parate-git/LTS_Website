@@ -11,11 +11,12 @@ export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchas
     return {
       days, months,
       label:    convertDaysToLabel(days),
-      total:    +(plan.price * (1 + plan.gst / 100) * months).toFixed(2),
+      total:    +Math.ceil((plan.price * (1 + plan.gst / 100) * months).toFixed(2)),
       gstAmt:   +(plan.price * months * (plan.gst / 100)).toFixed(2),
       subtotal: +(plan.price * months).toFixed(2),
     };
   });
+ 
 
   const activeIdx = pricing.length === 1 ? 0 : durIdx;
   const selected  = pricing[activeIdx];
