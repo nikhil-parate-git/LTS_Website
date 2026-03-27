@@ -13,7 +13,7 @@ const About = () => {
    
 
       {/* ── BREADCRUMB ── */}
-      <div className="w-full px-3 mt-10 sm:px-6 md:px-8">
+      <div className="w-full px-3 mt-5 sm:px-6 md:px-8">
         <div className="flex items-center py-2 sm:py-2.5">
           <div className="flex items-center gap-2 sm:gap-3">
 
@@ -30,7 +30,7 @@ const About = () => {
               onClick={() => navigate("/")}
               className="flex items-center gap-1 text-gray-400 hover:text-orange-500 transition-colors duration-200 shrink-0 group"
             >
-              <Home size={12} className="group-hover:text-orange-500 transition-colors" />
+              <Home size={13} className="group-hover:text-orange-500 transition-colors" />
               <span className="text-xs font-medium hidden sm:inline">Home</span>
             </button>
 

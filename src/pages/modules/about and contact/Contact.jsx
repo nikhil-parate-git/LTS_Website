@@ -41,7 +41,7 @@ const Contact = () => {
     <div className="min-h-screen bg-white font-sans">
       {/* ── HEADER ── */}
       <div className="sticky top-0 z-10 bg-white ">
-        <div className="w-full px-4 md:px-8 py-4">
+        {/* <div className="w-full px-4 md:px-8 py-4">
           <h1 className="text-center text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Find Top Businesses In Your City
           </h1>
@@ -70,18 +70,18 @@ const Contact = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* ── BREADCRUMB ── */}
-      <div className="w-full  border-gray-200 px-4 md:px-8">
+      <div className="w-full mt-5  border-gray-200 px-4 md:px-8">
         <div className="flex items-center py-2.5">
           <div className="flex items-center gap-3 overflow-x-auto">
             <button
               onClick={() => navigate(-1)}
               className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-gray-50 hover:bg-orange-500 hover:border-orange-500 hover:text-white text-gray-500 transition-all duration-200 shrink-0 shadow-sm"
             >
-              <ArrowLeft size={14} />
+              <ArrowLeft size={13} />
             </button>
 
             <div className="w-px h-5 bg-gray-200 shrink-0" />
