@@ -5,7 +5,7 @@ import FeaturesList from "./FeaturesList";
 
 export default function PrimeCard({ plan, stepNum, onPurchase }) {
   const dur          = plan.durations?.[0] ?? 365;
-  const totalPayable = +Math.ceil((plan.price * (1 + plan.gst / 100)).toFixed(2));
+ const totalPayable = Math.ceil(plan.price * (1 + plan.gst / 100));
 
   return (
     <div className="relative flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">

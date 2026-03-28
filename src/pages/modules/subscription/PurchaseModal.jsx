@@ -56,9 +56,9 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
 
   const theme  = THEME[plan.subCategory] || DEFAULT_THEME;
   const months = convertDaysToMonths(selectedDuration);
-  const total  = plan.category === "ONBOARDING"
-    ? +Math.ceil((plan.price * (1 + plan.gst / 100)).toFixed(2))
-    : +Math.ceil((plan.price * (1 + plan.gst / 100) * months).toFixed(2));
+ const total = plan.category === "ONBOARDING"
+  ? Math.ceil(plan.price * (1 + plan.gst / 100))
+  : Math.ceil(plan.price * (1 + plan.gst / 100) * months);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
