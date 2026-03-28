@@ -403,8 +403,8 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/about")} className="text-sm hover:text-orange-500 px-2">Contact Us</button>
-            <button onClick={() => navigate("/contact")} className="text-sm hover:text-orange-500 px-2">About</button>
+            <button onClick={() => navigate("/contact")} className="text-sm hover:text-orange-500 px-2">Contact Us</button>
+            <button onClick={() => navigate("/about")} className="text-sm hover:text-orange-500 px-2">About</button>
             <button onClick={() => setMenuOpen(true)} className="p-2 text-gray-600"><Menu className="w-5 h-5" /></button>
             <button
               onClick={() => setProfileOpen(true)}
