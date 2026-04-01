@@ -138,7 +138,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
           >
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 text-lg font-bold"
+              className="absolute cursor-pointer top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 text-lg font-bold"
               aria-label="Close"
             >
               ✕
