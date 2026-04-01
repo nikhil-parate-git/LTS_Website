@@ -407,7 +407,7 @@ export default function Navbar() {
           <div className="hidden md:block h-8 w-px bg-gray-200 mx-1 flex-shrink-0" />
 
           {/* 🔹 Search Box — smaller/compact size */}
-          <div className="hidden md:flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 w-[260px] lg:w-[640px] p-1 flex-shrink-0">
+          <div className="hidden md:flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 w-[260px] lg:w-[600px] p-1 flex-shrink-0">
             <input
               type="text"
               value={searchQuery}
@@ -428,18 +428,6 @@ export default function Navbar() {
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
             {/* 🔹 List Your Business Button */}
             
-{/* 
-            <button
-  onClick={() => window.open("https://vendor.localtradestreet.com/login", "_blank")}
-  className="hidden cursor-pointer md:inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition-all rounded-lg px-3 py-1.5 whitespace-nowrap animate-pulse shadow-lg shadow-orange-500/50"
->
-  <span className="relative flex h-2 w-2">
-    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-  </span>
-  Listing Your Business
-</button> */}
-
 <button
   onClick={() => window.open("https://vendor.localtradestreet.com/signin", "_blank")}
   className="
