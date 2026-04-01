@@ -13,7 +13,6 @@ import SkeletonCard       from "../../modules/subscription/SkeletonCard";
 // Duration options matching model enum: [30, 180, 365, 730]
 const SYNC_OPTIONS = [
   { days: 30,  label: "1 Month"  },
-  { days: 90,  label: "3 Months" },
   { days: 180, label: "6 Months" },
   { days: 365, label: "1 Year"   },
 ];
