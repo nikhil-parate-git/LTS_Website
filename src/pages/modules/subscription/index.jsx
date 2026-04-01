@@ -10,8 +10,13 @@ import PurchaseModal      from "../../modules/subscription/PurchaseModal";
 import PaymentSuccessCard from "../../modules/subscription/PaymentSuccessCard";
 import SkeletonCard       from "../../modules/subscription/SkeletonCard";
 
-const syncLabels = ["1 Month", "3 Months", "6 Months", "12 Months"];
-const syncDays   = [30, 90, 180, 365];
+// Duration options matching model enum: [30, 180, 365, 730]
+const SYNC_OPTIONS = [
+  { days: 30,  label: "1 Month"  },
+  { days: 90,  label: "3 Months" },
+  { days: 180, label: "6 Months" },
+  { days: 365, label: "1 Year"   },
+];
 
 export default function Subscription() {
   const navigate = useNavigate();
@@ -30,7 +35,8 @@ export default function Subscription() {
   const leadPlans       = allPlans.filter((p) => p.category === "PLAN");
   const allSteps        = [...onboardingPlans, ...leadPlans];
 
-  const setDur = (planId, idx) => setDurIdxMap((p) => ({ ...p, [planId]: idx }));
+  const setDur = (planId, idx) =>
+    setDurIdxMap((prev) => ({ ...prev, [planId]: idx }));
 
   const handlePurchase = (plan, duration) => {
     setSelectedPlan(plan);
@@ -38,17 +44,31 @@ export default function Subscription() {
     setShowModal(true);
   };
 
-  const syncAll = (idx) => {
+  /**
+   * Sync all lead plan cards to a given duration (by days value).
+   * durations are now objects: { duration, price, gst, ... }
+   * Find the index of the matching duration object.
+   */
+  const syncAll = (days) => {
     const next = {};
     leadPlans.forEach((p) => {
-      if (p.durations?.[idx] !== undefined) next[p._id] = idx;
+      const idx = (p.durations || []).findIndex((d) => d.duration === days);
+      if (idx !== -1) next[p._id] = idx;
     });
     setDurIdxMap(next);
   };
 
-  const validSync = syncDays.map((days) =>
-    leadPlans.some((p) => (p.durations || []).includes(days))
+  /** Which sync buttons are valid — at least one lead plan has that duration */
+  const validSync = SYNC_OPTIONS.map(({ days }) =>
+    leadPlans.some((p) => (p.durations || []).some((d) => d.duration === days))
   );
+
+  /** Check if all lead plans are currently showing a given duration */
+  const isSyncActive = (days) =>
+    leadPlans.every((p) => {
+      const idx = (p.durations || []).findIndex((d) => d.duration === days);
+      return idx === -1 || (durIdxMap[p._id] ?? 0) === idx;
+    });
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -96,23 +116,21 @@ export default function Subscription() {
             <span className="text-slate-400 font-light italic">for your business.</span>
           </h1>
 
+          {/* Duration sync bar */}
           {leadPlans.length > 0 && !loading && (
             <div className="inline-flex items-center gap-3 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm mt-8">
               <span className="text-[11px] font-semibold text-slate-400 pl-3 pr-1 tracking-wider">
                 Compare plans by:
               </span>
-              {syncDays.map((days, i) =>
+              {SYNC_OPTIONS.map(({ days, label }, i) =>
                 validSync[i] ? (
-                  <button key={days} onClick={() => syncAll(i)}
+                  <button key={days} onClick={() => syncAll(days)}
                     className={`px-4 py-2 rounded-xl text-[12px] font-bold tracking-wide transition-all duration-200 ${
-                      leadPlans.every((p) => {
-                        const pidx = p.durations?.indexOf(days) ?? -1;
-                        return pidx === -1 || (durIdxMap[p._id] ?? 0) === pidx;
-                      })
+                      isSyncActive(days)
                         ? "bg-slate-900 text-white shadow-sm"
                         : "text-slate-500 hover:text-slate-700"
                     }`}>
-                    {syncLabels[i]}
+                    {label}
                   </button>
                 ) : null
               )}
@@ -124,10 +142,11 @@ export default function Subscription() {
         {!loading && allSteps.length > 0 && (
           <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto py-2">
             {allSteps.map((p, i) => {
-              const color = p.category === "ONBOARDING"
+              const theme  = THEME[p.subCategory];
+              const color  = p.category === "ONBOARDING"
                 ? "bg-gradient-to-r from-blue-500 to-cyan-400"
-                : THEME[p.subCategory]?.dot
-                  ? `bg-gradient-to-r ${THEME[p.subCategory].color}`
+                : theme
+                  ? `bg-gradient-to-r ${theme.color}`
                   : "bg-slate-400";
               return (
                 <div key={p._id} className="flex items-center gap-2 flex-shrink-0">

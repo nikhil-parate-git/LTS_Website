@@ -1,11 +1,17 @@
 import React from "react";
 import { THEME } from "../../../constants/subscriptionThemes";
-import { fmt, convertDaysToMonths } from "../../../utils/subscriptionHelpers";
+import { fmt } from "../../../utils/subscriptionHelpers";
 import FeaturesList from "./FeaturesList";
 
+/**
+ * PrimeCard — Onboarding plan card.
+ * New model: price/gst are inside durations[0], not top-level.
+ * API enriches with totalPayable.
+ */
 export default function PrimeCard({ plan, stepNum, onPurchase }) {
-  const dur          = plan.durations?.[0] ?? 365;
- const totalPayable = Math.ceil(plan.price * (1 + plan.gst / 100));
+  // ONBOARDING always has one duration — take the first
+  const dur          = plan.durations?.[0];
+  const totalPayable = dur?.totalPayable ?? 0;
 
   return (
     <div className="relative flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
@@ -15,6 +21,7 @@ export default function PrimeCard({ plan, stepNum, onPurchase }) {
       </div>
 
       <div className="p-7 pt-10 flex flex-col flex-1">
+        {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           {plan.image
             ? <img src={plan.image} alt={plan.subCategory} className="w-12 h-12 object-contain" />
@@ -40,12 +47,12 @@ export default function PrimeCard({ plan, stepNum, onPurchase }) {
           <FeaturesList
             features={plan.features}
             dotClass="bg-blue-400"
-            moreBtnClass={THEME.Prime.moreBtn}
+            moreBtnClass={THEME.Prime?.moreBtn || "border-blue-200 text-blue-600 hover:bg-blue-50"}
           />
         </div>
 
         <button
-          onClick={() => onPurchase(plan, dur)}
+          onClick={() => onPurchase(plan, dur?.duration)}
           className="w-full py-3.5 rounded-xl text-[13px] font-extrabold tracking-widest uppercase bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 shadow-lg shadow-blue-500/20">
           Get Started →
         </button>

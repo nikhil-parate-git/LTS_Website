@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { guestPurchasePlan } from "../../../redux/slice/plansSlice";
 import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import { THEME, DEFAULT_THEME } from "../../../constants/subscriptionThemes";
-import { fmt, convertDaysToLabel, convertDaysToMonths } from "../../../utils/subscriptionHelpers";
+import { fmt, convertDaysToLabel } from "../../../utils/subscriptionHelpers";
 
 export default function PurchaseModal({ plan, selectedDuration, onClose }) {
   const dispatch          = useDispatch();
@@ -21,18 +21,25 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
   });
   const [errors, setErrors] = useState({});
 
+  // Find the selected duration entry to get totalPayable
+  // durations are now objects: { duration, price, gst, totalPayable, ... }
+  const durationEntry = (plan.durations || []).find(
+    (d) => d.duration === Number(selectedDuration)
+  );
+  const total = durationEntry?.totalPayable ?? 0;
+
   const validate = () => {
     const e = {};
-    if (!form.name.trim())                      e.name     = "Name is required";
-    if (!/^[0-9]{10}$/.test(form.phone))        e.phone    = "Enter valid 10-digit phone";
+    if (!form.name.trim())                          e.name     = "Name is required";
+    if (!/^[0-9]{10}$/.test(form.phone))            e.phone    = "Enter valid 10-digit phone";
     if (!form.password || form.password.length < 6) e.password = "Min 6 characters";
     return e;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const e2 = validate();
-    if (Object.keys(e2).length) { setErrors(e2); return; }
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
     dispatch(guestPurchasePlan({
       planId: plan._id,
       selectedDuration,
@@ -54,11 +61,7 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
     </div>
   );
 
-  const theme  = THEME[plan.subCategory] || DEFAULT_THEME;
-  const months = convertDaysToMonths(selectedDuration);
- const total = plan.category === "ONBOARDING"
-  ? Math.ceil(plan.price * (1 + plan.gst / 100))
-  : Math.ceil(plan.price * (1 + plan.gst / 100) * months);
+  const theme = THEME[plan.subCategory] || DEFAULT_THEME;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -89,13 +92,12 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-            {field("name",        "Full Name",                   "text",     "Your full name")}
-            {field("phone",       "Phone Number",                "tel",      "10-digit mobile")}
-            {field("email",       "Email (optional)",            "email",    "you@example.com")}
-            {field("password",    "Password",                    "password", "Min 6 characters")}
-            {field("companyName", "Company Name (optional)",     "text",     "Your business name")}
+            {field("name",        "Full Name",              "text",     "Your full name")}
+            {field("phone",       "Phone Number",           "tel",      "10-digit mobile")}
+            {field("email",       "Email (optional)",       "email",    "you@example.com")}
+            {field("password",    "Password",               "password", "Min 6 characters")}
+            {field("companyName", "Company Name (optional)","text",     "Your business name")}
 
-            {/* Service Category dropdown */}
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
                 Service Category (optional)
@@ -110,9 +112,7 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
                   {categoriesLoading ? "Loading…" : "Select a category"}
                 </option>
                 {(serviceCategories || []).map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
             </div>
@@ -125,8 +125,6 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
               }
             </button>
           </form>
-
-           
         </div>
       </div>
     </div>
