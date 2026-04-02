@@ -151,6 +151,31 @@ export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchas
           </div>
         )}
 
+        {durations.length === 1 && (
+            <div className="mb-5">
+            <div className="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">
+               Duration
+            </div>
+            <div
+              className="grid gap-1.5 bg-slate-100 rounded-xl p-1"
+              style={{ gridTemplateColumns: `repeat(${durations.length}, 1fr)` }}
+            >
+              {durations.map((d, i) => (
+                <button key={d.duration} onClick={() => onDurChange(i)}
+                  className={`py-2 px-1 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-200 ${
+                    i === activeIdx
+                      ? theme.featured
+                        ? "bg-amber-400 text-white shadow-sm"
+                        : "bg-white text-slate-800 shadow-sm"
+                      : "text-slate-400 hover:text-slate-600"
+                  }`}>
+                  {`${d.durationInMonths} Month${d.durationInMonths > 1 ? "s" : ""}`}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Pricing box */}
         <div className="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
           <div className="flex items-end justify-between mb-3">
