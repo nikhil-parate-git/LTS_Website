@@ -10,7 +10,6 @@ import PurchaseModal      from "../../modules/subscription/PurchaseModal";
 import PaymentSuccessCard from "../../modules/subscription/PaymentSuccessCard";
 import SkeletonCard       from "../../modules/subscription/SkeletonCard";
 
-// Duration options matching model enum: [30, 180, 365, 730]
 const SYNC_OPTIONS = [
   { days: 30,  label: "1 Month"  },
   { days: 180, label: "6 Months" },
@@ -26,7 +25,9 @@ export default function Subscription() {
   const [showModal,        setShowModal]        = useState(false);
   const [selectedPlan,     setSelectedPlan]     = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
-  const [durIdxMap,        setDurIdxMap]        = useState({});
+
+  // Now keyed by planId → duration _id (not index)
+  const [durIdMap, setDurIdMap] = useState({});
 
   useEffect(() => { dispatch(fetchPublicPlans()); }, [dispatch]);
 
@@ -34,39 +35,38 @@ export default function Subscription() {
   const leadPlans       = allPlans.filter((p) => p.category === "PLAN");
   const allSteps        = [...onboardingPlans, ...leadPlans];
 
-  const setDur = (planId, idx) =>
-    setDurIdxMap((prev) => ({ ...prev, [planId]: idx }));
+  // Store duration _id for a plan
+  const setDur = (planId, durId) =>
+    setDurIdMap((prev) => ({ ...prev, [planId]: durId }));
 
-  const handlePurchase = (plan, duration) => {
+  const handlePurchase = (plan, durId) => {
     setSelectedPlan(plan);
-    setSelectedDuration(duration);
+    setSelectedDuration(durId);   // now a duration _id
     setShowModal(true);
   };
 
-  /**
-   * Sync all lead plan cards to a given duration (by days value).
-   * durations are now objects: { duration, price, gst, ... }
-   * Find the index of the matching duration object.
-   */
+  // Sync all lead plan cards to a given duration by days value
   const syncAll = (days) => {
     const next = {};
     leadPlans.forEach((p) => {
-      const idx = (p.durations || []).findIndex((d) => d.duration === days);
-      if (idx !== -1) next[p._id] = idx;
+      const match = (p.durations || []).find((d) => d.duration === days);
+      if (match) next[p._id] = match._id;
     });
-    setDurIdxMap(next);
+    setDurIdMap(next);
   };
 
-  /** Which sync buttons are valid — at least one lead plan has that duration */
+  // Is at least one lead plan having this duration available?
   const validSync = SYNC_OPTIONS.map(({ days }) =>
     leadPlans.some((p) => (p.durations || []).some((d) => d.duration === days))
   );
 
-  /** Check if all lead plans are currently showing a given duration */
+  // Are all lead plans currently showing this duration?
   const isSyncActive = (days) =>
     leadPlans.every((p) => {
-      const idx = (p.durations || []).findIndex((d) => d.duration === days);
-      return idx === -1 || (durIdxMap[p._id] ?? 0) === idx;
+      const match = (p.durations || []).find((d) => d.duration === days);
+      if (!match) return true;
+      const activeDurId = durIdMap[p._id] ?? p.durations?.[0]?._id;
+      return activeDurId === match._id;
     });
 
   return (
@@ -141,8 +141,8 @@ export default function Subscription() {
         {!loading && allSteps.length > 0 && (
           <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto py-2">
             {allSteps.map((p, i) => {
-              const theme  = THEME[p.subCategory];
-              const color  = p.category === "ONBOARDING"
+              const theme = THEME[p.subCategory];
+              const color = p.category === "ONBOARDING"
                 ? "bg-gradient-to-r from-blue-500 to-cyan-400"
                 : theme
                   ? `bg-gradient-to-r ${theme.color}`
@@ -183,8 +183,8 @@ export default function Subscription() {
                 key={plan._id}
                 plan={plan}
                 stepNum={onboardingPlans.length + i + 1}
-                durIdx={durIdxMap[plan._id] ?? 0}
-                onDurChange={(idx) => setDur(plan._id, idx)}
+                selectedDurId={durIdMap[plan._id] ?? plan.durations?.[0]?._id}
+                onDurChange={(durId) => setDur(plan._id, durId)}
                 onPurchase={handlePurchase}
               />
             ))}

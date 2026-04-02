@@ -3,13 +3,6 @@ import { THEME, DEFAULT_THEME } from "../../../constants/subscriptionThemes";
 import { fmt } from "../../../utils/subscriptionHelpers";
 import FeaturesList from "./FeaturesList";
 
-/**
- * PlanCard
- * Works with the new model where each duration entry has its own
- * { duration, price, gst, leads } — price is NOT top-level anymore.
- */
-
-/** Parses "100-200" → { from: 100, to: 200 }. Returns null for "0" or bad input. */
 function fmtLeads(leads) {
   if (!leads || leads === "0") return null;
   if (leads === "unlimited") return { unlimited: true };
@@ -20,7 +13,6 @@ function fmtLeads(leads) {
   return null;
 }
 
-/** Renders a leads progress bar based on the parsed range */
 function LeadsBar({ leads, themeColor, accentClass }) {
   const parsed = fmtLeads(leads);
   if (!parsed) return null;
@@ -43,10 +35,6 @@ function LeadsBar({ leads, themeColor, accentClass }) {
 
   const { from, to } = parsed;
 
-  // "from" fills ~50% of bar width, "to" fills 100% — shows the range visually
-  const fromPct = 50;
-  const toPct   = 100;
-
   return (
     <div className="mb-5 rounded-xl px-4 py-3 border bg-slate-50 border-slate-100">
       <div className="flex items-center justify-between mb-2">
@@ -57,20 +45,16 @@ function LeadsBar({ leads, themeColor, accentClass }) {
           {fmt(from)} – {fmt(to)}
         </span>
       </div>
-
-      {/* Progress bar: faded full-width for "to", solid half-width for "from" */}
       <div className="relative w-full bg-slate-200 rounded-full h-2 overflow-hidden">
         <div
           className={`absolute left-0 top-0 h-2 rounded-full bg-gradient-to-r ${themeColor} opacity-25`}
-          style={{ width: `${toPct}%` }}
+          style={{ width: "100%" }}
         />
         <div
           className={`absolute left-0 top-0 h-2 rounded-full bg-gradient-to-r ${themeColor}`}
-          style={{ width: `${fromPct}%` }}
+          style={{ width: "50%" }}
         />
       </div>
-
-      {/* Min / Max labels */}
       <div className="flex justify-between mt-1.5">
         <span className="text-[10px] font-semibold text-slate-400">Min {fmt(from)}</span>
         <span className="text-[10px] font-semibold text-slate-400">Max {fmt(to)}</span>
@@ -79,11 +63,12 @@ function LeadsBar({ leads, themeColor, accentClass }) {
   );
 }
 
-export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchase }) {
+export default function PlanCard({ plan, stepNum, selectedDurId, onDurChange, onPurchase }) {
   const theme     = THEME[plan.subCategory] || DEFAULT_THEME;
   const durations = plan.durations || [];
-  const activeIdx = durations.length === 1 ? 0 : durIdx;
-  const selected  = durations[activeIdx];
+
+  // Find selected duration by _id; fall back to first
+  const selected = durations.find((d) => d._id === selectedDurId) || durations[0];
 
   if (!selected) return null;
 
@@ -126,55 +111,31 @@ export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchas
         )}
 
         {/* Duration pills */}
-        {durations.length > 1 && (
-          <div className="mb-5">
-            <div className="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">
-              Select Duration
-            </div>
-            <div
-              className="grid gap-1.5 bg-slate-100 rounded-xl p-1"
-              style={{ gridTemplateColumns: `repeat(${durations.length}, 1fr)` }}
-            >
-              {durations.map((d, i) => (
-                <button key={d.duration} onClick={() => onDurChange(i)}
-                  className={`py-2 px-1 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-200 ${
-                    i === activeIdx
-                      ? theme.featured
-                        ? "bg-amber-400 text-white shadow-sm"
-                        : "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-400 hover:text-slate-600"
-                  }`}>
-                  {`${d.durationInMonths} Month${d.durationInMonths > 1 ? "s" : ""}`}
-                </button>
-              ))}
-            </div>
+        <div className="mb-5">
+          <div className="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">
+            {durations.length > 1 ? "Select Duration" : "Duration"}
           </div>
-        )}
-
-        {durations.length === 1 && (
-            <div className="mb-5">
-            <div className="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">
-               Duration
-            </div>
-            <div
-              className="grid gap-1.5 bg-slate-100 rounded-xl p-1"
-              style={{ gridTemplateColumns: `repeat(${durations.length}, 1fr)` }}
-            >
-              {durations.map((d, i) => (
-                <button key={d.duration} onClick={() => onDurChange(i)}
-                  className={`py-2 px-1 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-200 ${
-                    i === activeIdx
-                      ? theme.featured
-                        ? "bg-amber-400 text-white shadow-sm"
-                        : "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-400 hover:text-slate-600"
-                  }`}>
-                  {`${d.durationInMonths} Month${d.durationInMonths > 1 ? "s" : ""}`}
-                </button>
-              ))}
-            </div>
+          <div
+            className="grid gap-1.5 bg-slate-100 rounded-xl p-1"
+            style={{ gridTemplateColumns: `repeat(${durations.length}, 1fr)` }}
+          >
+            {durations.map((d) => (
+              <button
+                key={d._id}
+                onClick={() => onDurChange(d._id)}
+                className={`py-2 px-1 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-200 ${
+                  d._id === selected._id
+                    ? theme.featured
+                      ? "bg-amber-400 text-white shadow-sm"
+                      : "bg-white text-slate-800 shadow-sm"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                {`${d.durationInMonths} Month${d.durationInMonths > 1 ? "s" : ""}`}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
 
         {/* Pricing box */}
         <div className="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
@@ -200,7 +161,7 @@ export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchas
           </div>
         </div>
 
-        {/* Leads progress bar */}
+        {/* Leads bar */}
         <LeadsBar
           leads={selected.leads}
           themeColor={theme.color}
@@ -218,8 +179,9 @@ export default function PlanCard({ plan, stepNum, durIdx, onDurChange, onPurchas
 
         <div className="flex-1" />
 
+        {/* Purchase button — passes duration _id */}
         <button
-          onClick={() => onPurchase(plan, selected.duration)}
+          onClick={() => onPurchase(plan, selected._id)}
           className={`w-full py-3.5 rounded-xl text-[13px] font-extrabold tracking-widest uppercase text-white transition-all duration-200 shadow-lg ${theme.btn} ${theme.shadow}`}>
           Get {plan.subCategory} Plan →
         </button>

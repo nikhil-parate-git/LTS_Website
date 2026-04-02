@@ -7,6 +7,7 @@ import { THEME, DEFAULT_THEME } from "../../../constants/subscriptionThemes";
 import { fmt, convertDaysToLabel } from "../../../utils/subscriptionHelpers";
 
 export default function PurchaseModal({ plan, selectedDuration, onClose }) {
+  // selectedDuration is now a duration _id (string)
   const dispatch          = useDispatch();
   const { purchasing, purchaseError } = useSelector((s) => s.plans);
   const serviceCategories = useSelector((s) => s.categories.categories);
@@ -21,11 +22,8 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
   });
   const [errors, setErrors] = useState({});
 
-  // Find the selected duration entry to get totalPayable
-  // durations are now objects: { duration, price, gst, totalPayable, ... }
-  const durationEntry = (plan.durations || []).find(
-    (d) => d.duration === Number(selectedDuration)
-  );
+  // Find duration entry by _id
+  const durationEntry = (plan.durations || []).find((d) => d._id === selectedDuration);
   const total = durationEntry?.totalPayable ?? 0;
 
   const validate = () => {
@@ -41,8 +39,8 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     dispatch(guestPurchasePlan({
-      planId: plan._id,
-      selectedDuration,
+      planId:             plan._id,
+      selectedDurationId: selectedDuration,   // send _id to backend
       ...form,
     })).unwrap().then(() => onClose()).catch(() => {});
   };
@@ -76,7 +74,7 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
                 {plan.category} – {plan.subCategory}
               </h3>
               <p className="text-sm text-slate-500 mt-0.5">
-                {convertDaysToLabel(selectedDuration)} · ₹{fmt(total)}
+                {convertDaysToLabel(durationEntry?.duration)} · ₹{fmt(total)}
               </p>
             </div>
             <button onClick={onClose}
@@ -92,11 +90,11 @@ export default function PurchaseModal({ plan, selectedDuration, onClose }) {
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-            {field("name",        "Full Name",              "text",     "Your full name")}
-            {field("phone",       "Phone Number",           "tel",      "10-digit mobile")}
-            {field("email",       "Email (optional)",       "email",    "you@example.com")}
-            {field("password",    "Password",               "password", "Min 6 characters")}
-            {field("companyName", "Company Name (optional)","text",     "Your business name")}
+            {field("name",        "Full Name",               "text",     "Your full name")}
+            {field("phone",       "Phone Number",            "tel",      "10-digit mobile")}
+            {field("email",       "Email (optional)",        "email",    "you@example.com")}
+            {field("password",    "Password",                "password", "Min 6 characters")}
+            {field("companyName", "Company Name (optional)", "text",     "Your business name")}
 
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">

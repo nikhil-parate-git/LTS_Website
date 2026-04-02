@@ -3,13 +3,7 @@ import { THEME } from "../../../constants/subscriptionThemes";
 import { fmt } from "../../../utils/subscriptionHelpers";
 import FeaturesList from "./FeaturesList";
 
-/**
- * PrimeCard — Onboarding plan card.
- * New model: price/gst are inside durations[0], not top-level.
- * API enriches with totalPayable.
- */
 export default function PrimeCard({ plan, stepNum, onPurchase }) {
-  // ONBOARDING always has one duration — take the first
   const dur          = plan.durations?.[0];
   const totalPayable = dur?.totalPayable ?? 0;
 
@@ -51,8 +45,9 @@ export default function PrimeCard({ plan, stepNum, onPurchase }) {
           />
         </div>
 
+        {/* Pass duration _id instead of duration days */}
         <button
-          onClick={() => onPurchase(plan, dur?.duration)}
+          onClick={() => onPurchase(plan, dur?._id)}
           className="w-full py-3.5 rounded-xl text-[13px] font-extrabold tracking-widest uppercase bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 shadow-lg shadow-blue-500/20">
           Get Started →
         </button>
