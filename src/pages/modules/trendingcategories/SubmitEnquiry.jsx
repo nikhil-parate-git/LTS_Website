@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
-import { sendEnquiryOtp, resetEnquiryState } from "../../../redux/slice/enquiryform/enquirySentOtpSlice";
+import {
+  sendEnquiryOtp,
+  resetEnquiryState,
+} from "../../../redux/slice/enquiryform/enquirySentOtpSlice";
 import EnquiryOtp from "./EnquiryOtp";
 
 const countryCodes = [
@@ -31,12 +34,12 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     setAnimate(false);
-    
+
     setTimeout(() => {
       dispatch(resetEnquiryState());
       if (onClose) {
-        onClose();}
-      else if (isRoutePage) navigate(-1);
+        onClose();
+      } else if (isRoutePage) navigate(-1);
       else setVisible(false);
     }, 400);
   };
@@ -51,15 +54,12 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
     if (isRoutePage) {
       setVisible(true);
       timer = setTimeout(() => setAnimate(true), 100);
-
     } else if (isOpen !== undefined && isOpen === true) {
       setVisible(true);
       timer = setTimeout(() => setAnimate(true), 100);
-
     } else if (isOpen === false) {
       setAnimate(false);
       timer = setTimeout(() => setVisible(false), 450);
-
     } else {
       timer = setTimeout(() => {
         setVisible(true);
@@ -69,8 +69,6 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 
     return () => clearTimeout(timer);
   }, [isOpen, isRoutePage]);
-
-
 
   useEffect(() => {
     if (!visible || isRoutePage) return;
@@ -96,8 +94,8 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
         name,
         phone: `${phone}`,
         enquiry,
-        categoryId:slug
-      })
+        categoryId: slug,
+      }),
     );
   };
 
@@ -228,7 +226,11 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                 disabled={loading}
                 className="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide flex items-center justify-center gap-2"
               >
-                {loading ? <Loader2 className="animate-spin" size={20} /> : "Send Enquiry"}
+                {loading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  "Send Enquiry"
+                )}
               </button>
             </form>
           </div>
@@ -329,9 +331,7 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
                   required
                   placeholder="Enter Contact Number"
                   value={phone}
-                  onChange={(e) =>
-                    setPhone(e.target.value.replace(/\D/g, ""))
-                  }
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   maxLength={12}
                   className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 py-3 pr-4 pl-3"
                 />
@@ -357,7 +357,11 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
               disabled={loading}
               className="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 text-base tracking-wide flex items-center justify-center gap-2"
             >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : "Send Enquiry"}
+              {loading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                "Send Enquiry"
+              )}
             </button>
           </form>
         </div>
@@ -367,3 +371,5 @@ const SubmitEnquiry = ({ isOpen, onClose }) => {
 };
 
 export default SubmitEnquiry;
+
+

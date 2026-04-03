@@ -2,18 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft } from "lucide-react";
-import { fetchPublicPlans, clearPaymentInfo } from "../../../redux/slice/plansSlice";
+import {
+  fetchPublicPlans,
+  clearPaymentInfo,
+} from "../../../redux/slice/plansSlice";
 import { THEME } from "../../../constants/subscriptionThemes";
-import PrimeCard          from "../../modules/subscription/PrimeCard";
-import PlanCard           from "../../modules/subscription/PlanCard";
-import PurchaseModal      from "../../modules/subscription/PurchaseModal";
+import PrimeCard from "../../modules/subscription/PrimeCard";
+import PlanCard from "../../modules/subscription/PlanCard";
+import PurchaseModal from "../../modules/subscription/PurchaseModal";
 import PaymentSuccessCard from "../../modules/subscription/PaymentSuccessCard";
-import SkeletonCard       from "../../modules/subscription/SkeletonCard";
+import SkeletonCard from "../../modules/subscription/SkeletonCard";
 
 const SYNC_OPTIONS = [
-  { days: 30,  label: "1 Month"  },
+  { days: 30, label: "1 Month" },
   { days: 180, label: "6 Months" },
-  { days: 365, label: "1 Year"   },
+  { days: 365, label: "1 Year" },
 ];
 
 export default function Subscription() {
@@ -22,30 +25,28 @@ export default function Subscription() {
 
   const { list: allPlans, loading, paymentInfo } = useSelector((s) => s.plans);
 
-  const [showModal,        setShowModal]        = useState(false);
-  const [selectedPlan,     setSelectedPlan]     = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
-
-  // Now keyed by planId → duration _id (not index)
   const [durIdMap, setDurIdMap] = useState({});
 
-  useEffect(() => { dispatch(fetchPublicPlans()); }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchPublicPlans());
+  }, [dispatch]);
 
   const onboardingPlans = allPlans.filter((p) => p.category === "ONBOARDING");
-  const leadPlans       = allPlans.filter((p) => p.category === "PLAN");
-  const allSteps        = [...onboardingPlans, ...leadPlans];
+  const leadPlans = allPlans.filter((p) => p.category === "PLAN");
+  const allSteps = [...onboardingPlans, ...leadPlans];
 
-  // Store duration _id for a plan
   const setDur = (planId, durId) =>
     setDurIdMap((prev) => ({ ...prev, [planId]: durId }));
 
   const handlePurchase = (plan, durId) => {
     setSelectedPlan(plan);
-    setSelectedDuration(durId);   // now a duration _id
+    setSelectedDuration(durId);
     setShowModal(true);
   };
 
-  // Sync all lead plan cards to a given duration by days value
   const syncAll = (days) => {
     const next = {};
     leadPlans.forEach((p) => {
@@ -55,12 +56,10 @@ export default function Subscription() {
     setDurIdMap(next);
   };
 
-  // Is at least one lead plan having this duration available?
   const validSync = SYNC_OPTIONS.map(({ days }) =>
-    leadPlans.some((p) => (p.durations || []).some((d) => d.duration === days))
+    leadPlans.some((p) => (p.durations || []).some((d) => d.duration === days)),
   );
 
-  // Are all lead plans currently showing this duration?
   const isSyncActive = (days) =>
     leadPlans.every((p) => {
       const match = (p.durations || []).find((d) => d.duration === days);
@@ -79,7 +78,10 @@ export default function Subscription() {
       {paymentInfo && (
         <PaymentSuccessCard
           info={paymentInfo}
-          onDone={() => { dispatch(clearPaymentInfo()); navigate("/subscriptions"); }}
+          onDone={() => {
+            dispatch(clearPaymentInfo());
+            navigate("/subscriptions");
+          }}
         />
       )}
 
@@ -92,11 +94,12 @@ export default function Subscription() {
       )}
 
       <div className="max-w-7xl mx-auto px-5 py-16">
-
         {/* Back */}
         <div className="mb-8">
-          <button onClick={() => navigate(-1)}
-            className="group flex items-center gap-2 w-fit text-slate-500 hover:text-slate-900 transition-colors duration-200">
+          <button
+            onClick={() => navigate(-1)}
+            className="group flex items-center gap-2 w-fit text-slate-500 hover:text-slate-900 transition-colors duration-200"
+          >
             <span className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white shadow-sm group-hover:border-slate-400 group-hover:shadow-md transition-all duration-200">
               <ArrowLeft size={16} />
             </span>
@@ -112,7 +115,9 @@ export default function Subscription() {
           <h1 className="text-[clamp(36px,5vw,60px)] font-black tracking-tight leading-tight text-slate-900 mb-5">
             Choose the right plan
             <br />
-            <span className="text-slate-400 font-light italic">for your business.</span>
+            <span className="text-slate-400 font-light italic">
+              for your business.
+            </span>
           </h1>
 
           {/* Duration sync bar */}
@@ -123,15 +128,18 @@ export default function Subscription() {
               </span>
               {SYNC_OPTIONS.map(({ days, label }, i) =>
                 validSync[i] ? (
-                  <button key={days} onClick={() => syncAll(days)}
+                  <button
+                    key={days}
+                    onClick={() => syncAll(days)}
                     className={`px-4 py-2 rounded-xl text-[12px] font-bold tracking-wide transition-all duration-200 ${
                       isSyncActive(days)
                         ? "bg-slate-900 text-white shadow-sm"
                         : "text-slate-500 hover:text-slate-700"
-                    }`}>
+                    }`}
+                  >
                     {label}
                   </button>
-                ) : null
+                ) : null,
               )}
             </div>
           )}
@@ -142,22 +150,38 @@ export default function Subscription() {
           <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto py-2">
             {allSteps.map((p, i) => {
               const theme = THEME[p.subCategory];
-              const color = p.category === "ONBOARDING"
-                ? "bg-gradient-to-r from-blue-500 to-cyan-400"
-                : theme
-                  ? `bg-gradient-to-r ${theme.color}`
-                  : "bg-slate-400";
+              const color =
+                p.category === "ONBOARDING"
+                  ? "bg-gradient-to-r from-blue-500 to-cyan-400"
+                  : theme
+                    ? `bg-gradient-to-r ${theme.color}`
+                    : "bg-slate-400";
               return (
-                <div key={p._id} className="flex items-center gap-2 flex-shrink-0">
+                <div
+                  key={p._id}
+                  className="flex items-center gap-2 flex-shrink-0"
+                >
                   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-[12px] font-semibold text-slate-600">
-                    <span className={`w-5 h-5 rounded-full ${color} text-white text-[10px] font-black flex items-center justify-center flex-shrink-0`}>
+                    <span
+                      className={`w-5 h-5 rounded-full ${color} text-white text-[10px] font-black flex items-center justify-center flex-shrink-0`}
+                    >
                       {i + 1}
                     </span>
                     {p.subCategory}
                   </div>
                   {i < allSteps.length - 1 && (
-                    <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-4 h-4 text-slate-300 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   )}
                 </div>
@@ -168,25 +192,38 @@ export default function Subscription() {
 
         {/* Cards */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
+          <div className="flex flex-wrap justify-center gap-5">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="w-full sm:w-[340px]">
+                <SkeletonCard />
+              </div>
+            ))}
           </div>
         ) : allPlans.length === 0 ? (
-          <div className="text-center py-20 text-slate-400 text-sm">No plans available right now.</div>
+          <div className="text-center py-20 text-slate-400 text-sm">
+            No plans available right now.
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+          <div className="flex flex-wrap justify-center gap-5 mb-12">
             {onboardingPlans.map((plan, i) => (
-              <PrimeCard key={plan._id} plan={plan} stepNum={i + 1} onPurchase={handlePurchase} />
+              <div key={plan._id} className="w-full sm:w-[340px]">
+                <PrimeCard
+                  plan={plan}
+                  stepNum={i + 1}
+                  onPurchase={handlePurchase}
+                />
+              </div>
             ))}
             {leadPlans.map((plan, i) => (
-              <PlanCard
-                key={plan._id}
-                plan={plan}
-                stepNum={onboardingPlans.length + i + 1}
-                selectedDurId={durIdMap[plan._id] ?? plan.durations?.[0]?._id}
-                onDurChange={(durId) => setDur(plan._id, durId)}
-                onPurchase={handlePurchase}
-              />
+              <div key={plan._id} className="w-full sm:w-[340px]">
+                <PlanCard
+                  plan={plan}
+                  stepNum={onboardingPlans.length + i + 1}
+                  selectedDurId={durIdMap[plan._id] ?? plan.durations?.[0]?._id}
+                  onDurChange={(durId) => setDur(plan._id, durId)}
+                  onPurchase={handlePurchase}
+                />
+              </div>
             ))}
           </div>
         )}
