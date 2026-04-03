@@ -16,6 +16,7 @@ import topCategoriesReducer from "../slice/topCategory/getTopCategorySlice"
 import topcategoryByIdReducer from "../slice/topCategory/getTopCateogoryByIdSlice"
 import planReducer from "../slice/plansSlice"
 import topRightCatSubReducer from "../slice/rightSidebar/getTopRightCatSubSlice"
+import blogsReducer from "../slice/blog/getBlogSlice";
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -44,7 +45,10 @@ const store = configureStore({
     // topcategory
     topCategories: topCategoriesReducer,
     topcategoryById:topcategoryByIdReducer,
-    plans: planReducer
+    plans: planReducer,
+
+    //blogs
+    blogs: blogsReducer,
   },
 });
 export default store;
