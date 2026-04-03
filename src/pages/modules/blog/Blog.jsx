@@ -1200,7 +1200,7 @@ const Blog = () => {
             </p>
           </div>
           <div className="hidden md:flex flex-shrink-0 items-center justify-center">
-            <div className="relative w-[480px] h-[290px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/25 hero-img-wrap">
+            <div className="relative w-[480px] h-[280px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/25 hero-img-wrap">
               <img
                 src={blog}
                 alt="Blog illustration"

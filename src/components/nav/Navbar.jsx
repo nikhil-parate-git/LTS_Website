@@ -240,12 +240,12 @@ export default function Navbar() {
             </button>
 
             {/* Services Button */}
-            {/* <button
-              onClick={() => navigate("/services")}
+            <button
+              onClick={() => navigate("/navservice")}
               className="hidden cursor-pointer xl:block text-xs lg:text-sm hover:text-orange-500 px-1 lg:px-2 whitespace-nowrap font-medium text-gray-700 transition-colors duration-200"
             >
               Services
-            </button> */}
+            </button>
 
             {/* Blog Button */}
             <button
