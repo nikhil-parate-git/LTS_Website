@@ -37,6 +37,7 @@ export default function Subscription() {
   const onboardingPlans = allPlans.filter((p) => p.category === "ONBOARDING");
   const leadPlans = allPlans.filter((p) => p.category === "PLAN");
   const allSteps = [...onboardingPlans, ...leadPlans];
+  const totalCards = onboardingPlans.length + leadPlans.length;
 
   const setDur = (planId, durId) =>
     setDurIdMap((prev) => ({ ...prev, [planId]: durId }));
@@ -67,6 +68,16 @@ export default function Subscription() {
       const activeDurId = durIdMap[p._id] ?? p.durations?.[0]?._id;
       return activeDurId === match._id;
     });
+
+  // Dynamic grid cols based on total card count
+  const gridCols =
+    totalCards === 1
+      ? "grid-cols-1 max-w-sm mx-auto"
+      : totalCards === 2
+        ? "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto"
+        : totalCards === 3
+          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -192,11 +203,9 @@ export default function Subscription() {
 
         {/* Cards */}
         {loading ? (
-          <div className="flex flex-wrap justify-center gap-5">
+          <div className={`grid gap-5 ${gridCols}`}>
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-full sm:w-[340px]">
-                <SkeletonCard />
-              </div>
+              <SkeletonCard key={i} />
             ))}
           </div>
         ) : allPlans.length === 0 ? (
@@ -204,26 +213,24 @@ export default function Subscription() {
             No plans available right now.
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-5 mb-12">
+          <div className={`grid gap-5 mb-12 ${gridCols}`}>
             {onboardingPlans.map((plan, i) => (
-              <div key={plan._id} className="w-full sm:w-[340px]">
-                <PrimeCard
-                  plan={plan}
-                  stepNum={i + 1}
-                  onPurchase={handlePurchase}
-                />
-              </div>
+              <PrimeCard
+                key={plan._id}
+                plan={plan}
+                stepNum={i + 1}
+                onPurchase={handlePurchase}
+              />
             ))}
             {leadPlans.map((plan, i) => (
-              <div key={plan._id} className="w-full sm:w-[340px]">
-                <PlanCard
-                  plan={plan}
-                  stepNum={onboardingPlans.length + i + 1}
-                  selectedDurId={durIdMap[plan._id] ?? plan.durations?.[0]?._id}
-                  onDurChange={(durId) => setDur(plan._id, durId)}
-                  onPurchase={handlePurchase}
-                />
-              </div>
+              <PlanCard
+                key={plan._id}
+                plan={plan}
+                stepNum={onboardingPlans.length + i + 1}
+                selectedDurId={durIdMap[plan._id] ?? plan.durations?.[0]?._id}
+                onDurChange={(durId) => setDur(plan._id, durId)}
+                onPurchase={handlePurchase}
+              />
             ))}
           </div>
         )}
