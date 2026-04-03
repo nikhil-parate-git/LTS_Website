@@ -56,27 +56,39 @@ function LeadsBar({ leads, themeColor, accentClass }) {
         />
       </div>
       <div className="flex justify-between mt-1.5">
-        <span className="text-[10px] font-semibold text-slate-400">Min {fmt(from)}</span>
-        <span className="text-[10px] font-semibold text-slate-400">Max {fmt(to)}</span>
+        <span className="text-[10px] font-semibold text-slate-400">
+          Min {fmt(from)}
+        </span>
+        <span className="text-[10px] font-semibold text-slate-400">
+          Max {fmt(to)}
+        </span>
       </div>
     </div>
   );
 }
 
-export default function PlanCard({ plan, stepNum, selectedDurId, onDurChange, onPurchase }) {
-  const theme     = THEME[plan.subCategory] || DEFAULT_THEME;
+export default function PlanCard({
+  plan,
+  stepNum,
+  selectedDurId,
+  onDurChange,
+  onPurchase,
+}) {
+  const theme = THEME[plan.subCategory] || DEFAULT_THEME;
   const durations = plan.durations || [];
 
-  // Find selected duration by _id; fall back to first
-  const selected = durations.find((d) => d._id === selectedDurId) || durations[0];
+  const selected =
+    durations.find((d) => d._id === selectedDurId) || durations[0];
 
   if (!selected) return null;
 
   const months = Math.max(1, Math.round(selected.duration / 30));
 
   return (
-    <div className={`relative flex flex-col bg-white border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl
-      ${theme.featured ? "border-amber-300 shadow-xl shadow-amber-400/10" : "border-slate-200 shadow-md"}`}>
+    <div
+      className={`relative flex flex-col bg-white border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl w-full h-full
+      ${theme.featured ? "border-amber-300 shadow-xl shadow-amber-400/10" : "border-slate-200 shadow-md"}`}
+    >
       <div className={`h-1.5 w-full bg-gradient-to-r ${theme.color}`} />
 
       <div className="absolute top-5 left-5 w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[11px] font-black text-slate-500">
@@ -94,20 +106,31 @@ export default function PlanCard({ plan, stepNum, selectedDurId, onDurChange, on
       <div className="p-7 pt-10 flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
-          {plan.image
-            ? <img className="w-14 h-14 object-contain" src={plan.image} alt={plan.subCategory} />
-            : <span className="text-3xl">{theme.emoji}</span>
-          }
+          {plan.image ? (
+            <img
+              className="w-14 h-14 object-contain"
+              src={plan.image}
+              alt={plan.subCategory}
+            />
+          ) : (
+            <span className="text-3xl">{theme.emoji}</span>
+          )}
           <div>
-            <div className="text-xs font-semibold tracking-widest uppercase text-slate-400">Plan</div>
-            <div className={`text-3xl font-extrabold tracking-tight bg-gradient-to-r ${theme.color} bg-clip-text text-transparent`}>
+            <div className="text-xs font-semibold tracking-widest uppercase text-slate-400">
+              Plan
+            </div>
+            <div
+              className={`text-3xl font-extrabold tracking-tight bg-gradient-to-r ${theme.color} bg-clip-text text-transparent`}
+            >
               {plan.subCategory}
             </div>
           </div>
         </div>
 
         {plan.description && (
-          <p className="text-slate-500 text-[13px] leading-relaxed mb-6 min-h-[40px]">{plan.description}</p>
+          <p className="text-slate-500 text-[13px] leading-relaxed mb-6 min-h-[40px]">
+            {plan.description}
+          </p>
         )}
 
         {/* Duration pills */}
@@ -141,15 +164,19 @@ export default function PlanCard({ plan, stepNum, selectedDurId, onDurChange, on
         <div className="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
           <div className="flex items-end justify-between mb-3">
             <div>
-              <div className="text-[11px] text-slate-400 font-medium mb-0.5">Base Price</div>
+              <div className="text-[11px] text-slate-400 font-medium mb-0.5">
+                Base Price
+              </div>
               <div className="text-3xl font-black tracking-tight text-slate-800">
                 ₹{fmt(selected.price)}
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[11px] text-slate-400 font-medium mb-0.5">GST @{selected.gst}%</div>
+              <div className="text-[11px] text-slate-400 font-medium mb-0.5">
+                GST @{selected.gst}%
+              </div>
               <div className="text-sm font-bold text-slate-500">
-                ₹{fmt(Math.round(selected.price * selected.gst / 100))}
+                ₹{fmt(Math.round((selected.price * selected.gst) / 100))}
               </div>
             </div>
           </div>
@@ -179,16 +206,22 @@ export default function PlanCard({ plan, stepNum, selectedDurId, onDurChange, on
 
         <div className="flex-1" />
 
-        {/* Purchase button — passes duration _id */}
+        {/* Purchase button */}
         <button
           onClick={() => onPurchase(plan, selected._id)}
-          className={`w-full py-3.5 rounded-xl text-[13px] font-extrabold tracking-widest uppercase text-white transition-all duration-200 shadow-lg ${theme.btn} ${theme.shadow}`}>
+          className={`w-full cursor-pointer py-3.5 rounded-xl text-[13px] font-extrabold tracking-widest uppercase text-white transition-all duration-200 shadow-lg ${theme.btn} ${theme.shadow}`}
+        >
           Get {plan.subCategory} Plan →
         </button>
 
         {months > 1 && selected.perMonthPrice && (
           <p className="text-center text-[11px] text-slate-400 mt-2">
-            ≈ ₹{fmt(selected.perMonthPrice)}/mo billed {months >= 24 ? "every 2 years" : months >= 12 ? "annually" : `every ${months} months`}
+            ≈ ₹{fmt(selected.perMonthPrice)}/mo billed{" "}
+            {months >= 24
+              ? "every 2 years"
+              : months >= 12
+                ? "annually"
+                : `every ${months} months`}
           </p>
         )}
       </div>
