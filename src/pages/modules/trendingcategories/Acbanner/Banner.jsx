@@ -95,7 +95,6 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
       )
     : banners;
 
-  // Agar city ke liye koi banner nahi mila toh sab dikhao, warna FALLBACK
   const filteredBanners =
     Array.isArray(cityFilteredBanners) && cityFilteredBanners.length > 0
       ? cityFilteredBanners
@@ -103,7 +102,6 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
       ? banners
       : FALLBACK;
 
-  // Extra safety — kabhi bhi empty array nahi hoga
   const displaySlides = filteredBanners.length > 0 ? filteredBanners : FALLBACK;
 
   const [current, setCurrent] = useState(0);
@@ -139,10 +137,8 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
 
   if (loading) return <BannerSkeleton />;
 
-  // ── Safe activeSlide — kabhi undefined nahi hoga ──
   const activeSlide = displaySlides[current] || displaySlides[0] || FALLBACK[0];
 
-  // const displayTitle = pageTitle || activeSlide.title || null;
   const displayTitle = activeSlide.title || pageTitle || null;
 
   return (
@@ -169,7 +165,6 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
         />
       ))}
 
-      {/* Text Content */}
       <div
         key={current}
         className="absolute inset-0 z-10 flex flex-col justify-end px-5 sm:px-10 pb-7 sm:pb-12 pointer-events-none"
@@ -189,7 +184,6 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
         )}
       </div>
 
-      {/* Navigation Arrows */}
       {displaySlides.length > 1 && (
         <>
           <button
@@ -207,7 +201,6 @@ export default function Banner({ banners, loading = false, pageTitle = "", selec
         </>
       )}
 
-      {/* Slider Dots */}
       {displaySlides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
           {displaySlides.map((_, i) => (

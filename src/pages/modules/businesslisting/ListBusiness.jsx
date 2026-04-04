@@ -10,7 +10,7 @@ const stats = [
 
 const perks = [
   { icon: "🎯", title: "Targeted Reach", desc: "Appear in front of customers actively searching for your services nearby." },
-  { icon: "📈", title: "Grow Faster", desc: "Businesses on Local Trends Street see up to 3x more inquiries within 30 days." },
+  { icon: "📈", title: "Grow Faster", desc: "Businesses on Local Trade Street see up to 3x more inquiries within 30 days." },
   { icon: "⭐", title: "Build Trust", desc: "Collect reviews, showcase photos, and build a credible online presence." },
   { icon: "🆓", title: "Free to Start", desc: "List your business at zero cost. Upgrade anytime for premium visibility." },
 ];
@@ -135,7 +135,7 @@ export default function ListBusiness() {
             </h2>
 
             <p className="text-gray-500 text-base leading-relaxed mb-6 max-w-lg">
-              Maximize opportunities for shoppers to find you by listing your business on <span className="font-semibold text-gray-700"> Local Trends Street</span> — India's fastest-growing local search platform.
+              Maximize opportunities for shoppers to find you by listing your business on <span className="font-semibold text-gray-700"> Local Trade Street</span> — India's fastest-growing local search platform.
             </p>
 
             {/* Perks grid */}
