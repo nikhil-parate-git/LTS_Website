@@ -17,6 +17,7 @@ import topcategoryByIdReducer from "../slice/topCategory/getTopCateogoryByIdSlic
 import planReducer from "../slice/plansSlice"
 import topRightCatSubReducer from "../slice/rightSidebar/getTopRightCatSubSlice"
 import blogsReducer from "../slice/blog/getBlogSlice";
+import serviceReducer from "../slice/services/getServicesSlice";
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -49,6 +50,9 @@ const store = configureStore({
 
     //blogs
     blogs: blogsReducer,
+
+    //servics
+    services: serviceReducer,
   },
 });
 export default store;
