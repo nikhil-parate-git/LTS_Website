@@ -1,28 +1,56 @@
+// constants/subscriptionThemes.js
+// subCategory enum: ["Prime", "Dynamic", "Gold", "Diamond"]
+
 export const THEME = {
   Prime: {
-    color: "from-blue-400 to-cyan-300", dot: "bg-blue-400", accent: "text-blue-600",
-    bar: "bg-blue-400", btn: "bg-blue-500 hover:bg-blue-600", shadow: "shadow-blue-500/20",
-    featured: false, emoji: "🔰",
-    moreBtn: "text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border-blue-100",
+    color:    "from-blue-400 to-cyan-300",
+    accent:   "text-blue-600",
+    dot:      "bg-blue-400",
+    btn:      "bg-blue-500 hover:bg-blue-600",
+    shadow:   "shadow-blue-500/20",
+    moreBtn:  "border-blue-200 text-blue-600 hover:bg-blue-50",
+    featured: false,
+    emoji:    "🛡️",
   },
   Dynamic: {
-    color: "from-slate-400 to-slate-300", dot: "bg-slate-400", accent: "text-slate-500",
-    bar: "bg-slate-400", btn: "bg-slate-900 hover:bg-slate-700", shadow: "shadow-slate-500/20",
-    featured: false, emoji: "⚡",
-    moreBtn: "text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border-slate-200",
+    color:    "from-purple-500 to-violet-400",
+    accent:   "text-purple-600",
+    dot:      "bg-purple-400",
+    btn:      "bg-purple-600 hover:bg-purple-700",
+    shadow:   "shadow-purple-500/20",
+    moreBtn:  "border-purple-200 text-purple-600 hover:bg-purple-50",
+    featured: false,
+    emoji:    "⚡",
   },
   Gold: {
-    color: "from-yellow-500 to-amber-600", dot: "bg-yellow-500", accent: "text-amber-700",
-    bar: "bg-yellow-500", btn: "bg-amber-400 hover:bg-amber-500", shadow: "shadow-amber-400/30",
-    featured: true, emoji: "⭐",
-    moreBtn: "text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200",
+    color:    "from-amber-400 to-orange-400",
+    accent:   "text-amber-500",
+    dot:      "bg-amber-400",
+    btn:      "bg-amber-400 hover:bg-amber-500",
+    shadow:   "shadow-amber-400/20",
+    moreBtn:  "border-amber-200 text-amber-600 hover:bg-amber-50",
+    featured: true,    // Most Popular
+    emoji:    "🥇",
   },
   Diamond: {
-    color: "from-indigo-500 to-purple-500", dot: "bg-indigo-500", accent: "text-indigo-600",
-    bar: "bg-indigo-500", btn: "bg-indigo-600 hover:bg-indigo-700", shadow: "shadow-indigo-500/20",
-    featured: false, emoji: "💎",
-    moreBtn: "text-indigo-500 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border-indigo-100",
+    color:    "from-cyan-400 to-teal-400",
+    accent:   "text-cyan-600",
+    dot:      "bg-cyan-400",
+    btn:      "bg-cyan-500 hover:bg-cyan-600",
+    shadow:   "shadow-cyan-500/20",
+    moreBtn:  "border-cyan-200 text-cyan-600 hover:bg-cyan-50",
+    featured: false,
+    emoji:    "💎",
   },
 };
 
-export const DEFAULT_THEME = THEME.Dynamic;
+export const DEFAULT_THEME = {
+  color:    "from-slate-400 to-slate-300",
+  accent:   "text-slate-600",
+  dot:      "bg-slate-400",
+  btn:      "bg-slate-700 hover:bg-slate-800",
+  shadow:   "shadow-slate-500/20",
+  moreBtn:  "border-slate-200 text-slate-600 hover:bg-slate-50",
+  featured: false,
+  emoji:    "📦",
+};

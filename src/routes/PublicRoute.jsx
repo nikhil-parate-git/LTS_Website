@@ -8,6 +8,9 @@ import TopCategoryDetails from "../pages/modules/topcategorycity/TopCategoryDeta
 import BusinessPage from "../pages/modules/businesslisting/BusinessPlans";
 import SubmitEnquiry from "../pages/modules/trendingcategories/SubmitEnquiry";
 import PaymentSuccessMessage from "../pages/modules/subscription/PaymentSuccessMessage";
+import Blog from "../pages/modules/blog/Blog";
+import BlogView from "../pages/modules/blog/BlogView";
+import NavServices from "../pages/modules/navservices/NavServices";
 
 const Home = lazy(() => import("../pages/modules/home/Home"));
 const CategoryDetails = lazy(
@@ -39,6 +42,10 @@ export default function PublicRoute() {
           path="/service/:categoryId/:subcategoryId"
           element={<CategoryDetails />}
         />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:categoryId/:blogId" element={<BlogView />} />
+
+         <Route path="/navservice" element={<NavServices/>} />
 
         <Route
           path="*"

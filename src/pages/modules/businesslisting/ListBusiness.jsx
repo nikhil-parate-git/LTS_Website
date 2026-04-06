@@ -9,10 +9,26 @@ const stats = [
 ];
 
 const perks = [
-  { icon: "🎯", title: "Targeted Reach", desc: "Appear in front of customers actively searching for your services nearby." },
-  { icon: "📈", title: "Grow Faster", desc: "Businesses on Local Trade Street see up to 3x more inquiries within 30 days." },
-  { icon: "⭐", title: "Build Trust", desc: "Collect reviews, showcase photos, and build a credible online presence." },
-  { icon: "🆓", title: "Free to Start", desc: "List your business at zero cost. Upgrade anytime for premium visibility." },
+  {
+    icon: "🎯",
+    title: "Targeted Reach",
+    desc: "Appear in front of customers actively searching for your services nearby.",
+  },
+  {
+    icon: "📈",
+    title: "Grow Faster",
+    desc: "Businesses on Local Trade Street see up to 3x more inquiries within 30 days.",
+  },
+  {
+    icon: "⭐",
+    title: "Build Trust",
+    desc: "Collect reviews, showcase photos, and build a credible online presence.",
+  },
+  {
+    icon: "🆓",
+    title: "Free to Start",
+    desc: "List your business at zero cost. Upgrade anytime for premium visibility.",
+  },
 ];
 
 // Animated counter hook
@@ -38,7 +54,8 @@ function StatItem({ value, suffix, label, animate }) {
   return (
     <div className="text-center">
       <div className="text-3xl md:text-4xl font-extrabold text-orange-500 tracking-tight">
-        {count.toLocaleString()}{suffix}
+        {count.toLocaleString()}
+        {suffix}
       </div>
       <div className="text-sm text-gray-500 mt-1 font-medium">{label}</div>
     </div>
@@ -55,8 +72,10 @@ export default function ListBusiness() {
   // Trigger stat counters when section comes into view
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setAnimateStats(true); },
-      { threshold: 0.3 }
+      ([entry]) => {
+        if (entry.isIntersecting) setAnimateStats(true);
+      },
+      { threshold: 0.3 },
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
@@ -68,20 +87,27 @@ export default function ListBusiness() {
       className="relative bg-white overflow-hidden py-0"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+      />
 
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
-        style={{ backgroundImage: "radial-gradient(circle, #f97316 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, #f97316 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
 
       {/* Top orange accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" />
 
       <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-14 md:py-20">
-
         {/* ── MAIN CONTENT ROW ── */}
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-
           {/* LEFT: Image with floating badge */}
           <div className="relative w-full md:w-[45%] shrink-0">
             {/* Decorative orange shape behind image */}
@@ -90,7 +116,7 @@ export default function ListBusiness() {
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=85"
-                alt="Business owner listing on Local Trends Street"
+                alt="Business owner listing on Local Trade Street"
                 onLoad={() => setImgLoaded(true)}
                 className={`w-full h-[340px] md:h-[420px] object-cover transition-all duration-700 ${imgLoaded ? "scale-100 blur-0" : "scale-105 blur-sm"}`}
               />
@@ -105,9 +131,13 @@ export default function ListBusiness() {
 
             {/* Floating stat card */}
             <div className="absolute -bottom-5 -right-4 z-20 bg-white rounded-2xl shadow-xl px-5 py-4 flex items-center gap-3 border border-orange-100">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">📍</div>
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">
+                📍
+              </div>
               <div>
-                <div className="text-gray-800 font-bold text-sm leading-tight">500+ Cities</div>
+                <div className="text-gray-800 font-bold text-sm leading-tight">
+                  500+ Cities
+                </div>
                 <div className="text-gray-400 text-xs">All across India</div>
               </div>
             </div>
@@ -122,20 +152,37 @@ export default function ListBusiness() {
             </span>
 
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
-              Get your business<br />
+              Get your business
+              <br />
               in front of{" "}
               <span className="text-orange-500 relative inline-block">
                 local customers
                 {/* Underline squiggle */}
-                <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 200 8" fill="none">
-                  <path d="M2 6 Q50 2 100 6 Q150 10 198 4" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  viewBox="0 0 200 8"
+                  fill="none"
+                >
+                  <path
+                    d="M2 6 Q50 2 100 6 Q150 10 198 4"
+                    stroke="#f97316"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
                 </svg>
               </span>
               .
             </h2>
 
             <p className="text-gray-500 text-base leading-relaxed mb-6 max-w-lg">
-              Maximize opportunities for shoppers to find you by listing your business on <span className="font-semibold text-gray-700"> Local Trade Street</span> — India's fastest-growing local search platform.
+              Maximize opportunities for shoppers to find you by listing your
+              business on{" "}
+              <span className="font-semibold text-gray-700">
+                {" "}
+                Local Trade Street
+              </span>{" "}
+              — India's fastest-growing local search platform.
             </p>
 
             {/* Perks grid */}
@@ -146,14 +193,19 @@ export default function ListBusiness() {
                   onMouseEnter={() => setActivePerk(i)}
                   onMouseLeave={() => setActivePerk(null)}
                   className={`rounded-xl p-3 border transition-all duration-250 cursor-default
-                    ${activePerk === i
-                      ? "border-orange-300 bg-orange-50 shadow-md -translate-y-0.5"
-                      : "border-gray-100 bg-gray-50 hover:border-orange-200"
+                    ${
+                      activePerk === i
+                        ? "border-orange-300 bg-orange-50 shadow-md -translate-y-0.5"
+                        : "border-gray-100 bg-gray-50 hover:border-orange-200"
                     }`}
                 >
                   <div className="text-xl mb-1">{p.icon}</div>
-                  <div className="text-sm font-bold text-gray-800">{p.title}</div>
-                  <div className={`text-xs text-gray-500 mt-0.5 leading-snug overflow-hidden transition-all duration-300 ${activePerk === i ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}>
+                  <div className="text-sm font-bold text-gray-800">
+                    {p.title}
+                  </div>
+                  <div
+                    className={`text-xs text-gray-500 mt-0.5 leading-snug overflow-hidden transition-all duration-300 ${activePerk === i ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
+                  >
                     {p.desc}
                   </div>
                 </div>
@@ -163,8 +215,13 @@ export default function ListBusiness() {
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4">
               <button
-                onClick={() => navigate("/business")}
-                className="group relative bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 hover:scale-105 hover:shadow-orange-300 overflow-hidden"
+                onClick={() =>
+                  window.open(
+                    "https://vendor.localtradestreet.com/signin",
+                    "_blank",
+                  )
+                }
+                className="group cursor-pointer relative bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 hover:scale-105 hover:shadow-orange-300 overflow-hidden"
               >
                 <span className="relative z-10">List Your Business Free →</span>
                 <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12" />
@@ -188,7 +245,6 @@ export default function ListBusiness() {
             ))}
           </div>
         </div>
-
       </div>
 
       {/* Bottom orange accent bar */}
