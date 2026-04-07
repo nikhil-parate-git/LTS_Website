@@ -1,8 +1,10 @@
-
 // import { useState, useEffect } from "react";
 // import { useParams, useNavigate } from "react-router-dom";
 // import { useDispatch, useSelector } from "react-redux";
-// import { fetchVendorsByCatAndSubcat, fetchSubCategoryBanners } from "../../../redux/slice/category/getVendorByCatandSubcat";
+// import {
+//   fetchVendorsByCatAndSubcat,
+//   fetchSubCategoryBanners,
+// } from "../../../redux/slice/category/getVendorByCatandSubcat";
 
 // import {
 //   ChevronRight,
@@ -25,6 +27,7 @@
 // } from "lucide-react";
 // import Sidebar from "./MainSidebar";
 // import Banner from "./Acbanner/Banner";
+// import StickyFooter from "./EnquiryFooter";
 
 // function formatProfileCount(n) {
 //   if (!n) return "0";
@@ -209,29 +212,36 @@
 //   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
 //     useSelector((state) => state.vendorStore);
 
+//   // ── City filter ke liye ──
 //   const { selectedCity } = useSelector((state) => state.location);
 
 //   useEffect(() => {
 //     if (categoryId && subcategoryId) {
-//       dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId, city: selectedCity }));
+//       dispatch(
+//         fetchVendorsByCatAndSubcat({
+//           categoryId,
+//           subcategoryId,
+//           city: selectedCity,
+//         }),
+//       );
 //       dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
-//     } else {
-//       console.log("Missing categoryId or subcategoryId");
 //     }
 //   }, [dispatch, categoryId, subcategoryId, selectedCity]);
 
-//   // ── "Top 20 Residential Pest Control" format ──
-//   const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName}` : "";
+//   const bannerTitle = subcategoryName
+//     ? `Top 20 ${subcategoryName} in ${selectedCity}`
+//     : "";
 
 //   return (
 //     <div className="min-h-screen bg-gray-50">
 //       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
 
-//       {/* ── bannerLoading prevents welcome blink, subcategoryName as title ── */}
 //       <Banner
 //         banners={banners}
 //         loading={bannerLoading}
-//         pageTitle={bannerTitle}
+//         // pageTitle={bannerTitle}
+//         pageTitle=""
+//         selectedCity={selectedCity}
 //       />
 
 //       {/* Header Sticky Bar */}
@@ -343,6 +353,7 @@
 //           </div>
 //         </div>
 //       </div>
+//       {/* <StickyFooter/> */}
 //     </div>
 //   );
 // }
@@ -351,7 +362,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVendorsByCatAndSubcat, fetchSubCategoryBanners } from "../../../redux/slice/category/getVendorByCatandSubcat";
+import {
+  fetchVendorsByCatAndSubcat,
+  fetchSubCategoryBanners,
+} from "../../../redux/slice/category/getVendorByCatandSubcat";
 
 import {
   ChevronRight,
@@ -436,6 +450,23 @@ function BusinessCard({ biz }) {
   const visibleTags = showAllTags ? tags : tags.slice(0, VISIBLE);
   const hasMore = tags.length > VISIBLE;
 
+  // Tick Color Logic: Backend se aane wale color ko Tailwind classes mein map karna
+  const getTickColorClass = (color) => {
+    switch (color?.toLowerCase()) {
+      case "red":
+        return "text-red-500";
+      case "blue":
+        return "text-blue-500";
+      case "green":
+        return "text-green-500";
+      case "gold":
+      case "yellow":
+        return "text-yellow-500";
+      default:
+        return "text-blue-500"; // Default color agar backend se na mile
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
       <div className="flex flex-col sm:flex-row">
@@ -465,8 +496,12 @@ function BusinessCard({ biz }) {
               >
                 {biz.name}
               </h3>
+              {/* Dynamic Tick Color Applied Here */}
               {biz.verified && (
-                <BadgeCheck size={15} className="text-blue-500 shrink-0" />
+                <BadgeCheck 
+                  size={18} 
+                  className={`${getTickColorClass(biz.tickColour)} shrink-0`} 
+                />
               )}
             </div>
             <button className="text-gray-400 hover:text-orange-500">
@@ -559,17 +594,24 @@ export default function CategoryDetails() {
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
 
-  // ── City filter ke liye ──
   const { selectedCity } = useSelector((state) => state.location);
 
   useEffect(() => {
     if (categoryId && subcategoryId) {
-      dispatch(fetchVendorsByCatAndSubcat({ categoryId, subcategoryId, city: selectedCity }));
+      dispatch(
+        fetchVendorsByCatAndSubcat({
+          categoryId,
+          subcategoryId,
+          city: selectedCity,
+        }),
+      );
       dispatch(fetchSubCategoryBanners({ categoryId, subcategoryId }));
     }
   }, [dispatch, categoryId, subcategoryId, selectedCity]);
 
-  const bannerTitle = subcategoryName ? `Top 20 ${subcategoryName} in ${selectedCity}` : "";
+  const bannerTitle = subcategoryName
+    ? `Top 20 ${subcategoryName} in ${selectedCity}`
+    : "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -578,12 +620,10 @@ export default function CategoryDetails() {
       <Banner
         banners={banners}
         loading={bannerLoading}
-        // pageTitle={bannerTitle}
         pageTitle=""
         selectedCity={selectedCity}
       />
 
-      {/* Header Sticky Bar */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-1.5 text-xs">
@@ -624,7 +664,6 @@ export default function CategoryDetails() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-screen-xl mx-auto px-4 py-6">
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
@@ -661,6 +700,7 @@ export default function CategoryDetails() {
                         verified: biz.isVerified || true,
                         profileCount: biz.views || 0,
                         hours: biz.openingTime || "9:00 AM - 9:00 PM",
+                        tickColour: biz.tickColour // Backend key mapped here
                       }}
                     />
                   ))
@@ -682,7 +722,6 @@ export default function CategoryDetails() {
             )}
           </div>
 
-          {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 shrink-0">
             <Sidebar
               categoryId={categoryId}
@@ -692,7 +731,6 @@ export default function CategoryDetails() {
           </div>
         </div>
       </div>
-      {/* <StickyFooter/> */}
     </div>
   );
 }

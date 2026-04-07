@@ -18,6 +18,8 @@ import planReducer from "../slice/plansSlice"
 import topRightCatSubReducer from "../slice/rightSidebar/getTopRightCatSubSlice"
 import blogsReducer from "../slice/blog/getBlogSlice";
 import serviceReducer from "../slice/services/getServicesSlice";
+import enquiryReducer from "../slice/services/enquriySlice";
+import faqReducer from "../slice/faq/getFaqSlice";
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -53,6 +55,11 @@ const store = configureStore({
 
     //servics
     services: serviceReducer,
+    enquiry: enquiryReducer,
+
+    //faq
+    faq: faqReducer,
+ 
   },
 });
 export default store;

@@ -17,6 +17,7 @@ const exploreLinks = [
   { label: "Contact Us", path: "/contact" },
   { label: "SubScriptions And Plans", path: "/subscriptions" },
   { label: "Blogs", path: "/blog" },
+  { label: "Services", path: "/navservice" },
 ];
 
 // WhatsApp SVG icon (lucide doesn't have it)
