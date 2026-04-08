@@ -1,10 +1,8 @@
-// redux/slice/faq/faqSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = "https://local-trade-street-be.onrender.com/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Thunk: categoryId aur city ke basis par FAQs fetch karo
 export const fetchFaqsByCategoryAndCity = createAsyncThunk(
   "faq/fetchFaqsByCategoryAndCity",
   async ({ categoryId, city }, { rejectWithValue }) => {
@@ -14,15 +12,15 @@ export const fetchFaqsByCategoryAndCity = createAsyncThunk(
 
       const response = await axios.get(
         `${BASE_URL}/customer/faqs/${categoryId}`,
-        { params }
+        { params },
       );
-      return response.data.data; // array of faqs
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch FAQs"
+        error.response?.data?.message || "Failed to fetch FAQs",
       );
     }
-  }
+  },
 );
 
 const faqSlice = createSlice({

@@ -6,7 +6,7 @@ export const submitEnquiry = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://local-trade-street-be.onrender.com/api/customer/customerservice/contact",
+        `${import.meta.env.VITE_API_BASE_URL}/customer/customerservice/contact`,
         formData,
       );
       return response.data;
