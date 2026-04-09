@@ -70,7 +70,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-600 to-orange-500 px-5 py-4 flex justify-between items-center text-white">
           <div>
-            <h3 className="text-xl font-black italic uppercase">
+            <h3 className="text-xl font-black ">
               Send Enquiry
             </h3>
             <p className="text-[10px] font-bold tracking-widest opacity-80">
@@ -96,7 +96,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-1">
+              <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
                 <User size={12} className="text-orange-500" /> Full Name
               </label>
               <input
@@ -108,7 +108,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
 
             {/* Phone (Exactly 10 Digits) */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-1">
+              <label className="text-[13px] font-semibold text-black flex items-center gap-1">
                 <Phone size={12} className="text-orange-500" /> Contact
               </label>
               <input
@@ -123,7 +123,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
 
           {/* Email */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-1">
+            <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
               <Mail size={12} className="text-orange-500" /> Email
             </label>
             <input
@@ -135,7 +135,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
 
           {/* Subject (Blank initially) */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-1">
+            <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
               <MessageSquare size={12} className="text-orange-500" /> Subject
             </label>
             <input
@@ -148,7 +148,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
 
           {/* Message */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase">
+            <label className="text-[13px] font-semibold text-black ">
               Message
             </label>
             <textarea
@@ -162,7 +162,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 uppercase tracking-widest text-sm disabled:opacity-70 transition-all"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer text-sm disabled:opacity-70 transition-all"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />

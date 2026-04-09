@@ -84,8 +84,7 @@ const NavServices = () => {
             {/* Subtext */}
             <p className="text-sm sm:text-base md:text-lg text-black mb-8 md:mb-10 max-w-2xl leading-relaxed font-medium">
               We provide an all-inclusive, high-traffic search ecosystem
-              designed to give your business the visibility it deserves since
-              2026.
+              designed to give your business the visibility it deserves.
             </p>
 
             {/* CTA Button */}
@@ -165,7 +164,7 @@ const NavServices = () => {
                   <span className="block text-2xl md:text-3xl font-black text-orange-600 tracking-tighter">
                     1.5K+
                   </span>
-                  <span className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider">
+                  <span className="text-[13px] md:text-xs text-gray-500 font-bold ">
                     Projects Delivered
                   </span>
                 </div>
@@ -173,7 +172,7 @@ const NavServices = () => {
                   <span className="block text-2xl md:text-3xl font-black text-orange-600 tracking-tighter">
                     20+
                   </span>
-                  <span className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider">
+                  <span className="text-[13px] md:text-xs text-gray-500 font-bold ">
                     Years Experience
                   </span>
                 </div>
