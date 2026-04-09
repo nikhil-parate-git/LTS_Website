@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSubcategories,
@@ -117,6 +117,26 @@ export default function SubCategory() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  // ── ID: pehle location.state se lo, warna categories store se slug match karo ──
+  const categoriesFromStore = useSelector(
+    (state) => state.categories?.categories || [],
+  );
+
+  const categoryId =
+    location.state?.id ||
+    (() => {
+      const matched = categoriesFromStore.find(
+        (cat) =>
+          (cat.name || "")
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-") === slug,
+      );
+      return matched?.id || matched?._id || null;
+    })();
 
   const [showModal, setShowModal] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -133,23 +153,39 @@ export default function SubCategory() {
   const { selectedCity } = useSelector((state) => state.location);
 
   useEffect(() => {
-    if (slug) {
-      dispatch(fetchSubcategories(slug));
-      dispatch(fetchCategoryBanners(slug));
+    if (categoryId) {
+      dispatch(fetchSubcategories(categoryId));
+      dispatch(fetchCategoryBanners(categoryId));
     }
-    // ── clearSubcategories BILKUL nahi — yahi white page ka reason tha ──
-  }, [dispatch, slug]);
+  }, [dispatch, categoryId]);
 
-  const bannerTitle = categoryName
-    ? `Top 20 ${categoryName} in ${selectedCity}`
-    : "";
+  // ── Agar id nahi mili (direct URL access / refresh) ──
+  if (!categoryId) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
+        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">
+          🔍
+        </div>
+        <h3 className="text-lg font-bold text-gray-700">Category not found</h3>
+        <p className="text-sm text-gray-400 text-center px-6">
+          Direct URL access is not supported. Please go back and select a
+          category.
+        </p>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-2 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
+        >
+          ← Go Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Banner
         banners={banners}
         loading={bannerLoading}
-        // pageTitle={bannerTitle}
         pageTitle=""
         selectedCity={selectedCity}
       />
@@ -183,7 +219,7 @@ export default function SubCategory() {
             <ChevronRight size={14} className="text-gray-300 hidden sm:block" />
             <div className="flex items-center gap-2 min-w-0">
               <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">
-                {categoryName || "Services"}
+                {categoryName || slug?.replace(/-/g, " ") || "Services"}
               </span>
             </div>
           </div>
@@ -222,7 +258,7 @@ export default function SubCategory() {
               <div className="text-center py-24 bg-red-50 rounded-3xl border border-red-100">
                 <p className="text-red-500 font-bold">Error: {error}</p>
                 <button
-                  onClick={() => dispatch(fetchSubcategories(slug))}
+                  onClick={() => dispatch(fetchSubcategories(categoryId))}
                   className="mt-4 text-orange-500 underline"
                 >
                   Try Again
@@ -277,7 +313,6 @@ export default function SubCategory() {
       </div>
 
       {showModal && <SubmitEnquiry onClose={() => setShowModal(false)} />}
-      {/* <StickyFooter/> */}
     </div>
   );
 }
