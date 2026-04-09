@@ -87,9 +87,9 @@ const NavServices = () => {
               designed to give your business the visibility it deserves.
             </p>
 
-            {/* CTA Button */}
+            {/* ✅ FIX 1: Get Started Today → opens enquiry modal */}
             <button
-              onClick={() => navigate("/subscriptions")}
+              onClick={() => openModal("Get Started")}
               className="bg-blue-950 cursor-pointer hover:bg-orange-400 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl transition-all shadow-lg flex items-center gap-2 text-sm md:text-base w-fit"
             >
               Get Started Today
@@ -127,12 +127,14 @@ const NavServices = () => {
                   <p className="text-gray-500 text-xs md:text-sm leading-relaxed mb-4 md:mb-6 line-clamp-3 font-medium">
                     {service.description}
                   </p>
+
+                  {/* ✅ FIX 2: Proper styled "Request Consultation" button */}
                   <button
                     onClick={() => openModal(service.title)}
-                    className="mt-auto cursor-pointer flex items-center justify-between w-full text-orange-600 font-black text-[11px] md:text-base  border-t border-gray-100 pt-4 md:pt-5 group/btn"
+                    className="mt-auto cursor-pointer w-full bg-orange-600 hover:bg-orange-500 text-white font-bold text-[11px] md:text-sm py-2.5 md:py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-orange-200 hover:shadow-lg"
                   >
+                    <i className="fas fa-envelope text-xs md:text-sm" />
                     Request Consultation
-                    <i className="fas fa-envelope text-base md:text-lg transition-transform group-hover/btn:translate-x-1" />
                   </button>
                 </div>
               </div>
@@ -222,7 +224,7 @@ const NavServices = () => {
       {/* ── TECH STACK ── */}
       <div className="bg-gray-50 py-14 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 text-center">
-          <h3 className="text-[10px]  tracking-[0.3em] text-gray-400 font-black mb-8 md:mb-12 italic">
+          <h3 className="text-[10px] tracking-[0.3em] text-gray-400 font-black mb-8 md:mb-12 italic">
             Powering digital solutions with modern technology
           </h3>
           <div className="flex flex-wrap justify-center gap-2 md:gap-4">
@@ -234,7 +236,7 @@ const NavServices = () => {
                 <i
                   className={`${tech.icon} text-gray-400 group-hover:text-orange-600 text-lg md:text-2xl transition-colors`}
                 />
-                <span className="font-black text-gray-700 text-[11px] md:text-base ">
+                <span className="font-black text-gray-700 text-[11px] md:text-base">
                   {tech.name}
                 </span>
               </div>
@@ -246,12 +248,12 @@ const NavServices = () => {
       {/* ── CTA SECTION ── */}
       <div className="bg-orange-600 py-12 md:py-16 relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6 md:mb-8 ">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6 md:mb-8">
             Ready to Transform Your Business?
           </h2>
           <button
             onClick={() => openModal("General Platform Inquiry")}
-            className="bg-white cursor-pointer text-orange-600 font-black px-8 md:px-14 py-4 md:py-5 rounded-xl md:rounded-2xl shadow-2xl hover:scale-105 transition-transform  text-xs md:text-sm"
+            className="bg-white cursor-pointer text-orange-600 font-black px-8 md:px-14 py-4 md:py-5 rounded-xl md:rounded-2xl shadow-2xl hover:scale-105 transition-transform text-xs md:text-sm"
           >
             Contact Our Experts
           </button>
