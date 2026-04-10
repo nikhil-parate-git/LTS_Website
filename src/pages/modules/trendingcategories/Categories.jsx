@@ -20,6 +20,15 @@ import SubmitEnquiry from "./SubmitEnquiry";
 import Sidebar from "./MainSidebar";
 import StickyFooter from "./EnquiryFooter";
 
+// ─── SLUG HELPER ──────────────────────────────────────────────────
+function toSlug(name = "") {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
+
 function StarRating({ rating = 3.6 }) {
   return (
     <div className="flex items-center gap-1">
@@ -119,7 +128,6 @@ export default function SubCategory() {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  // ── ID: pehle location.state se lo, warna categories store se slug match karo ──
   const categoriesFromStore = useSelector(
     (state) => state.categories?.categories || [],
   );
@@ -128,12 +136,7 @@ export default function SubCategory() {
     location.state?.id ||
     (() => {
       const matched = categoriesFromStore.find(
-        (cat) =>
-          (cat.name || "")
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9\s-]/g, "")
-            .replace(/\s+/g, "-") === slug,
+        (cat) => toSlug(cat.name || "") === slug,
       );
       return matched?.id || matched?._id || null;
     })();
@@ -159,7 +162,6 @@ export default function SubCategory() {
     }
   }, [dispatch, categoryId]);
 
-  // ── Agar id nahi mili (direct URL access / refresh) ──
   if (!categoryId) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
@@ -196,7 +198,6 @@ export default function SubCategory() {
         cityName={selectedCity}
       />
 
-      {/* ── Breadcrumb / Header ── */}
       <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-wrap min-w-0">
@@ -243,7 +244,6 @@ export default function SubCategory() {
         </div>
       </div>
 
-      {/* ── Main Content ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
@@ -281,7 +281,16 @@ export default function SubCategory() {
                       key={item._id || item.id}
                       item={item}
                       onCardClick={() =>
-                        navigate(`/service/${item.categoryName}/${item.id}`)
+                        // ── FIXED: slug use karo, state me real IDs pass karo ──
+                        navigate(
+                          `/service/${toSlug(categoryName)}/${toSlug(item.name)}`,
+                          {
+                            state: {
+                              categoryId: categoryId,
+                              subcategoryId: item._id || item.id,
+                            },
+                          },
+                        )
                       }
                       index={index}
                     />

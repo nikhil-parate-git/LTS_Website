@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVendorsByCatAndSubcat,
@@ -28,6 +28,15 @@ import {
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
 import StickyFooter from "./EnquiryFooter";
+
+// ─── SLUG HELPER ──────────────────────────────────────────────────
+function toSlug(name = "") {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
 
 function formatProfileCount(n) {
   if (!n) return "0";
@@ -89,7 +98,6 @@ function BusinessCard({ biz }) {
   const visibleTags = showAllTags ? tags : tags.slice(0, VISIBLE);
   const hasMore = tags.length > VISIBLE;
 
-  // Tick Color Logic: Backend se aane wale color ko Tailwind classes mein map karna
   const getTickColorClass = (color) => {
     switch (color?.toLowerCase()) {
       case "red":
@@ -102,7 +110,7 @@ function BusinessCard({ biz }) {
       case "yellow":
         return "text-yellow-500";
       default:
-        return "text-blue-500"; // Default color agar backend se na mile
+        return "text-blue-500";
     }
   };
 
@@ -135,7 +143,6 @@ function BusinessCard({ biz }) {
               >
                 {biz.name}
               </h3>
-              {/* Dynamic Tick Color Applied Here */}
               {biz.verified && (
                 <BadgeCheck
                   size={18}
@@ -177,7 +184,7 @@ function BusinessCard({ biz }) {
           </div>
 
           <div className="flex items-center gap-1 text-xs text-gray-500">
-            <Clock size={11} />{" "}
+            <Clock size={11} />
             <span>Open: {biz.hours || "9:00 AM - 9:00 PM"}</span>
           </div>
 
@@ -222,7 +229,9 @@ function BusinessCard({ biz }) {
 }
 
 export default function CategoryDetails() {
-  const { categoryId, subcategoryId } = useParams();
+  // ── Slug params + location state ──────────────────────────────
+  const { categorySlug, subcategorySlug } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -232,8 +241,34 @@ export default function CategoryDetails() {
 
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
-
   const { selectedCity } = useSelector((state) => state.location);
+
+  // ── Store fallback for slug → id matching ────────────────────
+  const categoriesFromStore = useSelector(
+    (state) => state.categories?.categories || [],
+  );
+  const subcategoriesFromStore = useSelector(
+    (state) => state.subcategory?.subcategories || [],
+  );
+
+  // ── Real IDs: pehle location.state se, phir store se slug match
+  const categoryId =
+    location.state?.categoryId ||
+    (() => {
+      const matched = categoriesFromStore.find(
+        (cat) => toSlug(cat.name || "") === categorySlug,
+      );
+      return matched?.id || matched?._id || null;
+    })();
+
+  const subcategoryId =
+    location.state?.subcategoryId ||
+    (() => {
+      const matched = subcategoriesFromStore.find(
+        (sub) => toSlug(sub.name || "") === subcategorySlug,
+      );
+      return matched?.id || matched?._id || null;
+    })();
 
   useEffect(() => {
     if (categoryId && subcategoryId) {
@@ -248,9 +283,27 @@ export default function CategoryDetails() {
     }
   }, [dispatch, categoryId, subcategoryId, selectedCity]);
 
-  const bannerTitle = subcategoryName
-    ? `Top 20 ${subcategoryName} in ${selectedCity}`
-    : "";
+  // ── Agar IDs nahi mili (direct URL access without state) ─────
+  if (!categoryId || !subcategoryId) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
+        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">
+          🔍
+        </div>
+        <h3 className="text-lg font-bold text-gray-700">Page not found</h3>
+        <p className="text-sm text-gray-400 text-center px-6">
+          Direct URL access is not supported. Please go back and select a
+          service.
+        </p>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-2 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
+        >
+          ← Go Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -274,7 +327,9 @@ export default function CategoryDetails() {
             </button>
             <ChevronRight size={13} className="text-gray-300" />
             <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold truncate">
-              Vendors
+              {subcategoryName ||
+                subcategorySlug?.replace(/-/g, " ") ||
+                "Vendors"}
             </span>
           </div>
 
@@ -339,7 +394,7 @@ export default function CategoryDetails() {
                         verified: biz.isVerified || true,
                         profileCount: biz.views || 0,
                         hours: biz.openingTime || "9:00 AM - 9:00 PM",
-                        tickColour: biz.tickColour, // Backend key mapped here
+                        tickColour: biz.tickColour,
                       }}
                     />
                   ))

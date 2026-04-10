@@ -38,10 +38,7 @@ export default function PublicRoute() {
 
         <Route path="/top-category/:slug" element={<TopCategoryDetails />} />
         <Route path="/business" element={<BusinessPage />} />
-        <Route
-          path="/service/:categoryId/:subcategoryId"
-          element={<CategoryDetails />}
-        />
+        <Route path="/service/:categorySlug/:subcategorySlug" element={<CategoryDetails />}/>
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:categoryId/:blogId" element={<BlogView />} />
 
