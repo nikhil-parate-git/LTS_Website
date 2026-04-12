@@ -437,15 +437,13 @@ export default function SubCategory() {
     }
   }, [dispatch, categoryMongoId]);
 
-  const handleSubcategoryClick = (item) => {
-    /*
-      ✅ subCateId (SUBCAT-001) use karo — MongoDB _id nahi
-      URL: /service/SUBCAT-001/bed-bug-control-service
-    */
-    const subCateId = item.subCateId;
-    const subSlug = createSlug(item.name || "");
-    navigate(`/service/${subCateId}/${subSlug}`);
-  };
+ const handleSubcategoryClick = (item) => {
+  const subCateId = item.subCateId;
+  const subSlug = createSlug(item.name || "");
+  // ✅ city Redux store se lo
+  const city = createSlug(selectedCity || "india");
+  navigate(`/service/${city}/${subCateId}/${subSlug}`);
+};
 
   // Categories load nahi hui abhi
   if (categoriesFromStore.length === 0) {

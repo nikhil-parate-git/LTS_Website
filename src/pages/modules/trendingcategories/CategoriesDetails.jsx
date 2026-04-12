@@ -421,7 +421,6 @@
 // }
 
 
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -429,10 +428,12 @@ import {
   fetchVendorsByCatAndSubcat,
   fetchSubCategoryBanners,
 } from "../../../redux/slice/category/getVendorByCatandSubcat";
+import { fetchSubcategories } from "../../../redux/slice/category/getAllSubcategorySlice";
+import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import {
   ChevronRight, MapPin, Phone, Eye, ChevronDown,
   SlidersHorizontal, BadgeCheck, Star, Clock,
-  Zap, Share2, ArrowLeft, X, Search,
+  Zap, Share2, ArrowLeft, X, Search, Loader2,
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
@@ -490,16 +491,15 @@ function BusinessCard({ biz }) {
   };
 
   const handleBusinessClick = () => {
-  const venId = biz.venId;
-  const slug = createSlug(biz.companyName || biz.name || "business");
-  
-  const city = createSlug(
-    (typeof biz.address === "object" ? biz.address?.city : "") || "india"
-  );
-  if (!venId) return;
-  if (biz._id) sessionStorage.setItem(`vendor_${venId}`, biz._id);
-  navigate(`/business/${city}/${venId}/${slug}`);
-};
+    const venId = biz.venId;
+    const slug = createSlug(biz.companyName || biz.name || "business");
+    const city = createSlug(
+      (typeof biz.address === "object" ? biz.address?.city : "") || "india"
+    );
+    if (!venId) return;
+    if (biz._id) sessionStorage.setItem(`vendor_${venId}`, biz._id);
+    navigate(`/business/${city}/${venId}/${slug}`);
+  };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
@@ -518,7 +518,10 @@ function BusinessCard({ biz }) {
         <div className="flex-1 p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 onClick={handleBusinessClick} className="text-base font-bold text-blue-700 hover:underline cursor-pointer">
+              <h3
+                onClick={handleBusinessClick}
+                className="text-base font-bold text-blue-700 hover:underline cursor-pointer"
+              >
                 {biz.name}
               </h3>
               {biz.verified && (
@@ -585,48 +588,87 @@ function BusinessCard({ biz }) {
 
 export default function CategoryDetails() {
   /*
-    URL: /service/:subCateId/:subcategorySlug
-    subCateId = SUBCAT-001
-    ✅ subCateId se subcategory store me match → MongoDB _id nikalo
+    URL: /service/:city/:subCateId/:subcategorySlug
+    city     = nagpur (SEO)
+    subCateId = SUBCAT-002 (readable ID)
+    ✅ subCateId se subcategory store me match → MongoDB _id → API call
   */
-  const { subCateId, subcategorySlug } = useParams();
+  const { city, subCateId, subcategorySlug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Relevance");
+  const [resolving, setResolving] = useState(false);
 
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
   const { selectedCity } = useSelector((state) => state.location);
 
-  const subcategoriesFromStore = useSelector(
-    (state) => state.subcategory?.subcategories || []
-  );
+  const categoriesFromStore = useSelector((state) => state.categories?.categories || []);
+  const subcategoriesFromStore = useSelector((state) => state.subcategory?.subcategories || []);
+  const subcatLoading = useSelector((state) => state.subcategory?.loading || false);
 
   // ✅ subCateId → MongoDB _id
   const matchedSubcat = subcategoriesFromStore.find(
     (sub) => sub.subCateId === subCateId
   );
   const subcategoryMongoId = matchedSubcat?._id || matchedSubcat?.id || null;
-  // categoryName field me category ka MongoDB _id aata hai backend se
   const catMongoId = matchedSubcat?.categoryName || null;
 
+  // ✅ Direct URL fix: store empty ho to fetch karo
+  useEffect(() => {
+    const loadData = async () => {
+      if (subcategoriesFromStore.length > 0) return;
+
+      setResolving(true);
+
+      let cats = categoriesFromStore;
+      if (cats.length === 0) {
+        const result = await dispatch(fetchAllCategories());
+        cats = result?.payload?.data || [];
+      }
+
+      // ✅ Sari categories ki subcategories fetch karo jab tak match mile
+      for (const cat of cats) {
+        const catId = cat._id || cat.id;
+        const res = await dispatch(fetchSubcategories(catId));
+        const subs = res?.payload?.data || [];
+        const found = subs.find((s) => s.subCateId === subCateId);
+        if (found) break;
+      }
+
+      setResolving(false);
+    };
+
+    loadData();
+  }, [subCateId]);
+
+  // ✅ Vendors fetch
   useEffect(() => {
     if (catMongoId && subcategoryMongoId) {
       dispatch(fetchVendorsByCatAndSubcat({
         categoryId: catMongoId,
         subcategoryId: subcategoryMongoId,
-        city: selectedCity,
+        city: city?.replace(/-/g, " ") || selectedCity,
       }));
       dispatch(fetchSubCategoryBanners({
         categoryId: catMongoId,
         subcategoryId: subcategoryMongoId,
       }));
     }
-  }, [dispatch, catMongoId, subcategoryMongoId, selectedCity]);
+  }, [dispatch, catMongoId, subcategoryMongoId, city, selectedCity]);
 
-  if (!matchedSubcat && subcategoriesFromStore.length > 0) {
+  if (resolving || subcatLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
+        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+        <p className="text-gray-500 font-medium">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!matchedSubcat && subcategoriesFromStore.length > 0 && !resolving) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
         <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">🔍</div>
@@ -648,6 +690,15 @@ export default function CategoryDetails() {
               <ArrowLeft size={19} />
             </button>
             <ChevronRight size={13} className="text-gray-300" />
+            {/* ✅ City bhi dikhao breadcrumb me */}
+            {city && (
+              <>
+                <span className="text-gray-400 text-xs capitalize">
+                  {city.replace(/-/g, " ")}
+                </span>
+                <ChevronRight size={13} className="text-gray-300" />
+              </>
+            )}
             <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold truncate">
               {subcategoryName || subcategorySlug?.replace(/-/g, " ") || "Vendors"}
             </span>
@@ -721,7 +772,11 @@ export default function CategoryDetails() {
           </div>
 
           <div className="hidden lg:block w-72 shrink-0">
-            <Sidebar categoryId={catMongoId} cityName={selectedCity} subcategoryId={subcategoryMongoId} />
+            <Sidebar
+              categoryId={catMongoId}
+              cityName={selectedCity}
+              subcategoryId={subcategoryMongoId}
+            />
           </div>
         </div>
       </div>

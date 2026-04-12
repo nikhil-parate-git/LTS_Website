@@ -353,14 +353,17 @@ import {
   fetchVendorById,
   clearVendorDetail,
 } from "../../../redux/slice/category/getVendorById";
+import axios from "axios";
 import {
   MapPin, Phone, Star, Share2, ChevronRight,
-  Home, Clock, Calendar,
+  Home, Clock, Calendar, Loader2,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
 import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function BreadcrumbBar({ businessName, venId, city }) {
   return (
@@ -384,7 +387,6 @@ function BreadcrumbBar({ businessName, venId, city }) {
             <ChevronRight size={13} className="text-gray-400" />
             <span className="text-gray-500 flex items-center gap-1">
               <MapPin size={11} className="text-orange-500" />
-              {/* ✅ capitalize city */}
               {city.charAt(0).toUpperCase() + city.slice(1)}
             </span>
           </span>
@@ -427,8 +429,9 @@ export default function Details() {
 
   const { vendor, loading, error } = useSelector((state) => state.vendorDetail);
   const [rateModalOpen, setRateModalOpen] = useState(false);
+  const [resolving, setResolving] = useState(false);
 
-  // ✅ vendorStore se venId match karo
+  // ✅ Redux store se venId → MongoDB _id
   const vendorsFromStore = useSelector((state) => state.vendorStore?.vendors || []);
   const matchedVendor = vendorsFromStore.find((v) => v.venId === venId);
   const mongoVendorId = matchedVendor?._id || matchedVendor?.id || null;
@@ -436,28 +439,45 @@ export default function Details() {
   useEffect(() => {
     if (!venId) return;
 
-    let idToFetch = null;
+    const fetchData = async () => {
+      // ✅ Priority 1: Redux store me mila
+      if (mongoVendorId) {
+        dispatch(fetchVendorById(mongoVendorId));
+        return;
+      }
 
-    if (mongoVendorId) {
-      // ✅ Priority 1: Redux store se MongoDB _id mila
-      idToFetch = mongoVendorId;
-    } else {
-      // ✅ Priority 2: sessionStorage se MongoDB _id lo
+      // ✅ Priority 2: sessionStorage me saved hai
       const savedId = sessionStorage.getItem(`vendor_${venId}`);
       if (savedId) {
-        idToFetch = savedId;
-      } else {
-        // ✅ Priority 3: venId directly bhejo
-        // Backend me fix karo: Vendor.findOne({ $or: [{ _id: isMongoId }, { venId: id }] })
-        idToFetch = venId;
+        dispatch(fetchVendorById(savedId));
+        return;
       }
-    }
 
-    dispatch(fetchVendorById(idToFetch));
+      // ✅ Priority 3: Direct URL (WhatsApp share)
+      // venId se MongoDB _id lookup karo
+      try {
+        setResolving(true);
+        const res = await axios.get(
+          `${BASE_URL}/customer/vendor/lookup/${venId}`
+        );
+        const mongoId = res.data?.data?._id;
+        if (mongoId) {
+          // Save for future use
+          sessionStorage.setItem(`vendor_${venId}`, mongoId);
+          dispatch(fetchVendorById(mongoId));
+        }
+      } catch (err) {
+        console.error("Vendor lookup failed:", err);
+      } finally {
+        setResolving(false);
+      }
+    };
+
+    fetchData();
     return () => dispatch(clearVendorDetail());
   }, [dispatch, venId, mongoVendorId]);
 
-  if (loading)
+  if (resolving || loading)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
@@ -471,12 +491,7 @@ export default function Details() {
         <div className="text-center bg-white p-8 rounded-2xl shadow-sm border border-red-100">
           <p className="text-red-500 font-bold mb-2">Failed to load vendor</p>
           <p className="text-gray-500 text-sm">{error}</p>
-          <button
-            onClick={() => window.history.back()}
-            className="mt-4 text-orange-500 font-bold"
-          >
-            Go Back
-          </button>
+          <button onClick={() => window.history.back()} className="mt-4 text-orange-500 font-bold">Go Back</button>
         </div>
       </div>
     );
@@ -509,9 +524,7 @@ export default function Details() {
               />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-0.5">
-                {vendor.companyName}
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-0.5">{vendor.companyName}</h1>
               <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
                 <Stars filled={5} size={14} />
                 <span className="ml-1 text-gray-600 font-medium">5.0</span>
@@ -552,10 +565,7 @@ export default function Details() {
           <div className="flex flex-wrap gap-2">
             {vendor.subcategories?.length > 0 ? (
               vendor.subcategories.map((sub, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200"
-                >
+                <span key={i} className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200">
                   {typeof sub === "object" ? sub.name : sub}
                 </span>
               ))
@@ -573,10 +583,7 @@ export default function Details() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {vendor.gallery?.length > 0 ? (
                   vendor.gallery.map((item, i) => (
-                    <div
-                      key={item.id || i}
-                      className="rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50"
-                    >
+                    <div key={item.id || i} className="rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50">
                       <img
                         src={item.image || item.url}
                         alt="gallery"
@@ -595,10 +602,7 @@ export default function Details() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {vendor.services?.length > 0 ? (
                   vendor.services.map((service, i) => (
-                    <div
-                      key={service.id || i}
-                      className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300"
-                    >
+                    <div key={service.id || i} className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300">
                       <div className="absolute top-3 left-3 z-10">
                         <span className="bg-orange-500 text-white text-[11px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-0.5">
                           ₹ {service.price}
@@ -612,9 +616,7 @@ export default function Details() {
                         />
                       </div>
                       <div className="p-3 text-center border-t border-gray-50">
-                        <h3 className="text-sm font-medium text-gray-700 truncate">
-                          {service.name}
-                        </h3>
+                        <h3 className="text-sm font-medium text-gray-700 truncate">{service.name}</h3>
                       </div>
                     </div>
                   ))
@@ -638,9 +640,7 @@ export default function Details() {
                   <Calendar className="text-orange-500" size={18} />
                   <div>
                     <p className="text-gray-400 text-[10px] uppercase font-bold">Days</p>
-                    <p className="text-gray-700 font-medium">
-                      {vendor.openingDays?.join(", ")}
-                    </p>
+                    <p className="text-gray-700 font-medium">{vendor.openingDays?.join(", ")}</p>
                   </div>
                 </div>
               </div>
