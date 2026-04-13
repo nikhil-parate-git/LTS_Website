@@ -422,7 +422,7 @@
 
 
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -452,6 +452,7 @@ function formatProfileCount(n) {
   return String(n);
 }
 
+// ─── FilterOverlay ────────────────────────────────────────────────────────────
 function FilterOverlay({ open, onClose }) {
   if (!open) return null;
   return (
@@ -475,7 +476,19 @@ function FilterOverlay({ open, onClose }) {
   );
 }
 
-function BusinessCard({ biz }) {
+// ─── BusinessCard — memoised; internal state only, no parent re-renders ────────
+const getTickColorClass = (color) => {
+  switch (color?.toLowerCase()) {
+    case "red":    return "text-red-500";
+    case "blue":   return "text-blue-500";
+    case "green":  return "text-green-500";
+    case "gold":
+    case "yellow": return "text-yellow-500";
+    default:       return "text-blue-500";
+  }
+};
+
+const BusinessCard = memo(function BusinessCard({ biz }) {
   const [showNumber, setShowNumber] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
   const navigate = useNavigate();
@@ -485,18 +498,7 @@ function BusinessCard({ biz }) {
   const visibleTags = showAllTags ? tags : tags.slice(0, VISIBLE);
   const hasMore = tags.length > VISIBLE;
 
-  const getTickColorClass = (color) => {
-    switch (color?.toLowerCase()) {
-      case "red":    return "text-red-500";
-      case "blue":   return "text-blue-500";
-      case "green":  return "text-green-500";
-      case "gold":
-      case "yellow": return "text-yellow-500";
-      default:       return "text-blue-500";
-    }
-  };
-
-  const handleBusinessClick = () => {
+  const handleBusinessClick = useCallback(() => {
     const { venId, companyName, vendorName, address } = biz;
     if (!venId) return;
     const slug = createSlug(companyName || vendorName || "business");
@@ -504,7 +506,7 @@ function BusinessCard({ biz }) {
       (typeof address === "object" ? address?.city : "") || "india"
     );
     navigate(`/business/${city}/${venId}/${slug}`);
-  };
+  }, [biz, navigate]);
 
   return (
     <article className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
@@ -616,8 +618,9 @@ function BusinessCard({ biz }) {
       </div>
     </article>
   );
-}
+});
 
+// ─── CategoryDetails ──────────────────────────────────────────────────────────
 export default function CategoryDetails() {
   const { city, subCateId, subcategorySlug } = useParams();
   const navigate = useNavigate();
@@ -627,7 +630,6 @@ export default function CategoryDetails() {
   const [sortBy, setSortBy] = useState("Relevance");
   const [resolving, setResolving] = useState(false);
 
-  // ✅ Refs to prevent double fetches
   const vendorFetchedRef = useRef(false);
   const resolutionStartedRef = useRef(false);
 
@@ -642,21 +644,16 @@ export default function CategoryDetails() {
     (state) => state.categories?.categories || []
   );
 
-  // ✅ Find subcategory by readable subCateId
   const matchedSubcat = subcategoriesFromStore.find(
     (sub) => sub.subCateId === subCateId
   );
-
-  // ✅ matchedSubcat.categoryName = parent category's MongoDB _id
   const parentCatMongoId = matchedSubcat?.categoryName || null;
-
-  // ✅ Find parent category in store by mongo _id → get readable cateId
   const parentCategory = categoriesFromStore.find(
     (cat) => (cat._id || cat.id) === parentCatMongoId
   );
   const cateId = parentCategory?.cateId || null;
 
-  // ✅ STEP 1: Resolve subcategory — runs only once per subCateId
+  // STEP 1: Resolve subcategory — only once
   useEffect(() => {
     if (matchedSubcat || resolutionStartedRef.current || !subCateId) return;
     resolutionStartedRef.current = true;
@@ -687,9 +684,10 @@ export default function CategoryDetails() {
     };
 
     resolve();
-  }, [subCateId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subCateId]); // intentionally narrow — refs guard against double-run
 
-  // ✅ STEP 2: Fetch vendors ONCE when both IDs are ready
+  // STEP 2: Fetch vendors once cateId + subCateId ready
   useEffect(() => {
     if (!cateId || !subCateId || vendorFetchedRef.current) return;
     vendorFetchedRef.current = true;
@@ -697,7 +695,10 @@ export default function CategoryDetails() {
     const cityName = city?.replace(/-/g, " ") || selectedCity || "";
     dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
     dispatch(fetchSubCategoryBanners({ cateId, subCateId }));
-  }, [cateId, subCateId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cateId, subCateId]); // city/selectedCity intentionally excluded to avoid re-fetch on location change
+
+  const closeFilter = useCallback(() => setFilterOpen(false), []);
 
   const pageTitle =
     subcategoryName ||
@@ -732,7 +733,6 @@ export default function CategoryDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ✅ SEO */}
       <SEO
         title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
         description={`Find top-rated ${pageTitle} providers in ${cityLabel}. Compare verified vendors, view ratings, and get instant quotes on LocalTradeStreet.`}
@@ -740,7 +740,7 @@ export default function CategoryDetails() {
         ogType="website"
       />
 
-      <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
+      <FilterOverlay open={filterOpen} onClose={closeFilter} />
       <Banner
         banners={banners}
         loading={bannerLoading}

@@ -316,7 +316,7 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -330,12 +330,13 @@ import {
 import Banner from "./Acbanner/Banner";
 import SubmitEnquiry from "./SubmitEnquiry";
 import Sidebar from "./MainSidebar";
-import { SEO } from "../../../hooks/useSEO"; // ✅ Helmet-based SEO
+import { SEO } from "../../../hooks/useSEO";
 
 const createSlug = (title = "") =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-function StarRating({ rating = 3.6 }) {
+// ─── StarRating — pure display, memoised ──────────────────────────────────────
+const StarRating = memo(function StarRating({ rating = 3.6 }) {
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -350,9 +351,10 @@ function StarRating({ rating = 3.6 }) {
       <span className="text-xs font-semibold text-gray-500 ml-1">{rating}</span>
     </div>
   );
-}
+});
 
-function SubCategoryCard({ item, onCardClick, index }) {
+// ─── SubCategoryCard — memoised to avoid re-render on parent state change ─────
+const SubCategoryCard = memo(function SubCategoryCard({ item, onCardClick, index }) {
   return (
     <div
       onClick={() => onCardClick(item)}
@@ -390,8 +392,9 @@ function SubCategoryCard({ item, onCardClick, index }) {
       </div>
     </div>
   );
-}
+});
 
+// ─── MobileSidebarDrawer ──────────────────────────────────────────────────────
 function MobileSidebarDrawer({ open, onClose, cityName }) {
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -421,6 +424,7 @@ function MobileSidebarDrawer({ open, onClose, cityName }) {
   );
 }
 
+// ─── SubCategory ──────────────────────────────────────────────────────────────
 export default function SubCategory() {
   const { cateId, slug } = useParams();
   const navigate = useNavigate();
@@ -433,18 +437,27 @@ export default function SubCategory() {
     useSelector((state) => state.subcategory);
   const { selectedCity } = useSelector((state) => state.location);
 
+  // Fetch only when cateId changes
   useEffect(() => {
     if (!cateId) return;
     dispatch(fetchSubcategories(cateId));
     dispatch(fetchCategoryBanners(cateId));
-  }, [cateId]);
+  }, [cateId, dispatch]);
 
-  const handleSubcategoryClick = (item) => {
-    const subCateId = item.subCateId;
-    const subSlug = createSlug(item.name || "");
-    const city = createSlug(selectedCity || "india");
-    navigate(`/service/${city}/${subCateId}/${subSlug}`);
-  };
+  // Stable callback — won't cause SubCategoryCard to re-render
+  const handleSubcategoryClick = useCallback(
+    (item) => {
+      const subCateId = item.subCateId;
+      const subSlug = createSlug(item.name || "");
+      const city = createSlug(selectedCity || "india");
+      navigate(`/service/${city}/${subCateId}/${subSlug}`);
+    },
+    [navigate, selectedCity]
+  );
+
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+  const openSidebar = useCallback(() => setSidebarOpen(true), []);
+  const closeModal = useCallback(() => setShowModal(false), []);
 
   const pageTitle = categoryName || slug?.replace(/-/g, " ") || "Services";
   const cityLabel = selectedCity || "India";
@@ -452,7 +465,6 @@ export default function SubCategory() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ✅ SEO with Helmet */}
       <SEO
         title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
         description={`Find trusted ${pageTitle} providers in ${cityLabel}. Browse all subcategories and connect with verified local businesses on LocalTradeStreet.`}
@@ -468,7 +480,7 @@ export default function SubCategory() {
       />
       <MobileSidebarDrawer
         open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        onClose={closeSidebar}
         cityName={selectedCity}
       />
 
@@ -502,7 +514,7 @@ export default function SubCategory() {
             </span>
             <StarRating rating={3.6} />
             <button
-              onClick={() => setSidebarOpen(true)}
+              onClick={openSidebar}
               className="lg:hidden flex items-center gap-1.5 text-xs bg-orange-500 text-white rounded-xl px-3 py-1.5 font-bold"
             >
               <Send size={12} /> Connect
@@ -565,7 +577,7 @@ export default function SubCategory() {
         </div>
       </div>
 
-      {showModal && <SubmitEnquiry onClose={() => setShowModal(false)} />}
+      {showModal && <SubmitEnquiry onClose={closeModal} />}
     </div>
   );
 }

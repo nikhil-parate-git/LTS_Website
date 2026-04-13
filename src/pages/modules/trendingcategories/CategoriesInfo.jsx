@@ -345,7 +345,7 @@
 // }
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -362,7 +362,8 @@ import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
 import { SEO } from "../../../hooks/useSEO";
 
-function BreadcrumbBar({ businessName, venId, city }) {
+// ─── BreadcrumbBar ─────────────────────────────────────────────────────────────
+const BreadcrumbBar = memo(function BreadcrumbBar({ businessName, venId, city }) {
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-2.5">
       <nav
@@ -408,9 +409,10 @@ function BreadcrumbBar({ businessName, venId, city }) {
       </nav>
     </div>
   );
-}
+});
 
-function Stars({ count = 5, size = 16, filled = 5 }) {
+// ─── Stars — pure display, memoised ──────────────────────────────────────────
+const Stars = memo(function Stars({ count = 5, size = 16, filled = 5 }) {
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
@@ -426,8 +428,9 @@ function Stars({ count = 5, size = 16, filled = 5 }) {
       ))}
     </div>
   );
-}
+});
 
+// ─── Details ──────────────────────────────────────────────────────────────────
 export default function Details() {
   const { city, venId, slug } = useParams();
   const dispatch = useDispatch();
@@ -436,12 +439,15 @@ export default function Details() {
   const { vendor, loading, error } = useSelector((state) => state.vendorDetail);
   const [rateModalOpen, setRateModalOpen] = useState(false);
 
-  // ✅ venId directly — /getbyidvendor/VEN-001
   useEffect(() => {
     if (!venId) return;
     dispatch(fetchVendorById(venId));
-    return () => dispatch(clearVendorDetail());
+    return () => { dispatch(clearVendorDetail()); };
   }, [dispatch, venId]);
+
+  const openRateModal = useCallback(() => setRateModalOpen(true), []);
+  const closeRateModal = useCallback(() => setRateModalOpen(false), []);
+  const handleShowNumber = useCallback(() => navigate("/submitenquiry"), [navigate]);
 
   const businessName = vendor?.companyName || slug?.replace(/-/g, " ") || "Business";
   const cityLabel = city?.replace(/-/g, " ") || "India";
@@ -482,7 +488,6 @@ export default function Details() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
-      {/* ✅ SEO */}
       <SEO
         title={`${businessName} – ${categoryLabel} in ${cityLabel} | LocalTradeStreet`}
         description={`${businessName} provides ${categoryLabel} services in ${cityLabel}. View gallery, services, timings, ratings and contact details on LocalTradeStreet.`}
@@ -493,11 +498,10 @@ export default function Details() {
 
       <InfoRateNow
         isOpen={rateModalOpen}
-        onClose={() => setRateModalOpen(false)}
+        onClose={closeRateModal}
         businessName={vendor.companyName}
       />
 
-      {/* ✅ Vendor's own banners */}
       <Banner
         banners={vendor.banners}
         pageTitle={vendor.companyName}
@@ -540,14 +544,14 @@ export default function Details() {
 
           <div className="flex flex-wrap gap-3 mt-4">
             <button
-              onClick={() => navigate("/submitenquiry")}
+              onClick={handleShowNumber}
               className="flex cursor-pointer items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all duration-300 min-w-[160px] bg-orange-500 text-white hover:bg-orange-600"
             >
               <Phone size={15} />
               <span>Show Number</span>
             </button>
             <button
-              onClick={() => setRateModalOpen(true)}
+              onClick={openRateModal}
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all"
             >
               <Star size={15} className="text-orange-400" /> Rate Now
