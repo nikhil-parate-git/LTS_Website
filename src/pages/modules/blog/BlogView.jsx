@@ -148,16 +148,16 @@ const BlogView = () => {
               </div>
             </div>
 
-            {/* Image */}
-            <div className="mb-8">
+            {/* Image - FIXED TO FULL WIDTH */}
+            <div className="mb-8 w-full overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
               {currentBlog.image ? (
                 <img
                   src={currentBlog.image}
                   alt={currentBlog.title}
-                  className="w-full h-64 md:h-[420px] object-cover rounded-2xl shadow-sm border border-gray-100"
+                  className="w-full h-[500px] block"
                 />
               ) : (
-                <div className="w-full h-48 rounded-2xl bg-gray-100 flex items-center justify-center">
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                   <span className="text-4xl opacity-20">📄</span>
                 </div>
               )}
@@ -175,7 +175,7 @@ const BlogView = () => {
               </p>
             )}
 
-            {/* ── DATE & TIME — EKDUM LAST ── */}
+            {/* DATE & TIME */}
             <div className="mt-10 pt-6 border-t border-gray-100 flex items-center gap-6 text-[11px] text-gray-400 font-semibold">
               <div className="flex items-center gap-1.5">
                 <svg

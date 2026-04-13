@@ -1,7 +1,3 @@
-/**
- * useSEO.js  —  place in src/hooks/useSEO.js
- * Zero external dependencies. Sets <title>, <meta>, <link rel="canonical">.
- */
 import { useEffect } from "react";
 
 export default function useSEO({ title, description, canonical, robots = "index, follow", ogImage } = {}) {

@@ -115,27 +115,25 @@
 // export const { clearVendorData } = vendorSlice.actions;
 // export default vendorSlice.reducer;
 
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-// ✅ API: /customer/vendor/getallvendor/CAT-010/SUBCAT-149?city=Nagpur
-// Uses readable cateId + subCateId directly — no MongoDB _id needed
 export const fetchVendorsByCatAndSubcat = createAsyncThunk(
   "vendorStore/fetchVendorsByCatAndSubcat",
   async ({ cateId, subCateId, city }, { rejectWithValue }) => {
     try {
       const params = city ? `?city=${city}` : "";
       const response = await axios.get(
-        `${BASE_URL}/customer/vendor/getallvendor/${cateId}/${subCateId}${params}`
+        `${BASE_URL}/customer/vendor/getallvendor/${cateId}/${subCateId}${params}`,
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch vendors");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch vendors",
+      );
     }
-  }
+  },
 );
 
 export const fetchSubCategoryBanners = createAsyncThunk(
@@ -143,16 +141,14 @@ export const fetchSubCategoryBanners = createAsyncThunk(
   async ({ cateId, subCateId }, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/banner/subcategory/${cateId}/${subCateId}`
+        `${BASE_URL}/customer/banner/subcategory/${cateId}/${subCateId}`,
       );
       return response.data;
     } catch (error) {
-      // ✅ Don't reject — just return empty banners silently
-      // Backend may not have this route yet
       return { data: [] };
     }
-  }
-)
+  },
+);
 const vendorStoreSlice = createSlice({
   name: "vendorStore",
   initialState: {
@@ -180,8 +176,11 @@ const vendorStoreSlice = createSlice({
       .addCase(fetchVendorsByCatAndSubcat.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload;
-        state.vendors = Array.isArray(payload?.data) ? payload.data
-          : Array.isArray(payload) ? payload : [];
+        state.vendors = Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload)
+            ? payload
+            : [];
         state.subcategoryName = payload?.subcategoryName || "";
       })
       .addCase(fetchVendorsByCatAndSubcat.rejected, (state, action) => {
@@ -194,8 +193,11 @@ const vendorStoreSlice = createSlice({
       .addCase(fetchSubCategoryBanners.fulfilled, (state, action) => {
         state.bannerLoading = false;
         const payload = action.payload;
-        state.banners = Array.isArray(payload?.data) ? payload.data
-          : Array.isArray(payload) ? payload : [];
+        state.banners = Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload)
+            ? payload
+            : [];
       })
       .addCase(fetchSubCategoryBanners.rejected, (state) => {
         state.bannerLoading = false;

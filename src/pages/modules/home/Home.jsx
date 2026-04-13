@@ -271,8 +271,6 @@
 //   );
 // }
 
-
-
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -289,7 +287,8 @@ import WhyChooseUs from "./WhyChooseUs";
 import CustomerReviews from "./CustomerReviews";
 
 const createSlug = (title = "") =>
-  title.toLowerCase()
+  title
+    .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
@@ -311,7 +310,10 @@ function HeroSlider() {
   const goTo = (index) => {
     if (animating || !banners?.length) return;
     setAnimating(true);
-    setTimeout(() => { setCurrent(index); setAnimating(false); }, 200);
+    setTimeout(() => {
+      setCurrent(index);
+      setAnimating(false);
+    }, 200);
   };
 
   const next = () => goTo((current + 1) % banners.length);
@@ -347,9 +349,16 @@ function HeroSlider() {
         <div
           key={s._id}
           className="absolute inset-0 w-full h-full transition-opacity duration-700"
-          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
+          style={{
+            opacity: i === current ? 1 : 0,
+            zIndex: i === current ? 1 : 0,
+          }}
         >
-          <img src={s.bannerImage} alt="Banner" className="w-full h-full object-cover" />
+          <img
+            src={s.bannerImage}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-black/55" />
         </div>
       ))}
@@ -368,10 +377,16 @@ function HeroSlider() {
 
       {banners?.length > 1 && (
         <>
-          <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1 sm:p-1.5 transition-all">
+          <button
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1 sm:p-1.5 transition-all"
+          >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-          <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1 sm:p-1.5 transition-all">
+          <button
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-orange-500 text-white rounded-full p-1 sm:p-1.5 transition-all"
+          >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </>
@@ -398,7 +413,9 @@ function HeroSlider() {
 
 function TrendingCategories() {
   const dispatch = useDispatch();
-  const { categories, loading, error } = useSelector((state) => state.categories);
+  const { categories, loading, error } = useSelector(
+    (state) => state.categories,
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -406,11 +423,7 @@ function TrendingCategories() {
   }, [dispatch]);
 
   const handleCategoryClick = (cat) => {
-    /*
-      ✅ cateId use karo (CAT-004) — MongoDB _id nahi
-      URL: /subcategory/CAT-004/electrician-service
-    */
-    const cateId = cat.cateId; // ✅ backend field: "cateId": "CAT-004"
+    const cateId = cat.cateId;
     const slug = createSlug(cat.name || "");
     navigate(`/subcategory/${cateId}/${slug}`);
   };

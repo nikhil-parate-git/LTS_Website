@@ -105,44 +105,42 @@
 // export const { clearSubcategories } = subcategorySlice.actions;
 // export default subcategorySlice.reducer;
 
+
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ cateId = readable "CAT-001" — passed directly to API
-// API response: { success, data: [{ id, subCateId, name, categoryName: mongoId, ... }] }
 export const fetchSubcategories = createAsyncThunk(
   "subcategory/fetchSubcategories",
   async (cateId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/subcategory/${cateId}`
+        `${BASE_URL}/customer/subcategory/${cateId}`,
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch subcategories"
+        error.response?.data?.message || "Failed to fetch subcategories",
       );
     }
-  }
+  },
 );
 
-// ✅ Banner uses cateId readable ID
-// If this route doesn't exist on backend, it silently returns empty
 export const fetchCategoryBanners = createAsyncThunk(
   "subcategory/fetchCategoryBanners",
   async (cateId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/banner/category/${cateId}`
+        `${BASE_URL}/customer/banner/category/${cateId}`,
       );
       return response.data;
     } catch (error) {
-      // ✅ Don't crash app if banner route missing — return empty silently
+      y;
       return { data: [] };
     }
-  }
+  },
 );
 
 const subcategorySlice = createSlice({

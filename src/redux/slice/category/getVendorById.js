@@ -51,25 +51,25 @@
 // export const { clearVendorDetail } = vendorDetailSlice.actions;
 // export default vendorDetailSlice.reducer;
 
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ API: /customer/vendor/getbyidvendor/VEN-001 — uses venId directly
 export const fetchVendorById = createAsyncThunk(
   "vendorDetail/fetchVendorById",
   async (venId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/vendor/getbyidvendor/${venId}`
+        `${BASE_URL}/customer/vendor/getbyidvendor/${venId}`,
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch vendor");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch vendor",
+      );
     }
-  }
+  },
 );
 
 const vendorDetailSlice = createSlice({
