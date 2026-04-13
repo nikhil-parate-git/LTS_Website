@@ -105,8 +105,6 @@
 // export const { clearSubcategories } = subcategorySlice.actions;
 // export default subcategorySlice.reducer;
 
-
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -117,30 +115,32 @@ export const fetchSubcategories = createAsyncThunk(
   async (cateId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/subcategory/${cateId}`,
+        `${BASE_URL}/customer/subcategory/${cateId}`
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch subcategories",
+        error.response?.data?.message || "Failed to fetch subcategories"
       );
     }
-  },
+  }
 );
 
+// ✅ FIXED: correct route from Postman Image 2
+// /customer/banner-management/getallbannercategory/CAT-001
 export const fetchCategoryBanners = createAsyncThunk(
   "subcategory/fetchCategoryBanners",
   async (cateId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/banner/category/${cateId}`,
+        `${BASE_URL}/customer/banner-management/getallbannercategory/${cateId}`
       );
       return response.data;
     } catch (error) {
-      y;
+      // Silent fail — banner not critical
       return { data: [] };
     }
-  },
+  }
 );
 
 const subcategorySlice = createSlice({
@@ -170,7 +170,6 @@ const subcategorySlice = createSlice({
       .addCase(fetchSubcategories.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload;
-        // API returns: { success: true, data: [...subcategories] }
         if (Array.isArray(payload?.data)) {
           state.subcategories = payload.data;
           state.categoryName = payload.categoryName || "";
@@ -184,7 +183,6 @@ const subcategorySlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Something went wrong";
       })
-
       .addCase(fetchCategoryBanners.pending, (state) => {
         state.bannerLoading = true;
       })

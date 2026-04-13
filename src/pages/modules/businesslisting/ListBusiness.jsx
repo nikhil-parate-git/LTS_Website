@@ -69,7 +69,20 @@ export default function ListBusiness() {
   const [imgLoaded, setImgLoaded] = useState(false);
   const sectionRef = useRef(null);
 
-  // Trigger stat counters when section comes into view
+  // SEO: Schema for Business Registration
+  const businessSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: "Business Directory Listing",
+    provider: {
+      "@type": "Organization",
+      name: "Local Trade Street",
+      url: "https://localtradestreet.com",
+    },
+    description:
+      "Register your local business for free on India's fastest-growing local search platform.",
+  };
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -86,15 +99,17 @@ export default function ListBusiness() {
       ref={sectionRef}
       className="relative bg-white overflow-hidden py-0"
       style={{ fontFamily: "'Poppins', sans-serif" }}
+      aria-labelledby="list-business-heading"
     >
-      <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet"
-      />
+      {/* Schema Injection */}
+      <script type="application/ld+json">
+        {JSON.stringify(businessSchema)}
+      </script>
 
       {/* Subtle background pattern */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        aria-hidden="true"
         style={{
           backgroundImage:
             "radial-gradient(circle, #f97316 1px, transparent 1px)",
@@ -102,36 +117,37 @@ export default function ListBusiness() {
         }}
       />
 
-      {/* Top orange accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" />
 
       <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-14 md:py-20">
-        {/* ── MAIN CONTENT ROW ── */}
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-          {/* LEFT: Image with floating badge */}
+          {/* LEFT: Image */}
           <div className="relative w-full md:w-[45%] shrink-0">
-            {/* Decorative orange shape behind image */}
-            <div className="absolute -top-4 -left-4 w-full h-full rounded-3xl bg-orange-100 z-0" />
+            <div
+              className="absolute -top-4 -left-4 w-full h-full rounded-3xl bg-orange-100 z-0"
+              aria-hidden="true"
+            />
 
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=85"
-                alt="Business owner listing on Local Trade Street"
+                alt="Business owner using Local Trade Street to get more customers"
                 onLoad={() => setImgLoaded(true)}
+                loading="lazy"
                 className={`w-full h-[340px] md:h-[420px] object-cover transition-all duration-700 ${imgLoaded ? "scale-100 blur-0" : "scale-105 blur-sm"}`}
               />
-              {/* Dark overlay at bottom */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
 
-            {/* Floating badge: FREE */}
             <div className="absolute -top-3 -right-3 z-20 bg-orange-500 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg rotate-12 tracking-widest uppercase">
-              100% Free
+              100% Free Listing
             </div>
 
-            {/* Floating stat card */}
             <div className="absolute -bottom-5 -right-4 z-20 bg-white rounded-2xl shadow-xl px-5 py-4 flex items-center gap-3 border border-orange-100">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">
+              <div
+                className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl"
+                aria-hidden="true"
+              >
                 📍
               </div>
               <div>
@@ -143,25 +159,27 @@ export default function ListBusiness() {
             </div>
           </div>
 
-          {/* RIGHT: Text + CTA */}
+          {/* RIGHT: Text content */}
           <div className="flex-1 mt-6 md:mt-0">
-            {/* Tag */}
             <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-500 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-orange-200 uppercase tracking-wider">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse inline-block" />
-              For Business Owners
+              Grow Your Business Online
             </span>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+            <h2
+              id="list-business-heading"
+              className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4"
+            >
               Get your business
               <br />
               in front of{" "}
               <span className="text-orange-500 relative inline-block">
                 local customers
-                {/* Underline squiggle */}
                 <svg
                   className="absolute -bottom-1 left-0 w-full"
                   viewBox="0 0 200 8"
                   fill="none"
+                  aria-hidden="true"
                 >
                   <path
                     d="M2 6 Q50 2 100 6 Q150 10 198 4"
@@ -176,16 +194,15 @@ export default function ListBusiness() {
             </h2>
 
             <p className="text-gray-500 text-base leading-relaxed mb-6 max-w-lg">
-              Maximize opportunities for shoppers to find you by listing your
-              business on{" "}
+              Boost your online visibility and get 3x more inquiries. List your
+              business on
               <span className="font-semibold text-gray-700">
                 {" "}
-                Local Trade Street
-              </span>{" "}
-              — India's fastest-growing local search platform.
+                Local Trade Street{" "}
+              </span>
+              today — India's fastest-growing hyperlocal business directory.
             </p>
 
-            {/* Perks grid */}
             <div className="grid grid-cols-2 gap-3 mb-8">
               {perks.map((p, i) => (
                 <div
@@ -199,7 +216,9 @@ export default function ListBusiness() {
                         : "border-gray-100 bg-gray-50 hover:border-orange-200"
                     }`}
                 >
-                  <div className="text-xl mb-1">{p.icon}</div>
+                  <div className="text-xl mb-1" aria-hidden="true">
+                    {p.icon}
+                  </div>
                   <div className="text-sm font-bold text-gray-800">
                     {p.title}
                   </div>
@@ -212,7 +231,6 @@ export default function ListBusiness() {
               ))}
             </div>
 
-            {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4">
               <button
                 onClick={() =>
@@ -222,22 +240,23 @@ export default function ListBusiness() {
                   )
                 }
                 className="group cursor-pointer relative bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 hover:scale-105 hover:shadow-orange-300 overflow-hidden"
+                aria-label="Register your business for free"
               >
                 <span className="relative z-10">List Your Business Free →</span>
-                <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12" />
+                <div
+                  className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12"
+                  aria-hidden="true"
+                />
               </button>
 
-              <button
-                // onClick={() => navigate("/how-it-works")}
-                className="text-sm font-semibold text-gray-500 hover:text-orange-500 transition-colors underline underline-offset-4"
-              >
+              <button className="text-sm font-semibold text-gray-500 hover:text-orange-500 transition-colors underline underline-offset-4">
                 How it works?
               </button>
             </div>
           </div>
         </div>
 
-        {/* ── STATS ROW ── */}
+        {/* STATS SECTION */}
         <div className="mt-16 md:mt-20 border-t border-dashed border-gray-200 pt-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((s, i) => (
@@ -247,7 +266,6 @@ export default function ListBusiness() {
         </div>
       </div>
 
-      {/* Bottom orange accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-red-500 via-orange-500 to-orange-400" />
     </section>
   );

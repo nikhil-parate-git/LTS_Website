@@ -353,20 +353,14 @@ import {
   clearVendorDetail,
 } from "../../../redux/slice/category/getVendorById";
 import {
-  MapPin,
-  Phone,
-  Star,
-  Share2,
-  ChevronRight,
-  Home,
-  Clock,
-  Calendar,
+  MapPin, Phone, Star, Share2, ChevronRight,
+  Home, Clock, Calendar,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
 import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
-import useSEO from "../../../hooks/useSEO";
+import { SEO } from "../../../hooks/useSEO";
 
 function BreadcrumbBar({ businessName, venId, city }) {
   return (
@@ -382,10 +376,7 @@ function BreadcrumbBar({ businessName, venId, city }) {
         >
           <ChevronRight size={18} className="rotate-180 text-gray-600" />
         </button>
-        <Link
-          to="/"
-          className="flex items-center gap-1 hover:text-orange-500 transition-colors"
-        >
+        <Link to="/" className="flex items-center gap-1 hover:text-orange-500 transition-colors">
           <Home size={13} />
           <span>Home</span>
         </Link>
@@ -445,25 +436,21 @@ export default function Details() {
   const { vendor, loading, error } = useSelector((state) => state.vendorDetail);
   const [rateModalOpen, setRateModalOpen] = useState(false);
 
-  // ✅ venId directly — backend supports /getbyidvendor/VEN-001
+  // ✅ venId directly — /getbyidvendor/VEN-001
   useEffect(() => {
     if (!venId) return;
     dispatch(fetchVendorById(venId));
     return () => dispatch(clearVendorDetail());
   }, [dispatch, venId]);
 
-  // SEO
-  const businessName =
-    vendor?.companyName || slug?.replace(/-/g, " ") || "Business";
+  const businessName = vendor?.companyName || slug?.replace(/-/g, " ") || "Business";
   const cityLabel = city?.replace(/-/g, " ") || "India";
   const categoryLabel = vendor?.category?.name || "Services";
 
-  useSEO({
-    title: `${businessName} – ${categoryLabel} in ${cityLabel} | LocalTradeStreet`,
-    description: `${businessName} provides ${categoryLabel} services in ${cityLabel}. View gallery, services, timings, and contact details on LocalTradeStreet.`,
-    canonical: `https://www.localtradestreet.com/business/${city}/${venId}/${slug}`,
-    ogImage: vendor?.image,
-  });
+  const addressText =
+    vendor?.address && Object.keys(vendor.address).length > 0
+      ? `${vendor.address.city || ""}, ${vendor.address.state || ""}`.replace(/^,\s*|,\s*$/, "")
+      : "Address not provided";
 
   if (loading) {
     return (
@@ -493,22 +480,29 @@ export default function Details() {
 
   if (!vendor) return null;
 
-  const addressText =
-    vendor.address && Object.keys(vendor.address).length > 0
-      ? `${vendor.address.city || ""}, ${vendor.address.state || ""}`.replace(
-          /^,\s*|,\s*$/,
-          "",
-        )
-      : "Address not provided";
-
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
+      {/* ✅ SEO */}
+      <SEO
+        title={`${businessName} – ${categoryLabel} in ${cityLabel} | LocalTradeStreet`}
+        description={`${businessName} provides ${categoryLabel} services in ${cityLabel}. View gallery, services, timings, ratings and contact details on LocalTradeStreet.`}
+        canonical={`https://www.localtradestreet.com/business/${city}/${venId}/${slug}`}
+        ogImage={vendor?.image}
+        ogType="business.business"
+      />
+
       <InfoRateNow
         isOpen={rateModalOpen}
         onClose={() => setRateModalOpen(false)}
         businessName={vendor.companyName}
       />
-      <Banner banners={vendor.banners} />
+
+      {/* ✅ Vendor's own banners */}
+      <Banner
+        banners={vendor.banners}
+        pageTitle={vendor.companyName}
+        selectedCity={city?.replace(/-/g, " ") || ""}
+      />
 
       <BreadcrumbBar
         businessName={vendor.companyName}
@@ -517,15 +511,13 @@ export default function Details() {
       />
 
       <div className="w-full mx-auto px-4 py-6 max-w-7xl">
+
         {/* Hero card */}
         <div className="bg-white rounded-xl shadow-sm p-5 mb-5 border border-gray-100">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-50">
               <img
-                src={
-                  vendor.image ||
-                  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80"
-                }
+                src={vendor.image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80"}
                 alt={`${vendor.companyName} logo`}
                 className="w-full h-full object-cover"
               />
@@ -537,9 +529,7 @@ export default function Details() {
               <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
                 <Stars filled={5} size={14} />
                 <span className="ml-1 text-gray-600 font-medium">5.0</span>
-                <span className="text-gray-400 ml-1">
-                  | {vendor.category?.name}
-                </span>
+                <span className="text-gray-400 ml-1">| {vendor.category?.name}</span>
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-500">
                 <MapPin size={14} className="text-orange-500" />
@@ -570,9 +560,7 @@ export default function Details() {
 
         {/* Subcategories */}
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm mb-5">
-          <h2 className="text-base font-semibold text-gray-800 mb-3">
-            Subcategories
-          </h2>
+          <h2 className="text-base font-semibold text-gray-800 mb-3">Subcategories</h2>
           <div className="flex flex-wrap gap-2">
             {vendor.subcategories?.length > 0 ? (
               vendor.subcategories.map((sub, i) => (
@@ -584,20 +572,17 @@ export default function Details() {
                 </span>
               ))
             ) : (
-              <p className="text-gray-400 text-sm">
-                No subcategories available
-              </p>
+              <p className="text-gray-400 text-sm">No subcategories available</p>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="md:col-span-2 space-y-5">
-            {/* Gallery */}
+
+            {/* Photo Gallery */}
             <section className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-800 mb-3">
-                Photo Gallery
-              </h2>
+              <h2 className="text-base font-semibold text-gray-800 mb-3">Photo Gallery</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {vendor.gallery?.length > 0 ? (
                   vendor.gallery.map((item, i) => (
@@ -614,16 +599,14 @@ export default function Details() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-sm py-4">Gallery is empty</p>
+                  <p className="text-gray-400 text-sm py-4 col-span-4">Gallery is empty</p>
                 )}
               </div>
             </section>
 
             {/* Services */}
             <section className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-800 mb-4">
-                Services
-              </h2>
+              <h2 className="text-base font-semibold text-gray-800 mb-4">Services</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {vendor.services?.length > 0 ? (
                   vendor.services.map((service, i) => (
@@ -638,10 +621,7 @@ export default function Details() {
                       </div>
                       <div className="aspect-[16/9] overflow-hidden bg-gray-100">
                         <img
-                          src={
-                            service.image ||
-                            "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=500&q=80"
-                          }
+                          src={service.image || "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=500&q=80"}
                           alt={service.name}
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -655,7 +635,7 @@ export default function Details() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-sm italic py-2">
+                  <p className="text-gray-400 text-sm italic py-2 col-span-3">
                     No services listed
                   </p>
                 )}
@@ -664,27 +644,19 @@ export default function Details() {
 
             {/* Business Info */}
             <section className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-              <h2 className="text-base font-semibold text-gray-800 mb-4">
-                Business Info
-              </h2>
+              <h2 className="text-base font-semibold text-gray-800 mb-4">Business Info</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Clock className="text-orange-500" size={18} />
+                  <Clock className="text-orange-500 shrink-0" size={18} />
                   <div>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">
-                      Timing
-                    </p>
-                    <p className="text-gray-700 font-medium">
-                      {vendor.openingTime || "N/A"}
-                    </p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">Timing</p>
+                    <p className="text-gray-700 font-medium">{vendor.openingTime || "N/A"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Calendar className="text-orange-500" size={18} />
+                  <Calendar className="text-orange-500 shrink-0" size={18} />
                   <div>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">
-                      Days
-                    </p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">Days</p>
                     <p className="text-gray-700 font-medium">
                       {vendor.openingDays?.join(", ") || "N/A"}
                     </p>
@@ -693,9 +665,11 @@ export default function Details() {
               </div>
             </section>
 
+            {/* FAQ */}
             {vendor && <Faq vendor={vendor} />}
           </div>
 
+          {/* Right sidebar */}
           <div className="space-y-4">
             <div className="sticky top-4">
               <CatgInfoRightSideBar vendorData={vendor} />

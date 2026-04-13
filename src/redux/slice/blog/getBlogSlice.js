@@ -211,7 +211,6 @@
 // export const { clearBlogs, clearBlogDetail } = blogSlice.actions;
 // export default blogSlice.reducer;
 
-
 // redux/slice/blog/getBlogSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -223,10 +222,6 @@ const DETAIL_URL = `${API_BASE_URL}/customer/blog/getbyid`;
 
 export const LIMIT = 5;
 
-// ─────────────────────────────────────────────────────────────
-// HELPER: slugify a string for SEO-friendly URLs
-// "Pest Control Service" → "pest-control-service"
-// ─────────────────────────────────────────────────────────────
 export const slugify = (text = "") =>
   text
     .toLowerCase()
@@ -235,29 +230,18 @@ export const slugify = (text = "") =>
     .replace(/[\s_]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-// ─────────────────────────────────────────────────────────────
-// fetchBlogsByCategory
-//
-// KEY FIX: Backend expects cateId (e.g. "CAT-001"), NOT mongo _id.
-// Each category from getAllCategorySlice has both:
-//   cat._id   → MongoDB ObjectId (used internally / for detail fetch)
-//   cat.cateId → readable ID like "CAT-001" (used for blog list API)
-//
-// We now receive `categories` (full objects) instead of just IDs,
-// so we can extract cateId for the API and keep _id for Redux state.
-// ─────────────────────────────────────────────────────────────
 export const fetchBlogsByCategory = createAsyncThunk(
   "blogs/fetchByCategory",
   async (
     { categoryMongoId, categoryObj, categories = [], page = 1 },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       if (categoryMongoId && categoryObj) {
         // SINGLE category selected — use cateId for API
         const apiId = categoryObj.cateId || categoryObj._id || categoryObj.id;
         const res = await axios.get(
-          `${BASE_URL}/${apiId}?page=${page}&limit=${LIMIT}`
+          `${BASE_URL}/${apiId}?page=${page}&limit=${LIMIT}`,
         );
         return {
           mode: "single",
@@ -278,7 +262,7 @@ export const fetchBlogsByCategory = createAsyncThunk(
         const grouped = results
           .map((r, i) => ({
             categoryMongoId: categories[i]._id || categories[i].id, // store mongo _id
-            categoryApiId: categories[i].cateId,                    // store cateId for future fetches
+            categoryApiId: categories[i].cateId, // store cateId for future fetches
             blogs: r.data?.data || [],
             pagination: r.data?.pagination || null,
           }))
@@ -293,22 +277,21 @@ export const fetchBlogsByCategory = createAsyncThunk(
       }
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to fetch blogs"
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch blogs",
       );
     }
-  }
+  },
 );
 
-// ─────────────────────────────────────────────────────────────
-// fetchMoreForCategory — uses categoryApiId (cateId)
-// ─────────────────────────────────────────────────────────────
 export const fetchMoreForCategory = createAsyncThunk(
   "blogs/fetchMoreForCategory",
   async ({ categoryMongoId, categoryApiId, page }, { rejectWithValue }) => {
     try {
       const apiId = categoryApiId || categoryMongoId; // fallback
       const res = await axios.get(
-        `${BASE_URL}/${apiId}?page=${page}&limit=${LIMIT}`
+        `${BASE_URL}/${apiId}?page=${page}&limit=${LIMIT}`,
       );
       return {
         categoryMongoId,
@@ -318,12 +301,9 @@ export const fetchMoreForCategory = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
-  }
+  },
 );
 
-// ─────────────────────────────────────────────────────────────
-// fetchBlogById — uses categoryApiId + blogId (e.g. "BLOG-001")
-// ─────────────────────────────────────────────────────────────
 export const fetchBlogById = createAsyncThunk(
   "blogs/fetchById",
   async ({ categoryApiId, blogId }, { rejectWithValue }) => {
@@ -332,10 +312,12 @@ export const fetchBlogById = createAsyncThunk(
       return res.data.data || null;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to fetch blog"
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch blog",
       );
     }
-  }
+  },
 );
 
 const blogSlice = createSlice({
@@ -404,11 +386,11 @@ const blogSlice = createSlice({
         const { categoryMongoId, blogs, pagination } = action.payload;
         state.categoryLoadingMap[categoryMongoId] = false;
         const idx = state.groupedByCategory.findIndex(
-          (g) => g.categoryMongoId === categoryMongoId
+          (g) => g.categoryMongoId === categoryMongoId,
         );
         if (idx !== -1) {
           const existingIds = new Set(
-            state.groupedByCategory[idx].blogs.map((b) => b._id)
+            state.groupedByCategory[idx].blogs.map((b) => b._id),
           );
           state.groupedByCategory[idx].blogs = [
             ...state.groupedByCategory[idx].blogs,

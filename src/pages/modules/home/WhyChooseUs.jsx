@@ -70,7 +70,7 @@ function ReasonCard({ reason, index }) {
   const { Icon } = reason;
 
   return (
-    <div
+    <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="why-card rounded-2xl transition-all duration-300 cursor-default"
@@ -89,12 +89,19 @@ function ReasonCard({ reason, index }) {
     >
       <div
         className="icon-wrap rounded-xl flex items-center justify-center mb-4 transition-transform duration-300"
+        aria-hidden="true"
         style={{
           background: `${reason.iconColor}18`,
-          transform: hovered ? "scale(1.12) rotate(-4deg)" : "scale(1) rotate(0deg)",
+          transform: hovered
+            ? "scale(1.12) rotate(-4deg)"
+            : "scale(1) rotate(0deg)",
         }}
       >
-        <Icon strokeWidth={1.8} style={{ color: reason.iconColor }} className="why-icon" />
+        <Icon
+          strokeWidth={1.8}
+          style={{ color: reason.iconColor }}
+          className="why-icon"
+        />
       </div>
 
       <h3
@@ -104,26 +111,37 @@ function ReasonCard({ reason, index }) {
         {reason.title}
       </h3>
 
-      <p className="why-card-desc text-gray-500 leading-relaxed">{reason.desc}</p>
-    </div>
+      <p className="why-card-desc text-gray-500 leading-relaxed">
+        {reason.desc}
+      </p>
+    </article>
   );
 }
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-12 px-4 bg-white" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
+    <section
+      className="py-12 px-4 bg-white"
+      style={{ fontFamily: "'Poppins', sans-serif" }}
+      aria-labelledby="why-choose-us-title"
+    >
       <div className="max-w-screen-xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="why-title font-extrabold text-gray-900 leading-tight">
+          <h2
+            id="why-choose-us-title"
+            className="why-title font-extrabold text-gray-900 leading-tight"
+          >
             Why Choose <span className="text-orange-500">LocalTradeStreet</span>
             <br className="hidden md:block" /> for Your Local Business Needs?
           </h2>
           <p className="why-subtitle text-gray-400 mt-4 max-w-xl mx-auto leading-relaxed">
-            India's most trusted local search platform — connecting millions of customers with verified businesses across 500+ cities.
+            India's most trusted local search platform — connecting millions of
+            customers with verified businesses across 500+ cities.
           </p>
-          <div className="mt-5 flex items-center justify-center gap-1.5">
+          <div
+            className="mt-5 flex items-center justify-center gap-1.5"
+            aria-hidden="true"
+          >
             <div className="h-1 w-8 rounded-full bg-orange-200" />
             <div className="h-1 w-16 rounded-full bg-orange-500" />
             <div className="h-1 w-8 rounded-full bg-orange-200" />
@@ -143,7 +161,6 @@ export default function WhyChooseUs() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Desktop (>1024px): 3 columns */
         .why-title       { font-size: 2rem; }
         .why-subtitle    { font-size: 0.95rem; }
         .why-grid        { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -153,13 +170,11 @@ export default function WhyChooseUs() {
         .why-card-title  { font-size: 1rem; }
         .why-card-desc   { font-size: 0.875rem; }
 
-        /* Tablet (<=1024px): 2 columns */
         @media (max-width: 1024px) {
           .why-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
           .why-card { padding: 24px; }
         }
 
-        /* Small Tablet (<=768px): 2 columns, compact */
         @media (max-width: 768px) {
           .why-title      { font-size: 1.6rem; }
           .why-subtitle   { font-size: 0.875rem; }
@@ -171,7 +186,6 @@ export default function WhyChooseUs() {
           .why-card-desc  { font-size: 0.8rem; }
         }
 
-        /* Mobile (<=480px): 1 column */
         @media (max-width: 480px) {
           .why-title { font-size: 1.4rem; }
           .why-grid  { grid-template-columns: 1fr; gap: 14px; }
@@ -180,7 +194,6 @@ export default function WhyChooseUs() {
           .why-icon  { width: 20px; height: 20px; }
         }
 
-        /* Small Mobile (<=360px) */
         @media (max-width: 360px) {
           .why-title      { font-size: 1.25rem; }
           .why-card       { padding: 16px; }

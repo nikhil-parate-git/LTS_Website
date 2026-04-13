@@ -70,13 +70,17 @@ const reviews = [
 
 function StarRating({ rating }) {
   return (
-    <div className="flex gap-0.5">
+    <div
+      className="flex gap-0.5"
+      aria-label={`Rating: ${rating} out of 5 stars`}
+    >
       {[1, 2, 3, 4, 5].map((s) => (
         <Star
           key={s}
           className="rev-star"
           fill={s <= rating ? "#f97316" : "#e5e7eb"}
           stroke="none"
+          aria-hidden="true"
         />
       ))}
     </div>
@@ -108,6 +112,24 @@ export default function CustomerReviews() {
 
   const total = reviews.length;
   const maxIndex = Math.max(0, total - visibleCount);
+
+  // SEO: Schema Markup for Google
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "LocalTradeStreet Services",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: reviews.length.toString(),
+    },
+    review: reviews.map((r) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: r.name },
+      reviewBody: r.text,
+      reviewRating: { "@type": "Rating", ratingValue: r.rating.toString() },
+    })),
+  };
 
   const goTo = (index, dir) => {
     if (isAnimating) return;
@@ -147,30 +169,35 @@ export default function CustomerReviews() {
     <section
       className="rev-section py-16 px-4 bg-gray-50 overflow-hidden"
       style={{ fontFamily: "'Poppins', sans-serif" }}
+      aria-labelledby="reviews-heading"
     >
-      <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
+      {/* Schema Script Injection */}
+      <script type="application/ld+json">{JSON.stringify(schemaMarkup)}</script>
 
       <div className="max-w-screen-xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="rev-title font-extrabold text-gray-900 leading-tight">
+          <h2
+            id="reviews-heading"
+            className="rev-title font-extrabold text-gray-900 leading-tight"
+          >
             What Our <span className="text-orange-500">Customers Say</span>
           </h2>
           <p className="rev-subtitle text-gray-400 mt-3 max-w-2xl mx-auto leading-relaxed">
             Don't just take our word for it. See what satisfied customers have
             to say about LocalTradeStreet.
           </p>
-          <div className="mt-5 flex items-center justify-center gap-1.5">
+          <div
+            className="mt-5 flex items-center justify-center gap-1.5"
+            aria-hidden="true"
+          >
             <div className="h-1 w-8 rounded-full bg-orange-200" />
             <div className="h-1 w-16 rounded-full bg-orange-500" />
             <div className="h-1 w-8 rounded-full bg-orange-200" />
           </div>
         </div>
 
-        {/* Cards */}
+        {/* Cards Wrapper - Semantic 'div' or 'ul' is fine here */}
         <div
           className="rev-grid"
           style={{
@@ -183,7 +210,7 @@ export default function CustomerReviews() {
           }}
         >
           {visible.map((review) => (
-            <div
+            <article
               key={review.id}
               className="rev-card bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 relative overflow-hidden"
             >
@@ -196,14 +223,16 @@ export default function CustomerReviews() {
                 fill="#ffedd5"
                 stroke="#fed7aa"
                 strokeWidth={0.5}
+                aria-hidden="true"
               />
 
               {/* Avatar + name */}
               <div className="flex items-center gap-3">
                 <img
                   src={review.avatar}
-                  alt={review.name}
+                  alt={`Reviewer ${review.name}`}
                   className="rev-avatar rounded-full border-2 border-orange-200 object-cover shrink-0"
+                  loading="lazy"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=ffedd5&color=f97316&bold=true&size=96`;
@@ -223,10 +252,12 @@ export default function CustomerReviews() {
               <StarRating rating={review.rating} />
 
               {/* Text */}
-              <p className="text-gray-500 text-sm leading-relaxed line-clamp-4 flex-1">
-                {review.text}
-              </p>
-            </div>
+              <blockquote className="m-0">
+                <p className="text-gray-500 text-sm leading-relaxed line-clamp-4 flex-1">
+                  "{review.text}"
+                </p>
+              </blockquote>
+            </article>
           ))}
         </div>
 
@@ -238,15 +269,19 @@ export default function CustomerReviews() {
               startAuto();
             }}
             disabled={current === 0}
+            aria-label="Previous Review"
             className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 disabled:opacity-30 transition-all duration-200"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center" role="tablist">
             {Array.from({ length: maxIndex + 1 }).map((_, i) => (
               <button
                 key={i}
+                role="tab"
+                aria-selected={i === current}
+                aria-label={`Go to slide ${i + 1}`}
                 onClick={() => {
                   goTo(i, i > current ? "left" : "right");
                   startAuto();
@@ -267,6 +302,7 @@ export default function CustomerReviews() {
               startAuto();
             }}
             disabled={current >= maxIndex}
+            aria-label="Next Review"
             className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 disabled:opacity-30 transition-all duration-200"
           >
             <ChevronRight className="w-4 h-4" />
@@ -275,30 +311,30 @@ export default function CustomerReviews() {
       </div>
 
       <style>{`
-        .rev-title    { font-size: 2rem; }
-        .rev-subtitle { font-size: 0.95rem; }
-        .rev-grid     { display: grid; gap: 20px; }
-        .rev-card     { padding: 24px; }
-        .rev-avatar   { width: 52px; height: 52px; }
-        .rev-star     { width: 16px; height: 16px; }
+        .rev-title     { font-size: 2rem; }
+        .rev-subtitle  { font-size: 0.95rem; }
+        .rev-grid      { display: grid; gap: 20px; }
+        .rev-card      { padding: 24px; }
+        .rev-avatar    { width: 52px; height: 52px; }
+        .rev-star      { width: 16px; height: 16px; }
 
         @media (max-width: 1024px) {
           .rev-title { font-size: 1.75rem; }
           .rev-grid  { gap: 16px; }
         }
         @media (max-width: 768px) {
-          .rev-title    { font-size: 1.5rem; }
-          .rev-subtitle { font-size: 0.875rem; }
-          .rev-card     { padding: 18px; }
-          .rev-avatar   { width: 44px; height: 44px; }
-          .rev-grid     { gap: 14px; }
+          .rev-title     { font-size: 1.5rem; }
+          .rev-subtitle  { font-size: 0.875rem; }
+          .rev-card      { padding: 18px; }
+          .rev-avatar    { width: 44px; height: 44px; }
+          .rev-grid      { gap: 14px; }
         }
         @media (max-width: 540px) {
-          .rev-title  { font-size: 1.35rem; }
-          .rev-card   { padding: 16px; }
-          .rev-avatar { width: 40px; height: 40px; }
-          .rev-grid   { gap: 12px; }
-          .rev-star   { width: 14px; height: 14px; }
+          .rev-title   { font-size: 1.35rem; }
+          .rev-card    { padding: 16px; }
+          .rev-avatar  { width: 40px; height: 40px; }
+          .rev-grid    { gap: 12px; }
+          .rev-star    { width: 14px; height: 14px; }
         }
         @media (max-width: 360px) {
           .rev-title { font-size: 1.2rem; }

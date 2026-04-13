@@ -112,43 +112,47 @@
 //   },
 // });
 
-// export const { clearVendorData } = vendorSlice.actions;
-// export default vendorSlice.reducer;
+
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const fetchVendorsByCatAndSubcat = createAsyncThunk(
   "vendorStore/fetchVendorsByCatAndSubcat",
   async ({ cateId, subCateId, city }, { rejectWithValue }) => {
     try {
-      const params = city ? `?city=${city}` : "";
+      const params = city ? `?city=${encodeURIComponent(city)}` : "";
       const response = await axios.get(
-        `${BASE_URL}/customer/vendor/getallvendor/${cateId}/${subCateId}${params}`,
+        `${BASE_URL}/customer/vendor/getallvendor/${cateId}/${subCateId}${params}`
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch vendors",
+        error.response?.data?.message || "Failed to fetch vendors"
       );
     }
-  },
+  }
 );
 
+// ✅ FIXED: correct route from Postman Image 1
+// /customer/banner-management/getallbannersubcategory/CAT-001/SUBCAT-001
 export const fetchSubCategoryBanners = createAsyncThunk(
   "vendorStore/fetchSubCategoryBanners",
-  async ({ cateId, subCateId }, { rejectWithValue }) => {
+  async ({ cateId, subCateId }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/customer/banner/subcategory/${cateId}/${subCateId}`,
+        `${BASE_URL}/customer/banner-management/getallbannersubcategory/${cateId}/${subCateId}`
       );
       return response.data;
     } catch (error) {
+      // Silent fail — banner not critical
       return { data: [] };
     }
-  },
+  }
 );
+
 const vendorStoreSlice = createSlice({
   name: "vendorStore",
   initialState: {
@@ -165,7 +169,7 @@ const vendorStoreSlice = createSlice({
       state.banners = [];
       state.error = null;
       state.subcategoryName = "";
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -179,25 +183,23 @@ const vendorStoreSlice = createSlice({
         state.vendors = Array.isArray(payload?.data)
           ? payload.data
           : Array.isArray(payload)
-            ? payload
-            : [];
+          ? payload
+          : [];
         state.subcategoryName = payload?.subcategoryName || "";
       })
       .addCase(fetchVendorsByCatAndSubcat.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Something went wrong";
+        state.vendors = [];
       })
       .addCase(fetchSubCategoryBanners.pending, (state) => {
         state.bannerLoading = true;
       })
       .addCase(fetchSubCategoryBanners.fulfilled, (state, action) => {
         state.bannerLoading = false;
-        const payload = action.payload;
-        state.banners = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload)
-            ? payload
-            : [];
+        state.banners = Array.isArray(action.payload?.data)
+          ? action.payload.data
+          : [];
       })
       .addCase(fetchSubCategoryBanners.rejected, (state) => {
         state.bannerLoading = false;

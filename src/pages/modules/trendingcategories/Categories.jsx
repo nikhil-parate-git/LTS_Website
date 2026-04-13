@@ -313,6 +313,9 @@
 
 
 
+
+
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -327,7 +330,7 @@ import {
 import Banner from "./Acbanner/Banner";
 import SubmitEnquiry from "./SubmitEnquiry";
 import Sidebar from "./MainSidebar";
-import useSEO from "../../../hooks/useSEO";
+import { SEO } from "../../../hooks/useSEO"; // ✅ Helmet-based SEO
 
 const createSlug = (title = "") =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -358,21 +361,14 @@ function SubCategoryCard({ item, onCardClick, index }) {
       role="button"
       aria-label={`View ${item.name} services`}
     >
-      <div
-        className="w-full overflow-hidden relative bg-gray-100"
-        style={{ aspectRatio: "3/2" }}
-      >
+      <div className="w-full overflow-hidden relative bg-gray-100" style={{ aspectRatio: "3/2" }}>
         <img
-          src={
-            item.image ||
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80"
-          }
+          src={item.image || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80"}
           alt={item.name}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           onError={(e) => {
-            e.target.src =
-              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80";
+            e.target.src = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80";
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
@@ -399,9 +395,7 @@ function SubCategoryCard({ item, onCardClick, index }) {
 function MobileSidebarDrawer({ open, onClose, cityName }) {
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   if (!open) return null;
@@ -439,13 +433,11 @@ export default function SubCategory() {
     useSelector((state) => state.subcategory);
   const { selectedCity } = useSelector((state) => state.location);
 
-  // ✅ Single useEffect, both calls together, cateId ref to avoid stale closure
-  // ✅ Only runs when cateId actually changes — no double fetch
   useEffect(() => {
     if (!cateId) return;
     dispatch(fetchSubcategories(cateId));
     dispatch(fetchCategoryBanners(cateId));
-  }, [cateId]); // ✅ dispatch is stable, no need in deps
+  }, [cateId]);
 
   const handleSubcategoryClick = (item) => {
     const subCateId = item.subCateId;
@@ -456,19 +448,22 @@ export default function SubCategory() {
 
   const pageTitle = categoryName || slug?.replace(/-/g, " ") || "Services";
   const cityLabel = selectedCity || "India";
-
-  useSEO({
-    title: `${pageTitle} in ${cityLabel} | LocalTradeStreet`,
-    description: `Find trusted ${pageTitle} providers in ${cityLabel}. Browse all subcategories and connect with verified local businesses on LocalTradeStreet.`,
-    canonical: `https://www.localtradestreet.com/subcategory/${cateId}/${slug}`,
-  });
+  const canonical = `https://www.localtradestreet.com/subcategory/${cateId}/${slug}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* ✅ SEO with Helmet */}
+      <SEO
+        title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
+        description={`Find trusted ${pageTitle} providers in ${cityLabel}. Browse all subcategories and connect with verified local businesses on LocalTradeStreet.`}
+        canonical={canonical}
+        ogType="website"
+      />
+
       <Banner
         banners={banners}
         loading={bannerLoading}
-        pageTitle=""
+        pageTitle={pageTitle}
         selectedCity={selectedCity}
       />
       <MobileSidebarDrawer
@@ -486,10 +481,7 @@ export default function SubCategory() {
               aria-label="Go back"
               className="group flex items-center justify-center w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 hover:bg-orange-500 hover:border-orange-500 transition-all duration-200"
             >
-              <ArrowLeft
-                size={15}
-                className="text-orange-500 group-hover:text-white"
-              />
+              <ArrowLeft size={15} className="text-orange-500 group-hover:text-white" />
             </button>
             <button
               onClick={() => navigate("/")}
@@ -506,10 +498,7 @@ export default function SubCategory() {
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg">
               <Grid3X3 size={12} className="text-gray-400" />
-              <span className="font-semibold text-gray-700">
-                {subcategories?.length || 0}
-              </span>{" "}
-              services
+              <span className="font-semibold text-gray-700">{subcategories?.length || 0}</span> services
             </span>
             <StarRating rating={3.6} />
             <button
@@ -528,9 +517,7 @@ export default function SubCategory() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-32">
                 <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
-                <p className="mt-4 text-gray-500 font-medium">
-                  Fetching services...
-                </p>
+                <p className="mt-4 text-gray-500 font-medium">Fetching services...</p>
               </div>
             ) : error ? (
               <div className="text-center py-24 bg-red-50 rounded-3xl border border-red-100">
@@ -545,11 +532,7 @@ export default function SubCategory() {
             ) : subcategories && subcategories.length > 0 ? (
               <>
                 <p className="text-sm text-gray-500 mb-6">
-                  Showing{" "}
-                  <span className="font-semibold text-gray-800">
-                    {subcategories.length}
-                  </span>{" "}
-                  services
+                  Showing <span className="font-semibold text-gray-800">{subcategories.length}</span> services
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {subcategories.map((item, index) => (
@@ -564,12 +547,8 @@ export default function SubCategory() {
               </>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl mb-4">
-                  🔍
-                </div>
-                <h3 className="text-lg font-bold text-gray-700">
-                  No services found
-                </h3>
+                <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl mb-4">🔍</div>
+                <h3 className="text-lg font-bold text-gray-700">No services found</h3>
                 <button
                   onClick={() => navigate(-1)}
                   className="mt-6 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"

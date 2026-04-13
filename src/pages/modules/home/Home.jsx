@@ -255,26 +255,17 @@
 //   );
 // }
 
-// // ─── HOME PAGE ────────────────────────────────────────────────────
-// export default function Home() {
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       <HeroSlider />
-//       <TrendingCategories />
-//       <ListBusiness />
-//       <TopRatedBusinesses />
-//       <TopCategoryCity />
-//       <CustomerReviews />
-//       <WhyChooseUs />
-//       {/* <StickyFooter /> */}
-//     </div>
-//   );
-// }
 
-import { useState, useEffect, useRef, useMemo } from "react";
+
+
+
+import { useState, useEffect, useRef, } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+
+// SEO Component Import
+import { SEO } from "../../../hooks/useSEO";
 
 import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import { fetchHomeBanners } from "../../../redux/slice/homecityBanner/getAllCityBanner";
@@ -475,6 +466,13 @@ function TrendingCategories() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Implementation */}
+      <SEO 
+        title="Local Trade Street | India's No. 1 Local Search Engine"
+        description="Find the best local services, businesses, and trending categories near you on Local Trade Street. Search for top-rated businesses easily."
+        canonical={window.location.href}
+      />
+      
       <HeroSlider />
       <TrendingCategories />
       <ListBusiness />

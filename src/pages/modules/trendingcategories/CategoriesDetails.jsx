@@ -420,6 +420,8 @@
 //   );
 // }
 
+
+
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -430,30 +432,16 @@ import {
 import { fetchSubcategories } from "../../../redux/slice/category/getAllSubcategorySlice";
 import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import {
-  ChevronRight,
-  MapPin,
-  Phone,
-  Eye,
-  ChevronDown,
-  SlidersHorizontal,
-  BadgeCheck,
-  Clock,
-  Zap,
-  Share2,
-  ArrowLeft,
-  X,
-  Search,
-  Loader2,
+  ChevronRight, MapPin, Phone, Eye, ChevronDown,
+  SlidersHorizontal, BadgeCheck, Clock,
+  Zap, Share2, ArrowLeft, X, Search, Loader2,
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
-import useSEO from "../../../hooks/useSEO";
+import { SEO } from "../../../hooks/useSEO";
 
 const createSlug = (title = "") =>
-  title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 function formatProfileCount(n) {
   if (!n) return "0";
@@ -472,8 +460,8 @@ function FilterOverlay({ open, onClose }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto p-5">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold">Filters</h2>
-            <X onClick={onClose} className="cursor-pointer" size={18} />
+            <h2 className="font-bold text-gray-800">Filters</h2>
+            <X onClick={onClose} className="cursor-pointer text-gray-500" size={18} />
           </div>
           <button
             onClick={onClose}
@@ -499,17 +487,12 @@ function BusinessCard({ biz }) {
 
   const getTickColorClass = (color) => {
     switch (color?.toLowerCase()) {
-      case "red":
-        return "text-red-500";
-      case "blue":
-        return "text-blue-500";
-      case "green":
-        return "text-green-500";
+      case "red":    return "text-red-500";
+      case "blue":   return "text-blue-500";
+      case "green":  return "text-green-500";
       case "gold":
-      case "yellow":
-        return "text-yellow-500";
-      default:
-        return "text-blue-500";
+      case "yellow": return "text-yellow-500";
+      default:       return "text-blue-500";
     }
   };
 
@@ -518,7 +501,7 @@ function BusinessCard({ biz }) {
     if (!venId) return;
     const slug = createSlug(companyName || vendorName || "business");
     const city = createSlug(
-      (typeof address === "object" ? address?.city : "") || "india",
+      (typeof address === "object" ? address?.city : "") || "india"
     );
     navigate(`/business/${city}/${venId}/${slug}`);
   };
@@ -531,10 +514,7 @@ function BusinessCard({ biz }) {
           style={{ minHeight: "180px" }}
         >
           <img
-            src={
-              biz.image ||
-              "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"
-            }
+            src={biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"}
             alt={biz.name}
             loading="lazy"
             className="w-full h-full object-cover"
@@ -560,10 +540,7 @@ function BusinessCard({ biz }) {
                 />
               )}
             </div>
-            <button
-              aria-label="Share"
-              className="text-gray-400 hover:text-orange-500"
-            >
+            <button aria-label="Share" className="text-gray-400 hover:text-orange-500">
               <Share2 size={14} />
             </button>
           </div>
@@ -659,15 +636,15 @@ export default function CategoryDetails() {
   const { selectedCity } = useSelector((state) => state.location);
 
   const subcategoriesFromStore = useSelector(
-    (state) => state.subcategory?.subcategories || [],
+    (state) => state.subcategory?.subcategories || []
   );
   const categoriesFromStore = useSelector(
-    (state) => state.categories?.categories || [],
+    (state) => state.categories?.categories || []
   );
 
   // ✅ Find subcategory by readable subCateId
   const matchedSubcat = subcategoriesFromStore.find(
-    (sub) => sub.subCateId === subCateId,
+    (sub) => sub.subCateId === subCateId
   );
 
   // ✅ matchedSubcat.categoryName = parent category's MongoDB _id
@@ -675,40 +652,34 @@ export default function CategoryDetails() {
 
   // ✅ Find parent category in store by mongo _id → get readable cateId
   const parentCategory = categoriesFromStore.find(
-    (cat) => (cat._id || cat.id) === parentCatMongoId,
+    (cat) => (cat._id || cat.id) === parentCatMongoId
   );
   const cateId = parentCategory?.cateId || null;
 
-  // ✅ STEP 1: Resolve subcategory from store or fetch if empty (direct URL)
+  // ✅ STEP 1: Resolve subcategory — runs only once per subCateId
   useEffect(() => {
-    // Already resolved or resolution started — skip
     if (matchedSubcat || resolutionStartedRef.current || !subCateId) return;
     resolutionStartedRef.current = true;
 
     const resolve = async () => {
       setResolving(true);
       try {
-        // Get categories (from store or fetch once)
         let cats = categoriesFromStore;
         if (cats.length === 0) {
           const result = await dispatch(fetchAllCategories());
           cats = Array.isArray(result?.payload?.data)
             ? result.payload.data
             : Array.isArray(result?.payload)
-              ? result.payload
-              : [];
+            ? result.payload
+            : [];
         }
-
-        // Loop each category, fetch its subcategories until our subCateId is found
         for (const cat of cats) {
-          const catId = cat.cateId; // ✅ readable ID for API
+          const catId = cat.cateId;
           if (!catId) continue;
           const res = await dispatch(fetchSubcategories(catId));
-          const subs = Array.isArray(res?.payload?.data)
-            ? res.payload.data
-            : [];
+          const subs = Array.isArray(res?.payload?.data) ? res.payload.data : [];
           const found = subs.find((s) => s.subCateId === subCateId);
-          if (found) break; // ✅ Found — stop looping
+          if (found) break;
         }
       } finally {
         setResolving(false);
@@ -716,21 +687,17 @@ export default function CategoryDetails() {
     };
 
     resolve();
-  }, [subCateId]); // ✅ Only runs once per subCateId
+  }, [subCateId]);
 
-  // ✅ STEP 2: Fetch vendors ONCE when both readable IDs are available
+  // ✅ STEP 2: Fetch vendors ONCE when both IDs are ready
   useEffect(() => {
     if (!cateId || !subCateId || vendorFetchedRef.current) return;
     vendorFetchedRef.current = true;
 
     const cityName = city?.replace(/-/g, " ") || selectedCity || "";
-
-    // ✅ Single vendor fetch — correct readable IDs
     dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
-
-    // ✅ Banner fetch — silently ignores 404 (handled in slice)
     dispatch(fetchSubCategoryBanners({ cateId, subCateId }));
-  }, [cateId, subCateId]); // ✅ Fires exactly once when IDs resolve
+  }, [cateId, subCateId]);
 
   const pageTitle =
     subcategoryName ||
@@ -738,12 +705,6 @@ export default function CategoryDetails() {
     subcategorySlug?.replace(/-/g, " ") ||
     "Services";
   const cityLabel = city?.replace(/-/g, " ") || selectedCity || "India";
-
-  useSEO({
-    title: `${pageTitle} in ${cityLabel} | LocalTradeStreet`,
-    description: `Find top-rated ${pageTitle} providers in ${cityLabel}. Compare verified vendors, view ratings, and get instant quotes on LocalTradeStreet.`,
-    canonical: `https://www.localtradestreet.com/service/${city}/${subCateId}/${subcategorySlug}`,
-  });
 
   if (resolving) {
     return (
@@ -757,9 +718,7 @@ export default function CategoryDetails() {
   if (!matchedSubcat && !resolving) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">
-          🔍
-        </div>
+        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">🔍</div>
         <h3 className="text-lg font-bold text-gray-700">Service not found</h3>
         <button
           onClick={() => navigate(-1)}
@@ -773,21 +732,26 @@ export default function CategoryDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* ✅ SEO */}
+      <SEO
+        title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
+        description={`Find top-rated ${pageTitle} providers in ${cityLabel}. Compare verified vendors, view ratings, and get instant quotes on LocalTradeStreet.`}
+        canonical={`https://www.localtradestreet.com/service/${city}/${subCateId}/${subcategorySlug}`}
+        ogType="website"
+      />
+
       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
       <Banner
         banners={banners}
         loading={bannerLoading}
-        pageTitle=""
+        pageTitle={pageTitle}
         selectedCity={selectedCity}
       />
 
       {/* Sticky toolbar */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between flex-wrap gap-3">
-          <nav
-            className="flex items-center gap-1.5 text-xs"
-            aria-label="Breadcrumb"
-          >
+          <nav className="flex items-center gap-1.5 text-xs" aria-label="Breadcrumb">
             <button
               onClick={() => navigate(-1)}
               aria-label="Go back"
@@ -819,10 +783,7 @@ export default function CategoryDetails() {
                 <option>Relevance</option>
                 <option>High Rating</option>
               </select>
-              <ChevronDown
-                size={12}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
-              />
+              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
             <button
               onClick={() => setFilterOpen(true)}
@@ -850,15 +811,8 @@ export default function CategoryDetails() {
                 <button
                   onClick={() => {
                     vendorFetchedRef.current = false;
-                    const cityName =
-                      city?.replace(/-/g, " ") || selectedCity || "";
-                    dispatch(
-                      fetchVendorsByCatAndSubcat({
-                        cateId,
-                        subCateId,
-                        city: cityName,
-                      }),
-                    );
+                    const cityName = city?.replace(/-/g, " ") || selectedCity || "";
+                    dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
                   }}
                   className="mt-4 text-orange-500 underline font-semibold"
                 >
@@ -869,9 +823,7 @@ export default function CategoryDetails() {
               <>
                 <p className="text-sm text-gray-500 mb-4">
                   Showing{" "}
-                  <span className="font-semibold text-gray-800">
-                    {vendors.length}
-                  </span>{" "}
+                  <span className="font-semibold text-gray-800">{vendors.length}</span>{" "}
                   vendors
                 </p>
                 <div className="space-y-4">
@@ -880,13 +832,8 @@ export default function CategoryDetails() {
                       key={biz.id || biz._id}
                       biz={{
                         ...biz,
-                        name:
-                          biz.companyName ||
-                          biz.vendorName ||
-                          "Unknown Business",
-                        image:
-                          biz.image ||
-                          "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
+                        name: biz.companyName || biz.vendorName || "Unknown Business",
+                        image: biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
                         address:
                           typeof biz.address === "object" &&
                           Object.keys(biz.address).length === 0
@@ -907,9 +854,7 @@ export default function CategoryDetails() {
             ) : (
               <div className="bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-200">
                 <Search size={40} className="mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-500 font-medium">
-                  No vendors found for this selection.
-                </p>
+                <p className="text-gray-500 font-medium">No vendors found for this selection.</p>
                 <button
                   onClick={() => navigate(-1)}
                   className="mt-4 text-orange-500 font-bold hover:underline"
