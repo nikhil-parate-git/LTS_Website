@@ -25,8 +25,6 @@ const getInitials = (name = "") =>
     .toUpperCase()
     .slice(0, 2);
 
-// ── Skeleton components ──────────────────────────────────────────────────────
-
 const SkeletonCard = () => (
   <div className="flex-shrink-0 w-72 bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse">
     <div className="h-44 bg-gray-200" />
@@ -65,8 +63,6 @@ const SkeletonGridCard = () => (
     </div>
   </div>
 );
-
-// ── Blog Card (used in horizontal carousels) ─────────────────────────────────
 
 const BlogCard = ({ blogItem, index }) => {
   const navigate = useNavigate();
@@ -154,8 +150,6 @@ const BlogCard = ({ blogItem, index }) => {
     </article>
   );
 };
-
-// ── Category Row (horizontal scroll) ────────────────────────────────────────
 
 const CategoryRow = ({ group, categoryName, isLoadingMore, onLoadMore }) => {
   const rowRef = useRef(null);
@@ -272,8 +266,6 @@ const CategoryRow = ({ group, categoryName, isLoadingMore, onLoadMore }) => {
   );
 };
 
-// ── Pagination ───────────────────────────────────────────────────────────────
-
 const Pagination = ({ pagination, onPageChange }) => {
   if (!pagination || pagination.totalPages <= 1) return null;
   const { page, totalPages, total } = pagination;
@@ -365,8 +357,6 @@ const Pagination = ({ pagination, onPageChange }) => {
     </div>
   );
 };
-
-// ── Main Blog Component ──────────────────────────────────────────────────────
 
 const Blog = () => {
   const dispatch = useDispatch();

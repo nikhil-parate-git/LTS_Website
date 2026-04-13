@@ -420,8 +420,7 @@
 //   );
 // }
 
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -431,15 +430,28 @@ import {
 import { fetchSubcategories } from "../../../redux/slice/category/getAllSubcategorySlice";
 import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import {
-  ChevronRight, MapPin, Phone, Eye, ChevronDown,
-  SlidersHorizontal, BadgeCheck, Star, Clock,
-  Zap, Share2, ArrowLeft, X, Search, Loader2,
+  ChevronRight,
+  MapPin,
+  Phone,
+  Eye,
+  ChevronDown,
+  SlidersHorizontal,
+  BadgeCheck,
+  Clock,
+  Zap,
+  Share2,
+  ArrowLeft,
+  X,
+  Search,
+  Loader2,
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
+import useSEO from "../../../hooks/useSEO";
 
 const createSlug = (title = "") =>
-  title.toLowerCase()
+  title
+    .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
@@ -463,7 +475,12 @@ function FilterOverlay({ open, onClose }) {
             <h2 className="font-bold">Filters</h2>
             <X onClick={onClose} className="cursor-pointer" size={18} />
           </div>
-          <button onClick={onClose} className="w-full bg-orange-500 text-white py-3 rounded-xl font-bold">Apply</button>
+          <button
+            onClick={onClose}
+            className="w-full bg-orange-500 text-white py-3 rounded-xl font-bold"
+          >
+            Apply
+          </button>
         </div>
       </div>
     </>
@@ -482,32 +499,44 @@ function BusinessCard({ biz }) {
 
   const getTickColorClass = (color) => {
     switch (color?.toLowerCase()) {
-      case "red": return "text-red-500";
-      case "blue": return "text-blue-500";
-      case "green": return "text-green-500";
-      case "gold": case "yellow": return "text-yellow-500";
-      default: return "text-blue-500";
+      case "red":
+        return "text-red-500";
+      case "blue":
+        return "text-blue-500";
+      case "green":
+        return "text-green-500";
+      case "gold":
+      case "yellow":
+        return "text-yellow-500";
+      default:
+        return "text-blue-500";
     }
   };
 
   const handleBusinessClick = () => {
-    const venId = biz.venId;
-    const slug = createSlug(biz.companyName || biz.name || "business");
-    const city = createSlug(
-      (typeof biz.address === "object" ? biz.address?.city : "") || "india"
-    );
+    const { venId, companyName, vendorName, address } = biz;
     if (!venId) return;
-    if (biz._id) sessionStorage.setItem(`vendor_${venId}`, biz._id);
+    const slug = createSlug(companyName || vendorName || "business");
+    const city = createSlug(
+      (typeof address === "object" ? address?.city : "") || "india",
+    );
     navigate(`/business/${city}/${venId}/${slug}`);
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
+    <article className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-xl transition-all duration-300">
       <div className="flex flex-col sm:flex-row">
-        <div className="relative w-full sm:w-56 shrink-0" style={{ minHeight: "180px" }}>
+        <div
+          className="relative w-full sm:w-56 shrink-0"
+          style={{ minHeight: "180px" }}
+        >
           <img
-            src={biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"}
+            src={
+              biz.image ||
+              "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"
+            }
             alt={biz.name}
+            loading="lazy"
             className="w-full h-full object-cover"
           />
           <div className="absolute top-2.5 right-2.5 bg-white/90 text-gray-700 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
@@ -525,29 +554,45 @@ function BusinessCard({ biz }) {
                 {biz.name}
               </h3>
               {biz.verified && (
-                <BadgeCheck size={18} className={`${getTickColorClass(biz.tickColour)} shrink-0`} />
+                <BadgeCheck
+                  size={18}
+                  className={`${getTickColorClass(biz.tickColour)} shrink-0`}
+                />
               )}
             </div>
-            <button className="text-gray-400 hover:text-orange-500"><Share2 size={14} /></button>
+            <button
+              aria-label="Share"
+              className="text-gray-400 hover:text-orange-500"
+            >
+              <Share2 size={14} />
+            </button>
           </div>
 
           <div className="flex items-start gap-1.5 text-gray-500 text-xs">
             <MapPin size={12} className="mt-0.5 text-orange-500 shrink-0" />
             <span>
               {typeof biz.address === "object"
-                ? biz.address.city || "Location not provided"
-                : biz.address}
+                ? biz.address?.city || "Location not provided"
+                : biz.address || "Location not provided"}
             </span>
           </div>
 
           <div className="flex flex-wrap gap-1.5 items-center">
             {visibleTags.map((tag, i) => (
-              <span key={i} className="text-[11px] border border-gray-300 text-gray-700 px-2.5 py-1 rounded-full bg-white font-medium">
+              <span
+                key={i}
+                className="text-[11px] border border-gray-300 text-gray-700 px-2.5 py-1 rounded-full bg-white font-medium"
+              >
                 {typeof tag === "object" ? tag.name : tag}
               </span>
             ))}
             {!showAllTags && hasMore && (
-              <button onClick={() => setShowAllTags(true)} className="text-[11px] text-blue-600 font-semibold hover:underline">See More</button>
+              <button
+                onClick={() => setShowAllTags(true)}
+                className="text-[11px] text-blue-600 font-semibold hover:underline"
+              >
+                See More
+              </button>
             )}
           </div>
 
@@ -561,13 +606,21 @@ function BusinessCard({ biz }) {
               <button
                 onClick={() => setShowNumber(!showNumber)}
                 className={`flex items-center justify-center gap-2 min-w-[140px] px-4 py-3 rounded-lg text-xs font-bold transition-all duration-300 ${
-                  showNumber ? "bg-green-600 text-white shadow-inner" : "bg-orange-500 text-white hover:bg-orange-600"
+                  showNumber
+                    ? "bg-green-600 text-white shadow-inner"
+                    : "bg-orange-500 text-white hover:bg-orange-600"
                 }`}
               >
                 {showNumber ? (
-                  <><Phone size={13} className="animate-pulse" /><span className="tracking-wider">{biz.phone}</span></>
+                  <>
+                    <Phone size={13} className="animate-pulse" />
+                    <span className="tracking-wider">{biz.phone || "N/A"}</span>
+                  </>
                 ) : (
-                  <><Phone size={13} /><span>Show Number</span></>
+                  <>
+                    <Phone size={13} />
+                    <span>Show Number</span>
+                  </>
                 )}
               </button>
               <button className="flex items-center gap-1 border border-orange-400 text-orange-500 text-xs font-bold px-3 py-3 rounded-lg">
@@ -576,23 +629,19 @@ function BusinessCard({ biz }) {
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-400">
               <Eye size={12} className="text-orange-400" />
-              <span className="font-semibold text-gray-600">{formatProfileCount(biz.profileCount || 0)}</span>
+              <span className="font-semibold text-gray-600">
+                {formatProfileCount(biz.profileCount || 0)}
+              </span>
               <span>Views</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
 export default function CategoryDetails() {
-  /*
-    URL: /service/:city/:subCateId/:subcategorySlug
-    city     = nagpur (SEO)
-    subCateId = SUBCAT-002 (readable ID)
-    ✅ subCateId se subcategory store me match → MongoDB _id → API call
-  */
   const { city, subCateId, subcategorySlug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -601,65 +650,102 @@ export default function CategoryDetails() {
   const [sortBy, setSortBy] = useState("Relevance");
   const [resolving, setResolving] = useState(false);
 
+  // ✅ Refs to prevent double fetches
+  const vendorFetchedRef = useRef(false);
+  const resolutionStartedRef = useRef(false);
+
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
   const { selectedCity } = useSelector((state) => state.location);
 
-  const categoriesFromStore = useSelector((state) => state.categories?.categories || []);
-  const subcategoriesFromStore = useSelector((state) => state.subcategory?.subcategories || []);
-  const subcatLoading = useSelector((state) => state.subcategory?.loading || false);
-
-  // ✅ subCateId → MongoDB _id
-  const matchedSubcat = subcategoriesFromStore.find(
-    (sub) => sub.subCateId === subCateId
+  const subcategoriesFromStore = useSelector(
+    (state) => state.subcategory?.subcategories || [],
   );
-  const subcategoryMongoId = matchedSubcat?._id || matchedSubcat?.id || null;
-  const catMongoId = matchedSubcat?.categoryName || null;
+  const categoriesFromStore = useSelector(
+    (state) => state.categories?.categories || [],
+  );
 
-  // ✅ Direct URL fix: store empty ho to fetch karo
+  // ✅ Find subcategory by readable subCateId
+  const matchedSubcat = subcategoriesFromStore.find(
+    (sub) => sub.subCateId === subCateId,
+  );
+
+  // ✅ matchedSubcat.categoryName = parent category's MongoDB _id
+  const parentCatMongoId = matchedSubcat?.categoryName || null;
+
+  // ✅ Find parent category in store by mongo _id → get readable cateId
+  const parentCategory = categoriesFromStore.find(
+    (cat) => (cat._id || cat.id) === parentCatMongoId,
+  );
+  const cateId = parentCategory?.cateId || null;
+
+  // ✅ STEP 1: Resolve subcategory from store or fetch if empty (direct URL)
   useEffect(() => {
-    const loadData = async () => {
-      if (subcategoriesFromStore.length > 0) return;
+    // Already resolved or resolution started — skip
+    if (matchedSubcat || resolutionStartedRef.current || !subCateId) return;
+    resolutionStartedRef.current = true;
 
+    const resolve = async () => {
       setResolving(true);
+      try {
+        // Get categories (from store or fetch once)
+        let cats = categoriesFromStore;
+        if (cats.length === 0) {
+          const result = await dispatch(fetchAllCategories());
+          cats = Array.isArray(result?.payload?.data)
+            ? result.payload.data
+            : Array.isArray(result?.payload)
+              ? result.payload
+              : [];
+        }
 
-      let cats = categoriesFromStore;
-      if (cats.length === 0) {
-        const result = await dispatch(fetchAllCategories());
-        cats = result?.payload?.data || [];
+        // Loop each category, fetch its subcategories until our subCateId is found
+        for (const cat of cats) {
+          const catId = cat.cateId; // ✅ readable ID for API
+          if (!catId) continue;
+          const res = await dispatch(fetchSubcategories(catId));
+          const subs = Array.isArray(res?.payload?.data)
+            ? res.payload.data
+            : [];
+          const found = subs.find((s) => s.subCateId === subCateId);
+          if (found) break; // ✅ Found — stop looping
+        }
+      } finally {
+        setResolving(false);
       }
-
-      // ✅ Sari categories ki subcategories fetch karo jab tak match mile
-      for (const cat of cats) {
-        const catId = cat._id || cat.id;
-        const res = await dispatch(fetchSubcategories(catId));
-        const subs = res?.payload?.data || [];
-        const found = subs.find((s) => s.subCateId === subCateId);
-        if (found) break;
-      }
-
-      setResolving(false);
     };
 
-    loadData();
-  }, [subCateId]);
+    resolve();
+  }, [subCateId]); // ✅ Only runs once per subCateId
 
-  // ✅ Vendors fetch
+  // ✅ STEP 2: Fetch vendors ONCE when both readable IDs are available
   useEffect(() => {
-    if (catMongoId && subcategoryMongoId) {
-      dispatch(fetchVendorsByCatAndSubcat({
-        categoryId: catMongoId,
-        subcategoryId: subcategoryMongoId,
-        city: city?.replace(/-/g, " ") || selectedCity,
-      }));
-      dispatch(fetchSubCategoryBanners({
-        categoryId: catMongoId,
-        subcategoryId: subcategoryMongoId,
-      }));
-    }
-  }, [dispatch, catMongoId, subcategoryMongoId, city, selectedCity]);
+    if (!cateId || !subCateId || vendorFetchedRef.current) return;
+    vendorFetchedRef.current = true;
 
-  if (resolving || subcatLoading) {
+    const cityName = city?.replace(/-/g, " ") || selectedCity || "";
+
+    // ✅ Single vendor fetch — correct readable IDs
+    dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
+
+    // ✅ Banner fetch — silently ignores 404 (handled in slice)
+    dispatch(fetchSubCategoryBanners({ cateId, subCateId }));
+  }, [cateId, subCateId]); // ✅ Fires exactly once when IDs resolve
+
+  const pageTitle =
+    subcategoryName ||
+    matchedSubcat?.name ||
+    subcategorySlug?.replace(/-/g, " ") ||
+    "Services";
+  const cityLabel = city?.replace(/-/g, " ") || selectedCity || "India";
+
+  useSEO({
+    title: `${pageTitle} in ${cityLabel} | LocalTradeStreet`,
+    description: `Find top-rated ${pageTitle} providers in ${cityLabel}. Compare verified vendors, view ratings, and get instant quotes on LocalTradeStreet.`,
+    canonical: `https://www.localtradestreet.com/service/${city}/${subCateId}/${subcategorySlug}`,
+  });
+
+  if (resolving) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
         <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
@@ -668,12 +754,19 @@ export default function CategoryDetails() {
     );
   }
 
-  if (!matchedSubcat && subcategoriesFromStore.length > 0 && !resolving) {
+  if (!matchedSubcat && !resolving) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">🔍</div>
+        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">
+          🔍
+        </div>
         <h3 className="text-lg font-bold text-gray-700">Service not found</h3>
-        <button onClick={() => navigate(-1)} className="mt-2 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold">← Go Back</button>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-2 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
+        >
+          ← Go Back
+        </button>
       </div>
     );
   }
@@ -681,16 +774,28 @@ export default function CategoryDetails() {
   return (
     <div className="min-h-screen bg-gray-50">
       <FilterOverlay open={filterOpen} onClose={() => setFilterOpen(false)} />
-      <Banner banners={banners} loading={bannerLoading} pageTitle="" selectedCity={selectedCity} />
+      <Banner
+        banners={banners}
+        loading={bannerLoading}
+        pageTitle=""
+        selectedCity={selectedCity}
+      />
 
+      {/* Sticky toolbar */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-1.5 text-xs">
-            <button onClick={() => navigate(-1)} className="w-7 h-7 border rounded-lg flex items-center justify-center hover:border-orange-400">
+          <nav
+            className="flex items-center gap-1.5 text-xs"
+            aria-label="Breadcrumb"
+          >
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              className="w-7 h-7 border rounded-lg flex items-center justify-center hover:border-orange-400"
+            >
               <ArrowLeft size={19} />
             </button>
             <ChevronRight size={13} className="text-gray-300" />
-            {/* ✅ City bhi dikhao breadcrumb me */}
             {city && (
               <>
                 <span className="text-gray-400 text-xs capitalize">
@@ -699,10 +804,10 @@ export default function CategoryDetails() {
                 <ChevronRight size={13} className="text-gray-300" />
               </>
             )}
-            <span className="bg-emerald-500 text-white text-base px-3 py-1 rounded-lg font-semibold truncate">
-              {subcategoryName || subcategorySlug?.replace(/-/g, " ") || "Vendors"}
+            <span className="bg-emerald-500 text-white text-sm px-3 py-1 rounded-lg font-semibold truncate capitalize">
+              {pageTitle}
             </span>
-          </div>
+          </nav>
 
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -714,9 +819,15 @@ export default function CategoryDetails() {
                 <option>Relevance</option>
                 <option>High Rating</option>
               </select>
-              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
+              <ChevronDown
+                size={12}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
+              />
             </div>
-            <button onClick={() => setFilterOpen(true)} className="flex items-center gap-1.5 text-xs border rounded-xl px-3 py-1.5 font-medium">
+            <button
+              onClick={() => setFilterOpen(true)}
+              className="flex items-center gap-1.5 text-xs border rounded-xl px-3 py-1.5 font-medium"
+            >
               <SlidersHorizontal size={12} /> Filters
             </button>
           </div>
@@ -725,57 +836,95 @@ export default function CategoryDetails() {
 
       <div className="max-w-screen-xl mx-auto px-4 py-6">
         <div className="flex gap-6">
-          <div className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500" />
-                <p className="mt-4 text-gray-500 font-medium">Fetching best vendors for you...</p>
+                <p className="mt-4 text-gray-500 font-medium">
+                  Fetching best vendors for you...
+                </p>
               </div>
             ) : error ? (
               <div className="text-center py-10 text-red-500">
                 <p>Oops! Something went wrong while loading vendors.</p>
+                <button
+                  onClick={() => {
+                    vendorFetchedRef.current = false;
+                    const cityName =
+                      city?.replace(/-/g, " ") || selectedCity || "";
+                    dispatch(
+                      fetchVendorsByCatAndSubcat({
+                        cateId,
+                        subCateId,
+                        city: cityName,
+                      }),
+                    );
+                  }}
+                  className="mt-4 text-orange-500 underline font-semibold"
+                >
+                  Try Again
+                </button>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {vendors.length > 0 ? (
-                  vendors.map((biz) => (
+            ) : vendors.length > 0 ? (
+              <>
+                <p className="text-sm text-gray-500 mb-4">
+                  Showing{" "}
+                  <span className="font-semibold text-gray-800">
+                    {vendors.length}
+                  </span>{" "}
+                  vendors
+                </p>
+                <div className="space-y-4">
+                  {vendors.map((biz) => (
                     <BusinessCard
                       key={biz.id || biz._id}
                       biz={{
                         ...biz,
-                        _id: biz._id || biz.id,
-                        venId: biz.venId,
-                        name: biz.companyName || "Unknown Business",
-                        image: biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
+                        name:
+                          biz.companyName ||
+                          biz.vendorName ||
+                          "Unknown Business",
+                        image:
+                          biz.image ||
+                          "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
                         address:
-                          typeof biz.address === "object" && Object.keys(biz.address).length === 0
+                          typeof biz.address === "object" &&
+                          Object.keys(biz.address).length === 0
                             ? "Address not available"
                             : biz.address,
                         since: biz.yearOfEstablishment || "2024",
                         subcategories: biz.subcategories || [],
-                        verified: biz.isVerified || true,
+                        verified: biz.isVerified ?? true,
                         profileCount: biz.views || 0,
                         hours: biz.openingTime || "9:00 AM - 9:00 PM",
+                        phone: biz.phone || biz.mobile || "N/A",
                         tickColour: biz.tickColour,
                       }}
                     />
-                  ))
-                ) : (
-                  <div className="bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-200">
-                    <Search size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 font-medium">No vendors found for this selection.</p>
-                    <button onClick={() => navigate(-1)} className="mt-4 text-orange-500 font-bold hover:underline">Go Back</button>
-                  </div>
-                )}
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-200">
+                <Search size={40} className="mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-500 font-medium">
+                  No vendors found for this selection.
+                </p>
+                <button
+                  onClick={() => navigate(-1)}
+                  className="mt-4 text-orange-500 font-bold hover:underline"
+                >
+                  Go Back
+                </button>
               </div>
             )}
-          </div>
+          </main>
 
           <div className="hidden lg:block w-72 shrink-0">
             <Sidebar
-              categoryId={catMongoId}
+              categoryId={cateId}
               cityName={selectedCity}
-              subcategoryId={subcategoryMongoId}
+              subcategoryId={subCateId}
             />
           </div>
         </div>

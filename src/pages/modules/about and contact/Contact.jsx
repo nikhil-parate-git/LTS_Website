@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  MapPin,
-  Search,
   Home,
   ChevronRight,
   ArrowLeft,
   Phone,
   Mail,
-  Clock,
+  MapPin,
+  MessageSquare,
 } from "lucide-react";
 
 const Contact = () => {
   const navigate = useNavigate();
-  const [locationVal, setLocationVal] = useState("");
-  const [searchVal, setSearchVal] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -28,79 +25,45 @@ const Contact = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validation: Mobile & Pincode should only contain numbers
+    if ((name === "mobile" || name === "pincode") && value !== "" && !/^\d+$/.test(value)) return;
+    
     if (name === "message" && value.length > maxChars) return;
+    
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Aap yahan API call add kar sakte hain
     console.log("Form submitted:", form);
+    alert("Shukriya! Hum jald hi aapse contact karenge.");
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      {/* ── HEADER ── */}
-      <div className="sticky top-0 z-10 bg-white ">
-        {/* <div className="w-full px-4 md:px-8 py-4">
-          <h1 className="text-center text-xl md:text-2xl font-bold text-gray-800 mb-4">
-            Find Top Businesses In Your City
-          </h1>
-          <div className="flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto">
-            <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-2 flex-1 gap-2">
-              <MapPin size={16} className="text-gray-400 shrink-0" />
-              <input
-                type="text"
-                placeholder="Enter Location"
-                value={locationVal}
-                onChange={(e) => setLocationVal(e.target.value)}
-                className="text-sm text-gray-600 outline-none w-full bg-transparent placeholder-gray-400"
-              />
-            </div>
-            <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-2 flex-1 gap-2">
-              <Search size={16} className="text-gray-400 shrink-0" />
-              <input
-                type="text"
-                placeholder="What are you looking for?"
-                value={searchVal}
-                onChange={(e) => setSearchVal(e.target.value)}
-                className="text-sm text-gray-600 outline-none w-full bg-transparent placeholder-gray-400"
-              />
-              <button className="bg-red-500 hover:bg-red-600 text-white rounded p-1 shrink-0">
-                <Search size={14} />
-              </button>
-            </div>
-          </div>
-        </div> */}
-      </div>
-
+    <div className="min-h-screen bg-white font-sans selection:bg-orange-100">
+      
       {/* ── BREADCRUMB ── */}
-      <div className="w-full mt-5  border-gray-200 px-4 md:px-8">
+      <div className="w-full mt-5 px-4 md:px-12 lg:px-24">
         <div className="flex items-center py-2.5">
-          <div className="flex items-center gap-3 overflow-x-auto">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-gray-50 hover:bg-orange-500 hover:border-orange-500 hover:text-white text-gray-500 transition-all duration-200 shrink-0 shadow-sm"
+              className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-white hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-sm"
             >
-              <ArrowLeft size={13} />
+              <ArrowLeft size={14} />
             </button>
-
             <div className="w-px h-5 bg-gray-200 shrink-0" />
-
             <button
               onClick={() => navigate("/")}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-orange-500 transition-colors duration-200 shrink-0 group"
+              className="flex items-center gap-1.5 text-gray-400 hover:text-orange-500 transition-colors group"
             >
-              <Home
-                size={13}
-                className="group-hover:text-orange-500 transition-colors"
-              />
+              <Home size={14} />
               <span className="text-xs font-medium hidden sm:inline">Home</span>
             </button>
-
-            <ChevronRight size={13} className="text-gray-300 shrink-0" />
-
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 rounded-full px-3 py-1 whitespace-nowrap shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+            <ChevronRight size={13} className="text-gray-300" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 rounded-full px-3 py-1">
               Contact Us
             </span>
           </div>
@@ -108,34 +71,53 @@ const Contact = () => {
       </div>
 
       {/* ── BODY ── */}
-      <div className="w-full px-4 md:px-10 lg:px-20 py-10">
-        <div className="flex flex-col lg:flex-row gap-10 items-start">
-          {/* ── LEFT — Get In Touch ── */}
+      <div className="w-full px-4 md:px-12 lg:px-24 py-10">
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          
+          {/* ── LEFT — Contact Info ── */}
           <div className="w-full lg:w-2/5">
-            <h2 className="text-lg font-bold text-gray-800 mb-1">
-              Get In Touch
+            <span className="text-orange-500 font-bold text-xs uppercase tracking-widest">Connect with us</span>
+            <h2 className="text-3xl font-black text-gray-900 mt-2 mb-4">
+              Get In <span className="text-orange-500">Touch</span>
             </h2>
-            <div className="w-10 h-1 bg-orange-500 rounded-full mb-4" />
-            <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              Have a question, feedback, or need assistance? We're here to help!
-              Whether you're a business owner looking to list your services or a
-              customer seeking support, our team is ready to assist you. Reach
-              out to us and we'll get back to you as soon as possible.
+            <p className="text-sm text-gray-500 leading-relaxed mb-8">
+              Koi sawal ya feedback? Humari team hamesha aapki madad ke liye taiyar hai. 
+              Business listing ho ya support, niche diye gaye tariko se humse judiye.
             </p>
 
-            {/* Contact Info Cards */}
-            <div className="space-y-3">
-             
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-100">
-                <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
-                  <Mail size={15} className="text-white" />
+            {/* Info Cards */}
+            <div className="space-y-4">
+              {/* Email Card */}
+              <a href="mailto:support@localtradestreet.com" className="flex items-center gap-4 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 hover:shadow-md transition-all group">
+                <div className="w-11 h-11 rounded-xl bg-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Mail size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-gray-400 font-medium">
-                    Email Us
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    support@localtradestreet.com
+                  <p className="text-[10px] text-blue-500 font-extrabold uppercase tracking-tight">Email Us</p>
+                  <p className="text-sm font-bold text-gray-700">support@localtradestreet.com</p>
+                </div>
+              </a>
+
+              {/* Call Card */}
+              <a href="tel:+917030772573" className="flex items-center gap-4 p-4 rounded-2xl bg-green-50/50 border border-green-100 hover:shadow-md transition-all group">
+                <div className="w-11 h-11 rounded-xl bg-green-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Phone size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-green-600 font-extrabold uppercase tracking-tight">Call/WhatsApp</p>
+                  <p className="text-sm font-bold text-gray-700">+91 70307 72573</p>
+                </div>
+              </a>
+
+              {/* Address Card */}
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-orange-50/50 border border-orange-100 hover:shadow-md transition-all group">
+                <div className="w-11 h-11 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform mt-1">
+                  <MapPin size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-orange-600 font-extrabold uppercase tracking-tight">Visit Us</p>
+                  <p className="text-sm font-bold text-gray-700 leading-tight">
+                    4th floor, Prince Complex, Chatrapati Nagar, Nagpur, Maharashtra 440025
                   </p>
                 </div>
               </div>
@@ -144,123 +126,103 @@ const Contact = () => {
 
           {/* ── RIGHT — Form Card ── */}
           <div className="w-full lg:w-3/5">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 px-8 py-8">
-              <h3 className="text-base font-bold text-gray-800 mb-1">
-                Send Us a Message
-              </h3>
-              <div className="w-8 h-1 bg-orange-500 rounded-full mb-5" />
+            <div className="bg-white rounded-[2rem] shadow-2xl shadow-gray-200/50 border border-gray-100 p-8 md:p-10">
+              <div className="flex items-center gap-2 mb-6">
+                <MessageSquare className="text-orange-500" size={20} />
+                <h3 className="text-xl font-bold text-gray-800">Send Us a Message</h3>
+              </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name + Email — side by side */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                      Name <span className="text-red-400">*</span>
-                    </label>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 ml-1">YOUR NAME</label>
                     <input
                       type="text"
                       name="name"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Your full name"
-                      className="w-full text-sm text-gray-700 placeholder-gray-400 border border-gray-200 rounded-lg px-3 py-2.5 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-gray-50"
+                      placeholder="e.g. Rahul Sharma"
+                      className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all"
                       required
                     />
                   </div>
-                  <div className="flex-1">
-                    <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                      Email <span className="text-red-400">*</span>
-                    </label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 ml-1">EMAIL ADDRESS</label>
                     <input
                       type="email"
                       name="email"
                       value={form.email}
                       onChange={handleChange}
-                      placeholder="you@example.com"
-                      className="w-full text-sm text-gray-700 placeholder-gray-400 border border-gray-200 rounded-lg px-3 py-2.5 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-gray-50"
+                      placeholder="rahul@example.com"
+                      className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Contact Number + Pincode — side by side */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                      Contact Number <span className="text-red-400">*</span>
-                    </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 ml-1">MOBILE NUMBER</label>
                     <input
                       type="tel"
                       name="mobile"
+                      maxLength={10}
                       value={form.mobile}
                       onChange={handleChange}
-                      placeholder="10-digit mobile number"
-                      className="w-full text-sm text-gray-700 placeholder-gray-400 border border-gray-200 rounded-lg px-3 py-2.5 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-gray-50"
+                      placeholder="10 digit number"
+                      className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all"
                       required
                     />
                   </div>
-                  <div className="flex-1">
-                    <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                      Pincode <span className="text-red-400">*</span>
-                    </label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 ml-1">PINCODE</label>
                     <input
                       type="text"
                       name="pincode"
+                      maxLength={6}
                       value={form.pincode}
                       onChange={handleChange}
-                      placeholder="6-digit pincode"
-                      className="w-full text-sm text-gray-700 placeholder-gray-400 border border-gray-200 rounded-lg px-3 py-2.5 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-gray-50"
+                      placeholder="6 digit pincode"
+                      className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Subject */}
-                <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                    Subject <span className="text-red-400">*</span>
-                  </label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 ml-1">SUBJECT</label>
                   <input
                     type="text"
                     name="subject"
                     value={form.subject}
                     onChange={handleChange}
                     placeholder="How can we help you?"
-                    className="w-full text-sm text-gray-700 placeholder-gray-400 border border-gray-200 rounded-lg px-3 py-2.5 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all bg-gray-50"
+                    className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all"
                     required
                   />
                 </div>
 
-                {/* Message */}
-                <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                    Message <span className="text-red-400">*</span>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 ml-1 flex justify-between">
+                    MESSAGE <span>{maxChars - form.message.length} chars left</span>
                   </label>
-                  <div className="border border-gray-200 rounded-lg focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-all bg-gray-50">
-                    <textarea
-                      name="message"
-                      value={form.message}
-                      onChange={handleChange}
-                      placeholder="Write your message here..."
-                      rows={4}
-                      className="w-full text-sm text-gray-700 placeholder-gray-400 outline-none bg-transparent resize-none px-3 pt-2.5 pb-1"
-                      required
-                    />
-                    <div className="text-right text-[10px] text-gray-400 px-3 pb-1.5">
-                      {maxChars - form.message.length} chars left
-                    </div>
-                  </div>
+                  <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    rows={4}
+                    placeholder="Describe your requirement..."
+                    className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all resize-none"
+                    required
+                  />
                 </div>
 
-                {/* Submit */}
-                <div className="flex justify-center pt-1">
-                  <button
-                    type="submit"
-                    className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold text-sm px-16 py-3 rounded-lg transition-all duration-300 hover:shadow-lg"
-                  >
-                    Submit
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all active:scale-[0.98]"
+                >
+                  Send Message
+                </button>
               </form>
             </div>
           </div>

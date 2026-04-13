@@ -344,8 +344,6 @@
 //   );
 // }
 
-
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -353,54 +351,66 @@ import {
   fetchVendorById,
   clearVendorDetail,
 } from "../../../redux/slice/category/getVendorById";
-import axios from "axios";
 import {
-  MapPin, Phone, Star, Share2, ChevronRight,
-  Home, Clock, Calendar, Loader2,
+  MapPin,
+  Phone,
+  Star,
+  Share2,
+  ChevronRight,
+  Home,
+  Clock,
+  Calendar,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
 import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import useSEO from "../../../hooks/useSEO";
 
 function BreadcrumbBar({ businessName, venId, city }) {
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-2.5">
-      <nav className="flex items-center flex-wrap gap-1 text-sm text-gray-500">
+      <nav
+        className="flex items-center flex-wrap gap-1 text-sm text-gray-500"
+        aria-label="Breadcrumb"
+      >
         <button
           onClick={() => window.history.back()}
+          aria-label="Go back"
           className="flex items-center justify-center w-9 h-7 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors"
         >
           <ChevronRight size={18} className="rotate-180 text-gray-600" />
         </button>
-        <Link to="/" className="flex items-center gap-1 hover:text-orange-500 transition-colors">
-          <Home size={13} /><span>Home</span>
+        <Link
+          to="/"
+          className="flex items-center gap-1 hover:text-orange-500 transition-colors"
+        >
+          <Home size={13} />
+          <span>Home</span>
         </Link>
         <span className="flex items-center gap-1">
           <ChevronRight size={13} className="text-gray-400" />
-          <span className="text-gray-500">Business</span>
+          <span>Business</span>
         </span>
         {city && (
           <span className="flex items-center gap-1">
             <ChevronRight size={13} className="text-gray-400" />
-            <span className="text-gray-500 flex items-center gap-1">
-              <MapPin size={11} className="text-orange-500" />
-              {city.charAt(0).toUpperCase() + city.slice(1)}
-            </span>
+            <MapPin size={11} className="text-orange-500" />
+            <span className="capitalize">{city}</span>
           </span>
         )}
         {venId && (
           <span className="flex items-center gap-1">
             <ChevronRight size={13} className="text-gray-400" />
-            <span className="text-gray-500">{venId}</span>
+            <span>{venId}</span>
           </span>
         )}
         {businessName && (
           <span className="flex items-center gap-1">
             <ChevronRight size={13} className="text-gray-400" />
-            <span className="text-gray-800 font-medium truncate max-w-[200px]">{businessName}</span>
+            <span className="text-gray-800 font-medium truncate max-w-[200px]">
+              {businessName}
+            </span>
           </span>
         )}
       </nav>
@@ -415,7 +425,11 @@ function Stars({ count = 5, size = 16, filled = 5 }) {
         <Star
           key={i}
           size={size}
-          className={i < filled ? "text-orange-400 fill-orange-400" : "text-gray-300 fill-gray-100"}
+          className={
+            i < filled
+              ? "text-orange-400 fill-orange-400"
+              : "text-gray-300 fill-gray-100"
+          }
         />
       ))}
     </div>
@@ -429,74 +443,62 @@ export default function Details() {
 
   const { vendor, loading, error } = useSelector((state) => state.vendorDetail);
   const [rateModalOpen, setRateModalOpen] = useState(false);
-  const [resolving, setResolving] = useState(false);
 
-  // ✅ Redux store se venId → MongoDB _id
-  const vendorsFromStore = useSelector((state) => state.vendorStore?.vendors || []);
-  const matchedVendor = vendorsFromStore.find((v) => v.venId === venId);
-  const mongoVendorId = matchedVendor?._id || matchedVendor?.id || null;
-
+  // ✅ venId directly — backend supports /getbyidvendor/VEN-001
   useEffect(() => {
     if (!venId) return;
-
-    const fetchData = async () => {
-      // ✅ Priority 1: Redux store me mila
-      if (mongoVendorId) {
-        dispatch(fetchVendorById(mongoVendorId));
-        return;
-      }
-
-      // ✅ Priority 2: sessionStorage me saved hai
-      const savedId = sessionStorage.getItem(`vendor_${venId}`);
-      if (savedId) {
-        dispatch(fetchVendorById(savedId));
-        return;
-      }
-
-      // ✅ Priority 3: Direct URL (WhatsApp share)
-      // venId se MongoDB _id lookup karo
-      try {
-        setResolving(true);
-        const res = await axios.get(
-          `${BASE_URL}/customer/vendor/lookup/${venId}`
-        );
-        const mongoId = res.data?.data?._id;
-        if (mongoId) {
-          // Save for future use
-          sessionStorage.setItem(`vendor_${venId}`, mongoId);
-          dispatch(fetchVendorById(mongoId));
-        }
-      } catch (err) {
-        console.error("Vendor lookup failed:", err);
-      } finally {
-        setResolving(false);
-      }
-    };
-
-    fetchData();
+    dispatch(fetchVendorById(venId));
     return () => dispatch(clearVendorDetail());
-  }, [dispatch, venId, mongoVendorId]);
+  }, [dispatch, venId]);
 
-  if (resolving || loading)
+  // SEO
+  const businessName =
+    vendor?.companyName || slug?.replace(/-/g, " ") || "Business";
+  const cityLabel = city?.replace(/-/g, " ") || "India";
+  const categoryLabel = vendor?.category?.name || "Services";
+
+  useSEO({
+    title: `${businessName} – ${categoryLabel} in ${cityLabel} | LocalTradeStreet`,
+    description: `${businessName} provides ${categoryLabel} services in ${cityLabel}. View gallery, services, timings, and contact details on LocalTradeStreet.`,
+    canonical: `https://www.localtradestreet.com/business/${city}/${venId}/${slug}`,
+    ogImage: vendor?.image,
+  });
+
+  if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
         <p className="mt-4 text-gray-500 font-medium">Loading profile...</p>
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="text-center bg-white p-8 rounded-2xl shadow-sm border border-red-100">
           <p className="text-red-500 font-bold mb-2">Failed to load vendor</p>
           <p className="text-gray-500 text-sm">{error}</p>
-          <button onClick={() => window.history.back()} className="mt-4 text-orange-500 font-bold">Go Back</button>
+          <button
+            onClick={() => dispatch(fetchVendorById(venId))}
+            className="mt-4 text-orange-500 font-bold"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
+  }
 
   if (!vendor) return null;
+
+  const addressText =
+    vendor.address && Object.keys(vendor.address).length > 0
+      ? `${vendor.address.city || ""}, ${vendor.address.state || ""}`.replace(
+          /^,\s*|,\s*$/,
+          "",
+        )
+      : "Address not provided";
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
@@ -514,29 +516,33 @@ export default function Details() {
       />
 
       <div className="w-full mx-auto px-4 py-6 max-w-7xl">
+        {/* Hero card */}
         <div className="bg-white rounded-xl shadow-sm p-5 mb-5 border border-gray-100">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-50">
               <img
-                src={vendor.image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80"}
-                alt="logo"
+                src={
+                  vendor.image ||
+                  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80"
+                }
+                alt={`${vendor.companyName} logo`}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-0.5">{vendor.companyName}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-0.5">
+                {vendor.companyName}
+              </h1>
               <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
                 <Stars filled={5} size={14} />
                 <span className="ml-1 text-gray-600 font-medium">5.0</span>
-                <span className="text-gray-400 ml-1">| {vendor.category?.name}</span>
+                <span className="text-gray-400 ml-1">
+                  | {vendor.category?.name}
+                </span>
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-500">
                 <MapPin size={14} className="text-orange-500" />
-                <span>
-                  {Object.keys(vendor.address || {}).length === 0
-                    ? "Address not provided"
-                    : `${vendor.address?.city || ""}, ${vendor.address?.state || ""}`}
-                </span>
+                <span>{addressText}</span>
               </div>
             </div>
           </div>
@@ -546,7 +552,8 @@ export default function Details() {
               onClick={() => navigate("/submitenquiry")}
               className="flex cursor-pointer items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all duration-300 min-w-[160px] bg-orange-500 text-white hover:bg-orange-600"
             >
-              <Phone size={15} /><span>Show Number</span>
+              <Phone size={15} />
+              <span>Show Number</span>
             </button>
             <button
               onClick={() => setRateModalOpen(true)}
@@ -560,33 +567,47 @@ export default function Details() {
           </div>
         </div>
 
+        {/* Subcategories */}
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm mb-5">
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Subcategories</h2>
+          <h2 className="text-base font-semibold text-gray-800 mb-3">
+            Subcategories
+          </h2>
           <div className="flex flex-wrap gap-2">
             {vendor.subcategories?.length > 0 ? (
               vendor.subcategories.map((sub, i) => (
-                <span key={i} className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200">
+                <span
+                  key={i}
+                  className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200"
+                >
                   {typeof sub === "object" ? sub.name : sub}
                 </span>
               ))
             ) : (
-              <p className="text-gray-400 text-sm">No subcategories available</p>
+              <p className="text-gray-400 text-sm">
+                No subcategories available
+              </p>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="md:col-span-2 space-y-5">
-
-            <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-800 mb-3">Photo Gallery</h2>
+            {/* Gallery */}
+            <section className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-800 mb-3">
+                Photo Gallery
+              </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {vendor.gallery?.length > 0 ? (
                   vendor.gallery.map((item, i) => (
-                    <div key={item.id || i} className="rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50">
+                    <div
+                      key={item.id || i}
+                      className="rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50"
+                    >
                       <img
                         src={item.image || item.url}
-                        alt="gallery"
+                        alt={`${vendor.companyName} gallery ${i + 1}`}
+                        loading="lazy"
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>
@@ -595,14 +616,20 @@ export default function Details() {
                   <p className="text-gray-400 text-sm py-4">Gallery is empty</p>
                 )}
               </div>
-            </div>
+            </section>
 
-            <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-800 mb-4">Services</h2>
+            {/* Services */}
+            <section className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-800 mb-4">
+                Services
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {vendor.services?.length > 0 ? (
                   vendor.services.map((service, i) => (
-                    <div key={service.id || i} className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300">
+                    <div
+                      key={service.id || i}
+                      className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300"
+                    >
                       <div className="absolute top-3 left-3 z-10">
                         <span className="bg-orange-500 text-white text-[11px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-0.5">
                           ₹ {service.price}
@@ -610,41 +637,60 @@ export default function Details() {
                       </div>
                       <div className="aspect-[16/9] overflow-hidden bg-gray-100">
                         <img
-                          src={service.image || "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=500&q=80"}
+                          src={
+                            service.image ||
+                            "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=500&q=80"
+                          }
                           alt={service.name}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       </div>
                       <div className="p-3 text-center border-t border-gray-50">
-                        <h3 className="text-sm font-medium text-gray-700 truncate">{service.name}</h3>
+                        <h3 className="text-sm font-medium text-gray-700 truncate">
+                          {service.name}
+                        </h3>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-sm italic py-2">No services listed</p>
+                  <p className="text-gray-400 text-sm italic py-2">
+                    No services listed
+                  </p>
                 )}
               </div>
-            </div>
+            </section>
 
-            <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-              <h2 className="text-base font-semibold text-gray-800 mb-4">Business Info</h2>
+            {/* Business Info */}
+            <section className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+              <h2 className="text-base font-semibold text-gray-800 mb-4">
+                Business Info
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <Clock className="text-orange-500" size={18} />
                   <div>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">Timing</p>
-                    <p className="text-gray-700 font-medium">{vendor.openingTime}</p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">
+                      Timing
+                    </p>
+                    <p className="text-gray-700 font-medium">
+                      {vendor.openingTime || "N/A"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <Calendar className="text-orange-500" size={18} />
                   <div>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">Days</p>
-                    <p className="text-gray-700 font-medium">{vendor.openingDays?.join(", ")}</p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">
+                      Days
+                    </p>
+                    <p className="text-gray-700 font-medium">
+                      {vendor.openingDays?.join(", ") || "N/A"}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
 
             {vendor && <Faq vendor={vendor} />}
           </div>
