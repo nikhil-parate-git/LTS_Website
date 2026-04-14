@@ -656,6 +656,7 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
           Quick Information
         </p>
 
+
         <div className="flex items-start gap-2 mb-3">
           <span className="mt-0.5">
             <IconMapPin />
@@ -673,10 +674,10 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
 
         <div className="space-y-2.5">
           <div className="flex items-center gap-2">
-            <IconBriefcase />{" "}
-            <span className="text-xs text-gray-600">
+            {/* <IconBriefcase />{" "} */}
+            {/* <span className="text-xs text-gray-600">
               Established: {vendorData?.yearOfEstablishment || "2024"}
-            </span>
+            </span> */}
           </div>
           <div className="flex items-center gap-2">
             <IconClock />{" "}

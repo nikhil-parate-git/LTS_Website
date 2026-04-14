@@ -1388,7 +1388,7 @@ const Blog = () => {
   const carouselRef = useRef(null);
 
   const isPageLoading = categoriesLoading || blogsLoading;
-  const canonicalUrl = `${window.location.origin}/blog`;
+  // const canonicalUrl = `${window.location.origin}/blog`;
 
   useEffect(() => {
     dispatch(fetchAllCategories());
@@ -1517,7 +1517,7 @@ const Blog = () => {
       <SEO
         title="Blog | Local Trade Street — Local Services & Stories"
         description="Expert insights, practical guides, and real updates about local services in your city. Find trusted vendors on Local Trade Street."
-        canonical={canonicalUrl}
+        // canonical={canonicalUrl}
         ogType="website"
       />
 

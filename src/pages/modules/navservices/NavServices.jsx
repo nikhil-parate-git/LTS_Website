@@ -155,7 +155,7 @@ const NavServices = () => {
       <SEO
         title="Our Services | Local Trade Street — Digital Excellence"
         description="Local Trade Street offers expert digital transformation, SEO, web development, and marketing services. Partner with us to grow your local business online."
-        canonical={`${window.location.origin}/services`}
+        // canonical={`${window.location.origin}/services`}
         ogType="website"
       />
 

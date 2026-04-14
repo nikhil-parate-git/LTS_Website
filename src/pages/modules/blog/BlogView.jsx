@@ -339,7 +339,7 @@ const BlogView = () => {
     [currentBlog?.description],
   );
 
-  const canonicalUrl = `${SITE_URL}/blog/${categorySlug}/${blogId}`;
+  // const canonicalUrl = `${SITE_URL}/blog/${categorySlug}/${blogId}`;
 
   const seoTitle = currentBlog?.title
     ? `${currentBlog.title} | Local Trade Street`
@@ -354,7 +354,7 @@ const BlogView = () => {
       <SEO
         title={seoTitle}
         description={plainDescription}
-        canonical={canonicalUrl}
+        // canonical={canonicalUrl}
         ogType="article"
         ogImage={currentBlog?.image || ""}
       />

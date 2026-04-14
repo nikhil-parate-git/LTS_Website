@@ -416,7 +416,7 @@ const TopCategoryDetails = () => {
     return { filteredSections: filtered, categoryLabel };
   }, [categoryData, search]);
 
-  const canonicalUrl = `${window.location.origin}/top-category/${cateId}/${slug}`;
+  // const canonicalUrl = `${window.location.origin}/top-category/${cateId}/${slug}`;
 
   if (loading)
     return (
@@ -436,7 +436,7 @@ const TopCategoryDetails = () => {
       <SEO
         title={categoryLabel ? `${categoryLabel} Services | Local Trade Street` : "Category Services | Local Trade Street"}
         description={categoryLabel ? `Find the best ${categoryLabel} services near you. Browse top subcategories on Local Trade Street.` : "Browse top service categories near you on Local Trade Street."}
-        canonical={canonicalUrl}
+        // canonical={canonicalUrl}
         ogType="website"
       />
 

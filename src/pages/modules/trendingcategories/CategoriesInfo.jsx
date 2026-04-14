@@ -491,7 +491,7 @@ export default function Details() {
       <SEO
         title={`${businessName} – ${categoryLabel} in ${cityLabel} | LocalTradeStreet`}
         description={`${businessName} provides ${categoryLabel} services in ${cityLabel}. View gallery, services, timings, ratings and contact details on LocalTradeStreet.`}
-        canonical={`https://www.localtradestreet.com/business/${city}/${venId}/${slug}`}
+        // canonical={`https://www.localtradestreet.com/business/${city}/${venId}/${slug}`}
         ogImage={vendor?.image}
         ogType="business.business"
       />

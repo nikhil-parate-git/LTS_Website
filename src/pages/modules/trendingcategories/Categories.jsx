@@ -462,14 +462,14 @@ export default function SubCategory() {
 
   const pageTitle = categoryName || slug?.replace(/-/g, " ") || "Services";
   const cityLabel = selectedCity || "India";
-  const canonical = `https://www.localtradestreet.com/subcategory/${cateId}/${slug}`;
+  // const canonical = `https://www.localtradestreet.com/subcategory/${cateId}/${slug}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <SEO
         title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
         description={`Find trusted ${pageTitle} providers in ${cityLabel}. Browse all subcategories and connect with verified local businesses on LocalTradeStreet.`}
-        canonical={canonical}
+        // canonical={canonical}
         ogType="website"
       />
 
