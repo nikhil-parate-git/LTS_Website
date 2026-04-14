@@ -445,15 +445,16 @@ export default function SubCategory() {
   }, [cateId, dispatch]);
 
   // Stable callback — won't cause SubCategoryCard to re-render
-  const handleSubcategoryClick = useCallback(
-    (item) => {
-      const subCateId = item.subCateId;
-      const subSlug = createSlug(item.name || "");
-      const city = createSlug(selectedCity || "india");
-      navigate(`/service/${city}/${subCateId}/${subSlug}`);
-    },
-    [navigate, selectedCity]
-  );
+ const handleSubcategoryClick = useCallback(
+  (item) => {
+    const subCateId = item.subCateId;
+    const subSlug = createSlug(item.name || "");
+    const citySlug = createSlug(selectedCity || "india");
+    // ✅ URL: /service/CAT-001/SUBCAT-001/nagpur/bed-bug-control-service
+    navigate(`/service/${cateId}/${subCateId}/${citySlug}/${subSlug}`);
+  },
+  [navigate, selectedCity, cateId]
+);
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   const openSidebar = useCallback(() => setSidebarOpen(true), []);

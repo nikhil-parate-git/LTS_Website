@@ -106,7 +106,8 @@ export default function PublicRoute() {
           {/*
             /service/nagpur/SUBCAT-001/bed-bug-control-service
           */}
-          <Route path="/service/:city/:subCateId/:subcategorySlug" element={<CategoryDetails />} />
+          {/* <Route path="/service/:city/:subCateId/:subcategorySlug" element={<CategoryDetails />} /> */}
+          <Route path="/service/:catId/:subCateId/:city/:subcategorySlug" element={<CategoryDetails />} />
 
           {/*
             /business/nagpur/VEN-001/abc-services
@@ -118,7 +119,8 @@ export default function PublicRoute() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/submitenquiry" element={<SubmitEnquiry />} />
-          <Route path="/top-category/:slug" element={<TopCategoryDetails />} />
+          {/* <Route path="/top-category/:slug" element={<TopCategoryDetails />} /> */}
+          <Route path="/top-category/:cateId/:slug" element={<TopCategoryDetails />} />
           <Route path="/business" element={<BusinessPage />} />
           <Route path="/blog" element={<Blog />} />
           {/* <Route path="/blog/:categoryId/:blogId" element={<BlogView />} /> */}

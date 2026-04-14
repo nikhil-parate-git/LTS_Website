@@ -420,28 +420,39 @@
 //   );
 // }
 
-
-
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVendorsByCatAndSubcat,
   fetchSubCategoryBanners,
+  clearVendors,
 } from "../../../redux/slice/category/getVendorByCatandSubcat";
-import { fetchSubcategories } from "../../../redux/slice/category/getAllSubcategorySlice";
-import { fetchAllCategories } from "../../../redux/slice/category/getAllCategorySlice";
 import {
-  ChevronRight, MapPin, Phone, Eye, ChevronDown,
-  SlidersHorizontal, BadgeCheck, Clock,
-  Zap, Share2, ArrowLeft, X, Search, Loader2,
+  ChevronRight,
+  MapPin,
+  Phone,
+  Eye,
+  ChevronDown,
+  SlidersHorizontal,
+  BadgeCheck,
+  Clock,
+  Zap,
+  Share2,
+  ArrowLeft,
+  X,
+  Search,
+  Loader2,
 } from "lucide-react";
 import Sidebar from "./MainSidebar";
 import Banner from "./Acbanner/Banner";
 import { SEO } from "../../../hooks/useSEO";
 
 const createSlug = (title = "") =>
-  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
 function formatProfileCount(n) {
   if (!n) return "0";
@@ -452,7 +463,7 @@ function formatProfileCount(n) {
   return String(n);
 }
 
-// ─── FilterOverlay ────────────────────────────────────────────────────────────
+// ─── FilterOverlay ─────────────────────────────────────────────────────────────
 function FilterOverlay({ open, onClose }) {
   if (!open) return null;
   return (
@@ -462,7 +473,11 @@ function FilterOverlay({ open, onClose }) {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto p-5">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-bold text-gray-800">Filters</h2>
-            <X onClick={onClose} className="cursor-pointer text-gray-500" size={18} />
+            <X
+              onClick={onClose}
+              className="cursor-pointer text-gray-500"
+              size={18}
+            />
           </div>
           <button
             onClick={onClose}
@@ -476,15 +491,20 @@ function FilterOverlay({ open, onClose }) {
   );
 }
 
-// ─── BusinessCard — memoised; internal state only, no parent re-renders ────────
+// ─── BusinessCard ──────────────────────────────────────────────────────────────
 const getTickColorClass = (color) => {
   switch (color?.toLowerCase()) {
-    case "red":    return "text-red-500";
-    case "blue":   return "text-blue-500";
-    case "green":  return "text-green-500";
+    case "red":
+      return "text-red-500";
+    case "blue":
+      return "text-blue-500";
+    case "green":
+      return "text-green-500";
     case "gold":
-    case "yellow": return "text-yellow-500";
-    default:       return "text-blue-500";
+    case "yellow":
+      return "text-yellow-500";
+    default:
+      return "text-blue-500";
   }
 };
 
@@ -502,10 +522,10 @@ const BusinessCard = memo(function BusinessCard({ biz }) {
     const { venId, companyName, vendorName, address } = biz;
     if (!venId) return;
     const slug = createSlug(companyName || vendorName || "business");
-    const city = createSlug(
-      (typeof address === "object" ? address?.city : "") || "india"
+    const citySlug = createSlug(
+      (typeof address === "object" ? address?.city : "") || "india",
     );
-    navigate(`/business/${city}/${venId}/${slug}`);
+    navigate(`/business/${citySlug}/${venId}/${slug}`);
   }, [biz, navigate]);
 
   return (
@@ -516,7 +536,10 @@ const BusinessCard = memo(function BusinessCard({ biz }) {
           style={{ minHeight: "180px" }}
         >
           <img
-            src={biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"}
+            src={
+              biz.image ||
+              "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80"
+            }
             alt={biz.name}
             loading="lazy"
             className="w-full h-full object-cover"
@@ -542,7 +565,10 @@ const BusinessCard = memo(function BusinessCard({ biz }) {
                 />
               )}
             </div>
-            <button aria-label="Share" className="text-gray-400 hover:text-orange-500">
+            <button
+              aria-label="Share"
+              className="text-gray-400 hover:text-orange-500"
+            >
               <Share2 size={14} />
             </button>
           </div>
@@ -620,123 +646,77 @@ const BusinessCard = memo(function BusinessCard({ biz }) {
   );
 });
 
-// ─── CategoryDetails ──────────────────────────────────────────────────────────
+// ─── CategoryDetails ───────────────────────────────────────────────────────────
 export default function CategoryDetails() {
-  const { city, subCateId, subcategorySlug } = useParams();
+  const { catId, subCateId, city, subcategorySlug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Relevance");
-  const [resolving, setResolving] = useState(false);
-
-  const vendorFetchedRef = useRef(false);
-  const resolutionStartedRef = useRef(false);
 
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
-  const { selectedCity } = useSelector((state) => state.location);
 
-  const subcategoriesFromStore = useSelector(
-    (state) => state.subcategory?.subcategories || []
-  );
-  const categoriesFromStore = useSelector(
-    (state) => state.categories?.categories || []
-  );
+  const selectedCity = useSelector((state) => state.location.selectedCity);
 
-  const matchedSubcat = subcategoriesFromStore.find(
-    (sub) => sub.subCateId === subCateId
-  );
-  const parentCatMongoId = matchedSubcat?.categoryName || null;
-  const parentCategory = categoriesFromStore.find(
-    (cat) => (cat._id || cat.id) === parentCatMongoId
-  );
-  const cateId = parentCategory?.cateId || null;
+  const cityFromUrl =
+    city?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "";
 
-  // STEP 1: Resolve subcategory — only once
+  // Active city = Redux selectedCity (if set) else URL city
+  const activeCity = selectedCity || cityFromUrl;
+
+  const lastFetchKeyRef = useRef("");
+
   useEffect(() => {
-    if (matchedSubcat || resolutionStartedRef.current || !subCateId) return;
-    resolutionStartedRef.current = true;
+    if (!catId || !subCateId) return;
 
-    const resolve = async () => {
-      setResolving(true);
-      try {
-        let cats = categoriesFromStore;
-        if (cats.length === 0) {
-          const result = await dispatch(fetchAllCategories());
-          cats = Array.isArray(result?.payload?.data)
-            ? result.payload.data
-            : Array.isArray(result?.payload)
-            ? result.payload
-            : [];
-        }
-        for (const cat of cats) {
-          const catId = cat.cateId;
-          if (!catId) continue;
-          const res = await dispatch(fetchSubcategories(catId));
-          const subs = Array.isArray(res?.payload?.data) ? res.payload.data : [];
-          const found = subs.find((s) => s.subCateId === subCateId);
-          if (found) break;
-        }
-      } finally {
-        setResolving(false);
-      }
+    // ✅ activeCity in key — any city change triggers re-fetch
+    const fetchKey = `${catId}-${subCateId}-${activeCity}`;
+    if (lastFetchKeyRef.current === fetchKey) return;
+    lastFetchKeyRef.current = fetchKey;
+
+    dispatch(clearVendors());
+
+    dispatch(
+      fetchVendorsByCatAndSubcat({
+        cateId: catId,
+        subCateId,
+        city: activeCity, // ✅ "Nagpur", "Aurangabad" etc.
+      }),
+    );
+
+    dispatch(fetchSubCategoryBanners({ cateId: catId, subCateId }));
+  }, [catId, subCateId, activeCity, dispatch]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearVendors());
+      lastFetchKeyRef.current = "";
     };
-
-    resolve();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subCateId]); // intentionally narrow — refs guard against double-run
-
-  // STEP 2: Fetch vendors once cateId + subCateId ready
-  useEffect(() => {
-    if (!cateId || !subCateId || vendorFetchedRef.current) return;
-    vendorFetchedRef.current = true;
-
-    const cityName = city?.replace(/-/g, " ") || selectedCity || "";
-    dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
-    dispatch(fetchSubCategoryBanners({ cateId, subCateId }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cateId, subCateId]); // city/selectedCity intentionally excluded to avoid re-fetch on location change
+  }, [dispatch]);
 
   const closeFilter = useCallback(() => setFilterOpen(false), []);
 
   const pageTitle =
     subcategoryName ||
-    matchedSubcat?.name ||
-    subcategorySlug?.replace(/-/g, " ") ||
+    subcategorySlug
+      ?.replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase()) ||
     "Services";
-  const cityLabel = city?.replace(/-/g, " ") || selectedCity || "India";
 
-  if (resolving) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
-        <p className="text-gray-500 font-medium">Loading...</p>
-      </div>
-    );
-  }
+  const cityLabel = activeCity || "India";
 
-  if (!matchedSubcat && !resolving) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-4xl">🔍</div>
-        <h3 className="text-lg font-bold text-gray-700">Service not found</h3>
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-2 bg-orange-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
-        >
-          ← Go Back
-        </button>
-      </div>
-    );
-  }
+  // ✅ SEO canonical with city in URL
+  const canonicalUrl = `https://www.localtradestreet.com/service/${catId}/${subCateId}/${city}/${subcategorySlug}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <SEO
         title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
         description={`Find top-rated ${pageTitle} providers in ${cityLabel}. Compare verified vendors, view ratings, and get instant quotes on LocalTradeStreet.`}
-        canonical={`https://www.localtradestreet.com/service/${city}/${subCateId}/${subcategorySlug}`}
+        canonical={canonicalUrl}
         ogType="website"
       />
 
@@ -745,13 +725,16 @@ export default function CategoryDetails() {
         banners={banners}
         loading={bannerLoading}
         pageTitle={pageTitle}
-        selectedCity={selectedCity}
+        selectedCity={activeCity}
       />
 
       {/* Sticky toolbar */}
       <div className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
         <div className="max-w-screen-xl mx-auto px-4 py-2.5 flex items-center justify-between flex-wrap gap-3">
-          <nav className="flex items-center gap-1.5 text-xs" aria-label="Breadcrumb">
+          <nav
+            className="flex items-center gap-1.5 text-xs"
+            aria-label="Breadcrumb"
+          >
             <button
               onClick={() => navigate(-1)}
               aria-label="Go back"
@@ -760,20 +743,22 @@ export default function CategoryDetails() {
               <ArrowLeft size={19} />
             </button>
             <ChevronRight size={13} className="text-gray-300" />
-            {city && (
-              <>
-                <span className="text-gray-400 text-xs capitalize">
-                  {city.replace(/-/g, " ")}
-                </span>
-                <ChevronRight size={13} className="text-gray-300" />
-              </>
-            )}
+            {/* ✅ City in breadcrumb */}
+            <span className="text-gray-400 text-xs capitalize">
+              {cityLabel}
+            </span>
+            <ChevronRight size={13} className="text-gray-300" />
             <span className="bg-emerald-500 text-white text-sm px-3 py-1 rounded-lg font-semibold truncate capitalize">
               {pageTitle}
             </span>
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* City badge */}
+            <span className="flex items-center gap-1 text-xs text-gray-600 border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white">
+              <MapPin size={11} className="text-orange-500" />
+              {cityLabel}
+            </span>
             <div className="relative">
               <select
                 value={sortBy}
@@ -783,7 +768,10 @@ export default function CategoryDetails() {
                 <option>Relevance</option>
                 <option>High Rating</option>
               </select>
-              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
+              <ChevronDown
+                size={12}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
+              />
             </div>
             <button
               onClick={() => setFilterOpen(true)}
@@ -800,19 +788,24 @@ export default function CategoryDetails() {
           <main className="flex-1 min-w-0">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500" />
+                <Loader2 className="animate-spin h-10 w-10 text-orange-500" />
                 <p className="mt-4 text-gray-500 font-medium">
-                  Fetching best vendors for you...
+                  Fetching best vendors in {cityLabel}...
                 </p>
               </div>
             ) : error ? (
               <div className="text-center py-10 text-red-500">
-                <p>Oops! Something went wrong while loading vendors.</p>
+                <p>Oops! Something went wrong.</p>
                 <button
                   onClick={() => {
-                    vendorFetchedRef.current = false;
-                    const cityName = city?.replace(/-/g, " ") || selectedCity || "";
-                    dispatch(fetchVendorsByCatAndSubcat({ cateId, subCateId, city: cityName }));
+                    lastFetchKeyRef.current = "";
+                    dispatch(
+                      fetchVendorsByCatAndSubcat({
+                        cateId: catId,
+                        subCateId,
+                        city: activeCity,
+                      }),
+                    );
                   }}
                   className="mt-4 text-orange-500 underline font-semibold"
                 >
@@ -823,23 +816,35 @@ export default function CategoryDetails() {
               <>
                 <p className="text-sm text-gray-500 mb-4">
                   Showing{" "}
-                  <span className="font-semibold text-gray-800">{vendors.length}</span>{" "}
-                  vendors
+                  <span className="font-semibold text-gray-800">
+                    {vendors.length}
+                  </span>{" "}
+                  vendors in{" "}
+                  <span className="font-semibold text-orange-500 capitalize">
+                    {cityLabel}
+                  </span>
                 </p>
                 <div className="space-y-4">
                   {vendors.map((biz) => (
                     <BusinessCard
-                      key={biz.id || biz._id}
+                      key={biz.venId || biz._id}
                       biz={{
                         ...biz,
-                        name: biz.companyName || biz.vendorName || "Unknown Business",
-                        image: biz.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
+                        name:
+                          biz.companyName ||
+                          biz.vendorName ||
+                          "Unknown Business",
+                        image:
+                          biz.image ||
+                          "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&q=80",
                         address:
                           typeof biz.address === "object" &&
                           Object.keys(biz.address).length === 0
                             ? "Address not available"
                             : biz.address,
-                        since: biz.yearOfEstablishment || "2024",
+                        // --- FIX APPLIED HERE ---
+                        since: biz.startedIn || biz.yearOfEstablishment,
+                        // ------------------------
                         subcategories: biz.subcategories || [],
                         verified: biz.isVerified ?? true,
                         profileCount: biz.views || 0,
@@ -854,7 +859,18 @@ export default function CategoryDetails() {
             ) : (
               <div className="bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-200">
                 <Search size={40} className="mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-500 font-medium">No vendors found for this selection.</p>
+                <p className="text-gray-500 font-medium">
+                  No vendors found for{" "}
+                  <span className="font-bold text-gray-700 capitalize">
+                    {pageTitle}
+                  </span>{" "}
+                  in{" "}
+                  <span className="font-bold text-orange-500">{cityLabel}</span>
+                  .
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Try changing your city from the top bar.
+                </p>
                 <button
                   onClick={() => navigate(-1)}
                   className="mt-4 text-orange-500 font-bold hover:underline"
@@ -867,8 +883,8 @@ export default function CategoryDetails() {
 
           <div className="hidden lg:block w-72 shrink-0">
             <Sidebar
-              categoryId={cateId}
-              cityName={selectedCity}
+              categoryId={catId}
+              cityName={activeCity}
               subcategoryId={subCateId}
             />
           </div>

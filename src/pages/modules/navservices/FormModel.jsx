@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useCallback, memo } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -17,30 +17,47 @@ import {
 } from "../../../redux/slice/services/enquriySlice";
 import { toast } from "react-toastify";
 
-const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
+// ─── Validation schema — defined outside to avoid recreating on every render
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Must be exactly 10 digits")
+    .required("Phone number is required"),
+  subject: Yup.string().required("Subject is required"),
+  message: Yup.string().min(10, "Message too short!").required("Required"),
+});
+
+const initialValues = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
+
+// ─── FieldError ────────────────────────────────────────────────────────────────
+const FieldError = memo(function FieldError({ touched, error }) {
+  if (!touched || !error) return null;
+  return (
+    <p className="text-red-500 text-[11px] font-semibold mt-0.5">{error}</p>
+  );
+});
+
+// ─── EnquiryModal ──────────────────────────────────────────────────────────────
+const EnquiryModal = memo(function EnquiryModal({
+  isOpen,
+  onClose,
+  serviceName,
+}) {
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector((state) => state.enquiry);
 
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: {
-      name: "",
-      email: "",
-      phone: "", // API expects 'phone'
-      subject: "", // Keep it blank as requested
-      message: "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      email: Yup.string().email("Invalid email").required("Email is required"),
-      phone: Yup.string()
-        .matches(/^[0-9]{10}$/, "Must be exactly 10 digits")
-        .required("Phone number is required"),
-      subject: Yup.string().required("Subject is required"),
-      message: Yup.string().min(10, "Message too short!").required("Required"),
-    }),
+    initialValues,
+    validationSchema,
     onSubmit: (values) => {
-      // Now sending exact keys required by your API
       dispatch(submitEnquiry(values));
     },
   });
@@ -55,12 +72,14 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
     }
   }, [success, dispatch, onClose]);
 
-  // Scroll lock & reset
+  // Reset on close
   useEffect(() => {
     if (!isOpen) {
       dispatch(resetStatus());
     }
   }, [isOpen, dispatch]);
+
+  const handleClose = useCallback(() => onClose(), [onClose]);
 
   if (!isOpen) return null;
 
@@ -70,15 +89,13 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-600 to-orange-500 px-5 py-4 flex justify-between items-center text-white">
           <div>
-            <h3 className="text-xl font-black ">
-              Send Enquiry
-            </h3>
+            <h3 className="text-xl font-black">Send Enquiry</h3>
             <p className="text-[10px] font-bold tracking-widest opacity-80">
               Local Trade Street
             </p>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 hover:rotate-90 transition-all"
           >
             <X size={20} />
@@ -86,7 +103,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
         </div>
 
         <form onSubmit={formik.handleSubmit} className="p-6 space-y-4">
-          {/* Error Message from API */}
+          {/* API Error */}
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-lg">
               {error}
@@ -96,7 +113,7 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div className="space-y-1">
-              <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
+              <label className="text-[13px] font-semibold text-black flex items-center gap-1">
                 <User size={12} className="text-orange-500" /> Full Name
               </label>
               <input
@@ -104,9 +121,13 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
                 {...formik.getFieldProps("name")}
                 className={`w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-orange-500 transition-all ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-gray-200"}`}
               />
+              <FieldError
+                touched={formik.touched.name}
+                error={formik.errors.name}
+              />
             </div>
 
-            {/* Phone (Exactly 10 Digits) */}
+            {/* Phone */}
             <div className="space-y-1">
               <label className="text-[13px] font-semibold text-black flex items-center gap-1">
                 <Phone size={12} className="text-orange-500" /> Contact
@@ -118,12 +139,16 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
                 className={`w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-orange-500 transition-all ${formik.touched.phone && formik.errors.phone ? "border-red-500" : "border-gray-200"}`}
                 placeholder="10 digit number"
               />
+              <FieldError
+                touched={formik.touched.phone}
+                error={formik.errors.phone}
+              />
             </div>
           </div>
 
           {/* Email */}
           <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
+            <label className="text-[13px] font-semibold text-black flex items-center gap-1">
               <Mail size={12} className="text-orange-500" /> Email
             </label>
             <input
@@ -131,11 +156,15 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
               {...formik.getFieldProps("email")}
               className={`w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-orange-500 transition-all ${formik.touched.email && formik.errors.email ? "border-red-500" : "border-gray-200"}`}
             />
+            <FieldError
+              touched={formik.touched.email}
+              error={formik.errors.email}
+            />
           </div>
 
-          {/* Subject (Blank initially) */}
+          {/* Subject */}
           <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-black  flex items-center gap-1">
+            <label className="text-[13px] font-semibold text-black flex items-center gap-1">
               <MessageSquare size={12} className="text-orange-500" /> Subject
             </label>
             <input
@@ -144,17 +173,25 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
               className={`w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-orange-500 transition-all ${formik.touched.subject && formik.errors.subject ? "border-red-500" : "border-gray-200"}`}
               placeholder="e.g. Service Inquiry"
             />
+            <FieldError
+              touched={formik.touched.subject}
+              error={formik.errors.subject}
+            />
           </div>
 
           {/* Message */}
           <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-black ">
+            <label className="text-[13px] font-semibold text-black">
               Message
             </label>
             <textarea
               rows="3"
               {...formik.getFieldProps("message")}
               className={`w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-orange-500 transition-all resize-none ${formik.touched.message && formik.errors.message ? "border-red-500" : "border-gray-200"}`}
+            />
+            <FieldError
+              touched={formik.touched.message}
+              error={formik.errors.message}
             />
           </div>
 
@@ -176,6 +213,6 @@ const EnquiryModal = ({ isOpen, onClose, serviceName }) => {
       </div>
     </div>
   );
-};
+});
 
 export default EnquiryModal;

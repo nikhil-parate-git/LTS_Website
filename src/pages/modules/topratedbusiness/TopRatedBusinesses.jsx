@@ -53,7 +53,6 @@
 //       // for go to no vendor found page
 //       // onClick={() => navigate(`/business/${business.id}`)}
 
-      
 //       className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300"
 //       style={{
 //         transition:
@@ -189,7 +188,7 @@
 //             Top Picks
 //           </div>
 //           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-//             Top Rated Businesses in  
+//             Top Rated Businesses in
 //             <span className="text-orange-500"> {selectedCity}</span>
 //           </h2>
 //           <p className="text-gray-400 text-sm mt-2 max-w-md mx-auto">
@@ -241,21 +240,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { MapPin, Star, Loader2, BadgeCheck, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchTopRatedVendors } from "../../../redux/slice/topRatedVendor/getAllTopRatedVendorSlice";
+import { SEO } from "../../../hooks/useSEO";
 
 const createSlug = (title = "") =>
-  title.toLowerCase()
+  title
+    .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
 function StarRating({ rating = 5 }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div
+      className="flex items-center gap-0.5"
+      aria-label={`Rating: ${rating} out of 5`}
+    >
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
           className="w-3.5 h-3.5"
           fill={star <= Math.round(rating) ? "#f97316" : "#d1d5db"}
           stroke="none"
+          aria-hidden="true"
         />
       ))}
     </div>
@@ -269,10 +274,13 @@ function BusinessCard({ business, index }) {
 
   const cardData = {
     id: business._id,
-    venId: business.venId, // ✅ VEN-001
+    venId: business.venId,
     name: business.companyName || business.name || "Unknown Business",
     category: business.category || "Service Provider",
-    city: business.addressInfo?.city || business.addressInfo?.officeAddress || "india",
+    city:
+      business.addressInfo?.city ||
+      business.addressInfo?.officeAddress ||
+      "india",
     location:
       [business.addressInfo?.officeAddress, business.addressInfo?.city]
         .filter(Boolean)
@@ -289,31 +297,51 @@ function BusinessCard({ business, index }) {
   const fallbackImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(cardData.name)}&background=fff7ed&color=f97316&size=400&bold=true`;
 
   const handleClick = () => {
-    // ✅ venId + city + slug — MongoDB _id nahi
-    // URL: /business/nagpur/VEN-001/rana-travel-and-tours
     const venId = cardData.venId;
     const city = createSlug(cardData.city);
     const slug = createSlug(cardData.name);
-
     if (!venId) return;
-
-    // sessionStorage me MongoDB _id save karo fallback ke liye
-    if (cardData.id) {
-      sessionStorage.setItem(`vendor_${venId}`, cardData.id);
-    }
-
+    if (cardData.id) sessionStorage.setItem(`vendor_${venId}`, cardData.id);
     navigate(`/business/${city}/${venId}/${slug}`);
   };
 
+  // ✅ JSON-LD structured data per card
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: cardData.name,
+    image: cardData.image || fallbackImage,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: cardData.city,
+      addressCountry: "IN",
+    },
+    aggregateRating:
+      cardData.reviews > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: Number(cardData.rating).toFixed(1),
+            reviewCount: cardData.reviews,
+          }
+        : undefined,
+  };
+
   return (
-    <div
+    <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && handleClick()}
+      aria-label={`View ${cardData.name} — ${cardData.category} in ${cardData.city}`}
       className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300"
       style={{
-        transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
-        transform: hovered ? "translateY(-5px) scale(1.015)" : "translateY(0) scale(1)",
+        transition:
+          "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
+        transform: hovered
+          ? "translateY(-5px) scale(1.015)"
+          : "translateY(0) scale(1)",
         boxShadow: hovered
           ? "0 24px 48px rgba(249, 115, 22, 0.15), 0 8px 20px rgba(0,0,0,0.08)"
           : "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
@@ -321,12 +349,21 @@ function BusinessCard({ business, index }) {
         animation: "fadeSlideUp 0.5s ease both",
       }}
     >
+      {/* ✅ JSON-LD per card */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* Image Section */}
       <div className="relative overflow-hidden h-[185px] bg-orange-50 shrink-0">
         <img
           src={cardData.image || fallbackImage}
-          alt={cardData.name}
+          alt={`${cardData.name} — ${cardData.category} in ${cardData.city}`}
           onError={() => setImgError(true)}
+          loading={index < 4 ? "eager" : "lazy"}
+          width={400}
+          height={185}
           className="w-full h-full object-cover"
           style={{
             transition: "transform 0.5s ease",
@@ -337,6 +374,7 @@ function BusinessCard({ business, index }) {
         <div
           className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
           style={{ opacity: hovered ? 1 : 0.4, transition: "opacity 0.3s" }}
+          aria-hidden="true"
         />
 
         {/* Category pill */}
@@ -349,7 +387,7 @@ function BusinessCard({ business, index }) {
         {/* Top Rated badge */}
         {cardData.badge && (
           <div className="absolute top-3 right-3 flex items-center gap-1 bg-white text-orange-500 text-[10px] font-bold px-2 py-1 rounded-full shadow-md border border-orange-100">
-            <TrendingUp className="w-2.5 h-2.5" />
+            <TrendingUp className="w-2.5 h-2.5" aria-hidden="true" />
             {cardData.badge}
           </div>
         )}
@@ -357,7 +395,7 @@ function BusinessCard({ business, index }) {
         {/* Verified badge */}
         {cardData.verified && (
           <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 bg-white/95 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full shadow border border-green-100">
-            <BadgeCheck className="w-3 h-3" />
+            <BadgeCheck className="w-3 h-3" aria-hidden="true" />
             Verified
           </div>
         )}
@@ -373,7 +411,10 @@ function BusinessCard({ business, index }) {
         </h3>
 
         <div className="flex items-start gap-1.5 text-gray-400 text-[11.5px]">
-          <MapPin className="w-3 h-3 text-orange-400 shrink-0 mt-0.5" />
+          <MapPin
+            className="w-3 h-3 text-orange-400 shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <span className="truncate leading-snug">{cardData.location}</span>
         </div>
 
@@ -393,13 +434,16 @@ function BusinessCard({ business, index }) {
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse">
+    <div
+      className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse"
+      aria-hidden="true"
+    >
       <div className="h-[185px] bg-gray-100" />
       <div className="px-4 py-3.5 space-y-3">
         <div className="h-4 bg-gray-100 rounded-lg w-3/4" />
@@ -413,69 +457,97 @@ function SkeletonCard() {
 export default function TopRatedBusinesses() {
   const dispatch = useDispatch();
   const { selectedCity } = useSelector((state) => state.location);
-  const { vendors, loading, error } = useSelector((state) => state.topRatedVendors);
+  const { vendors, loading, error } = useSelector(
+    (state) => state.topRatedVendors,
+  );
 
   useEffect(() => {
     dispatch(fetchTopRatedVendors());
   }, [dispatch]);
 
+  // ✅ SEO dynamic values
+  const pageTitle = `Top Rated Businesses in ${selectedCity} | Local Trade Street`;
+  const pageDescription = `Discover the best and most trusted businesses in ${selectedCity}. Handpicked top-rated service providers with verified reviews on Local Trade Street.`;
+  const canonicalUrl = `https://www.localtradestreet.com/top-rated/${createSlug(selectedCity)}`;
+  const ogImage = "https://www.localtradestreet.com/og-top-rated.jpg"; // ✅ replace with real OG image
+
   return (
-    <section
-      className="py-14 px-4 bg-white"
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
-    >
-      <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
+    <>
+      {/* ✅ SEO Hook */}
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonicalUrl}
+        ogImage={ogImage}
+        ogType="website"
       />
 
-      <div className="max-w-screen-xl mx-auto">
-        <div className="mb-10 text-center">
-          <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-500 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-3 uppercase tracking-widest">
-            <TrendingUp className="w-3.5 h-3.5" />
-            Top Picks
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-            Top Rated Businesses in
-            <span className="text-orange-500"> {selectedCity}</span>
-          </h2>
-          <p className="text-gray-400 text-sm mt-2 max-w-md mx-auto">
-            Handpicked and trusted by thousands of local customers
-          </p>
-        </div>
+      <section
+        className="py-14 px-4 bg-white"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
 
-        {error && (
-          <div className="text-center py-12">
-            <div className="inline-flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                <span className="text-red-400 text-lg">!</span>
-              </div>
-              <p className="text-red-400 text-sm font-medium">{error}</p>
+        <div className="max-w-screen-xl mx-auto">
+          <header className="mb-10 text-center">
+            <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-500 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-3 uppercase tracking-widest">
+              <TrendingUp className="w-3.5 h-3.5" aria-hidden="true" />
+              Top Picks
             </div>
-          </div>
-        )}
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+              Top Rated Businesses in
+              <span className="text-orange-500"> {selectedCity}</span>
+            </h1>
+            <p className="text-gray-400 text-sm mt-2 max-w-md mx-auto">
+              Handpicked and trusted by thousands of local customers
+            </p>
+          </header>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-          {loading
-            ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            : (vendors || []).map((vendor, i) => (
-                <BusinessCard key={vendor._id} business={vendor} index={i} />
-              ))}
+          {error && (
+            <div className="text-center py-12" role="alert">
+              <div className="inline-flex flex-col items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                  <span className="text-red-400 text-lg" aria-hidden="true">
+                    !
+                  </span>
+                </div>
+                <p className="text-red-400 text-sm font-medium">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <div
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
+            aria-label="Top rated businesses list"
+          >
+            {loading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
+              : (vendors || []).map((vendor, i) => (
+                  <BusinessCard key={vendor._id} business={vendor} index={i} />
+                ))}
+          </div>
+
+          {!loading && !error && (vendors || []).length === 0 && (
+            <div className="text-center py-16 text-gray-400" role="status">
+              <p className="text-sm">
+                No top rated businesses found in {selectedCity}.
+              </p>
+            </div>
+          )}
         </div>
 
-        {!loading && !error && (vendors || []).length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            <p className="text-sm">No top rated businesses found.</p>
-          </div>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(22px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </section>
+        <style>{`
+          @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </section>
+    </>
   );
 }
