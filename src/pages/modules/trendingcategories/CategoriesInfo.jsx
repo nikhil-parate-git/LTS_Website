@@ -345,6 +345,7 @@
 // }
 
 
+
 import { useState, useEffect, useCallback, memo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -354,7 +355,7 @@ import {
 } from "../../../redux/slice/category/getVendorById";
 import {
   MapPin, Phone, Star, Share2, ChevronRight,
-  Home, Clock, Calendar,
+  Home, Clock, Calendar, Info,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
@@ -668,6 +669,23 @@ export default function Details() {
                 </div>
               </div>
             </section>
+
+            {/* ─── About ───────────────────────────────────────────────────── */}
+            {vendor.aboutUs && (
+              <section className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Info size={16} className="text-orange-500" />
+                  <h2 className="text-base font-semibold text-gray-800">
+                    About {vendor.companyName}
+                  </h2>
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                  {vendor.aboutUs}
+                </p>
+                
+              </section>
+            )}
+            {/* ──────────────────────────────────────────────────────────────── */}
 
             {/* FAQ */}
             {vendor && <Faq vendor={vendor} />}
