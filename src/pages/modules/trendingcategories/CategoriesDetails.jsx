@@ -628,16 +628,6 @@ const BusinessCard = memo(function BusinessCard({ biz }) {
                   </>
                 )}
               </button>
-              <button className="flex items-center gap-1 border border-orange-400 text-orange-500 text-xs font-bold px-3 py-3 rounded-lg">
-                <Zap size={11} className="fill-orange-400" /> Sponsored
-              </button>
-            </div>
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <Eye size={12} className="text-orange-400" />
-              <span className="font-semibold text-gray-600">
-                {formatProfileCount(biz.profileCount || 0)}
-              </span>
-              <span>Views</span>
             </div>
           </div>
         </div>
