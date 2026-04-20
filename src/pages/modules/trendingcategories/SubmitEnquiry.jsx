@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
 import {
@@ -20,6 +20,7 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const params = useParams();
+  const location = useLocation();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -32,13 +33,18 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
   const { loading, success } = useSelector((state) => state.enquiryOtp);
   const isRoutePage = isOpen === undefined && onClose === undefined;
 
-  // categoryId prop sabse pehle, phir URL se cateId
-  const resolvedCategoryId = categoryId || params.cateId || params.slug;
+  // ✅ FIXED: sessionStorage fallback
+  const savedMeta = JSON.parse(sessionStorage.getItem("enquiryMeta") || "{}");
+  const venIdFromState = location.state?.venId || savedMeta.venId || null;
+  const catIdFromState = location.state?.catId || savedMeta.catId || null;
+  const subCateIdFromState =
+    location.state?.subCateId || savedMeta.subCateId || null;
 
   const handleClose = () => {
     setAnimate(false);
     setTimeout(() => {
       dispatch(resetEnquiryState());
+      sessionStorage.removeItem("enquiryMeta"); // ✅ cleanup
       if (onClose) {
         onClose();
       } else if (isRoutePage) navigate(-1);
@@ -94,7 +100,9 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
         name,
         phone: `${phone}`,
         enquiry,
-        cateId: resolvedCategoryId,
+        vendorId: venIdFromState || null,
+        categoryId: catIdFromState || null,
+        subcategoryId: subCateIdFromState || null,
       }),
     );
   };
@@ -222,18 +230,9 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
     return (
       <>
         <style>{`
-          .enquiry-modal {
-            opacity: 0;
-            transform: translateY(-40px);
-            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-          .enquiry-modal.show {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          .enquiry-modal { opacity: 0; transform: translateY(-40px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+          .enquiry-modal.show { opacity: 1; transform: translateY(0); }
         `}</style>
-
         <main className="min-h-screen bg-gray-50 flex items-start justify-center px-4 py-12">
           <div
             className={`enquiry-modal relative w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 sm:p-10 ${animate ? "show" : ""}`}
@@ -264,24 +263,11 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
   return (
     <>
       <style>{`
-        .enquiry-backdrop {
-          opacity: 0;
-          transition: opacity 0.45s ease;
-        }
+        .enquiry-backdrop { opacity: 0; transition: opacity 0.45s ease; }
         .enquiry-backdrop.show { opacity: 1; }
-
-        .enquiry-modal {
-          opacity: 0;
-          transform: translateY(-130px);
-          transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-                      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .enquiry-modal.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        .enquiry-modal { opacity: 0; transform: translateY(-130px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+        .enquiry-modal.show { opacity: 1; transform: translateY(0); }
       `}</style>
-
       <div
         className={`enquiry-backdrop fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm px-4 pt-10 pb-6 ${animate ? "show" : ""}`}
         onClick={(e) => e.target === e.currentTarget && handleClose()}

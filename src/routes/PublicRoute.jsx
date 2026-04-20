@@ -118,7 +118,8 @@ export default function PublicRoute() {
           <Route path="/subscriptions/success" element={<PaymentSuccessMessage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/submitenquiry" element={<SubmitEnquiry />} />
+          {/* <Route path="/submitenquiry" element={<SubmitEnquiry />} /> */}
+          <Route path="/submitenquiry/:catId/:subCateId" element={<SubmitEnquiry />} />
           {/* <Route path="/top-category/:slug" element={<TopCategoryDetails />} /> */}
           <Route path="/top-category/:cateId/:slug" element={<TopCategoryDetails />} />
           <Route path="/business" element={<BusinessPage />} />
