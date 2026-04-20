@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // useNavigate import kiya
+import { useNavigate } from "react-router-dom";
 import {
   sendEnquiryOtp,
   resetEnquiryState,
 } from "../../../redux/slice/enquiryform/enquirySentOtpSlice";
 import EnquiryOtp from "./EnquiryOtp";
 
-// ─── ICONS (Inline SVGs) ───────────────────────────────────────────────────
+// ─── ICONS ────────────────────────────────────────────────────────────────
 const IconPhone = () => (
   <svg
     width="14"
@@ -70,21 +70,6 @@ const IconMapPin = () => (
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
-const IconBriefcase = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#6b7280"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-  </svg>
-);
 const IconClock = () => (
   <svg
     width="14"
@@ -138,7 +123,7 @@ const IconChevronRight = () => (
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────────
 const CatgInfoRightSideBar = ({ vendorData }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Hook initialize kiya
+  const navigate = useNavigate();
   const [form, setForm] = useState({ mobile: "", name: "", requirement: "" });
   const [showMore, setShowMore] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -149,6 +134,7 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
     if (success) setShowOtp(true);
   }, [success]);
 
+  // ✅ FIXED: venId string bhejo — backend ab accept karta hai
   const handleSendEnquiry = (e) => {
     e.preventDefault();
     if (!form.mobile || !form.name || !form.requirement) return;
@@ -158,9 +144,9 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
         name: form.name,
         phone: form.mobile,
         enquiry: form.requirement,
-        categoryId: vendorData?.category?.id || null,
-        subcategoryId: vendorData?.subcategories?.[0]?.id || null,
-        vendorId: vendorData?.id || vendorData?._id || null,
+        vendorId: vendorData?.venId || null, // ✅ "VEN-274" string
+        categoryId: vendorData?.categoryId || null, // ✅ "CAT-010" string
+        subcategoryId: vendorData?.subcategoryIds?.[0] || null, // ✅ "SUBCAT-153" string
       }),
     );
   };
@@ -176,9 +162,18 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
     dispatch(resetEnquiryState());
   };
 
-  // Enquiry page par redirect karne ke liye handler
+  // ✅ FIXED: catId aur subCateId ke saath navigate karo
   const handleShowNumberClick = () => {
-    navigate("/submitenquiry");
+    const meta = {
+      venId: vendorData?.venId || null,
+      catId: vendorData?.categoryId || null,
+      subCateId: vendorData?.subcategoryIds?.[0] || null,
+    };
+    sessionStorage.setItem("enquiryMeta", JSON.stringify(meta));
+    navigate(
+      `/submitenquiry/${vendorData?.categoryId || "cat"}/${vendorData?.subcategoryIds?.[0] || "subcat"}`,
+      { state: meta },
+    );
   };
 
   const listedUnder = vendorData?.subcategories || [
@@ -297,13 +292,7 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
 
         <div className="space-y-2.5">
           <div className="flex items-center gap-2">
-            {/* <IconBriefcase />{" "} */}
-            {/* <span className="text-xs text-gray-600">
-              Established: {vendorData?.yearOfEstablishment || "2024"}
-            </span> */}
-          </div>
-          <div className="flex items-center gap-2">
-            <IconClock />{" "}
+            <IconClock />
             <span className="text-xs text-gray-600">
               Hours: {vendorData?.openingTime || "9:00 AM - 9:00 PM"}
             </span>
@@ -316,7 +305,7 @@ const CatgInfoRightSideBar = ({ vendorData }) => {
           </div>
         </div>
 
-        {/* Click karne par enquiry page par navigate hoga */}
+        {/* ✅ FIXED: catId/subCateId ke saath navigate */}
         <button
           onClick={handleShowNumberClick}
           className="w-full cursor-pointer mt-4 py-2 bg-blue-600 hover:bg-orange-500 text-white font-bold text-xs rounded transition-all flex items-center justify-center gap-2"
