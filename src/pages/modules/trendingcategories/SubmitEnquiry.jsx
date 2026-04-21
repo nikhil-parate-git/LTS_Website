@@ -16,7 +16,13 @@ const countryCodes = [
   { code: "+971", flag: "🇦🇪" },
 ];
 
-const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
+const SubmitEnquiry = ({
+  isOpen,
+  onClose,
+  categoryId,
+  subcategoryId,
+  vendorId,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const params = useParams();
@@ -33,18 +39,28 @@ const SubmitEnquiry = ({ isOpen, onClose, categoryId }) => {
   const { loading, success } = useSelector((state) => state.enquiryOtp);
   const isRoutePage = isOpen === undefined && onClose === undefined;
 
-  // ✅ FIXED: sessionStorage fallback
+  // ✅ FIXED: location.state → sessionStorage → props → params — sabse pehle jo mile
   const savedMeta = JSON.parse(sessionStorage.getItem("enquiryMeta") || "{}");
-  const venIdFromState = location.state?.venId || savedMeta.venId || null;
-  const catIdFromState = location.state?.catId || savedMeta.catId || null;
+  const venIdFromState =
+    location.state?.venId || savedMeta.venId || vendorId || null;
+  const catIdFromState =
+    location.state?.catId ||
+    savedMeta.catId ||
+    categoryId ||
+    params.catId ||
+    null;
   const subCateIdFromState =
-    location.state?.subCateId || savedMeta.subCateId || null;
+    location.state?.subCateId ||
+    savedMeta.subCateId ||
+    subcategoryId ||
+    params.subCateId ||
+    null;
 
   const handleClose = () => {
     setAnimate(false);
     setTimeout(() => {
       dispatch(resetEnquiryState());
-      sessionStorage.removeItem("enquiryMeta"); // ✅ cleanup
+      sessionStorage.removeItem("enquiryMeta");
       if (onClose) {
         onClose();
       } else if (isRoutePage) navigate(-1);

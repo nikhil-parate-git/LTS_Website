@@ -165,7 +165,7 @@ const InfoRateNow = ({
             </div>
 
             {/* Phone Number */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-semibold text-gray-800 mb-1.5">
                 Phone Number
               </label>
@@ -195,41 +195,7 @@ const InfoRateNow = ({
                   className="flex-1 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none bg-white"
                 />
               </div>
-            </div>
-
-            {/* Upload Photo */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1.5">
-                Upload Photo
-              </label>
-              <div
-                onClick={() => fileRef.current.click()}
-                className="border-2 border-dashed border-orange-300 rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer hover:bg-orange-50 transition-colors bg-orange-50/30"
-              >
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="h-16 w-auto rounded-lg object-cover"
-                  />
-                ) : (
-                  <>
-                    <Upload size={22} className="text-gray-400 mb-1.5" />
-                    <p className="text-xs text-gray-500 text-center px-4">
-                      Upload Image (Add JPG,JPEG, PNG Photos Only – Max. 10 MB
-                      each)
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                className="hidden"
-                onChange={handlePhoto}
-              />
-            </div>
+            </div> */}
 
             {/* Submit */}
             <button

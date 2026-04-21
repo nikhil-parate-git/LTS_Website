@@ -337,7 +337,6 @@ export default function CategoryDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("Relevance");
 
   const { vendors, loading, banners, bannerLoading, error, subcategoryName } =
     useSelector((state) => state.vendorStore);
@@ -422,7 +421,7 @@ export default function CategoryDetails() {
               <MapPin size={11} className="text-orange-500" />
               {cityLabel}
             </span>
-            <div className="relative">
+            {/* <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -435,13 +434,13 @@ export default function CategoryDetails() {
                 size={12}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
               />
-            </div>
-            <button
+            </div> */}
+            {/* <button
               onClick={() => setFilterOpen(true)}
               className="flex items-center gap-1.5 text-xs border rounded-xl px-3 py-1.5 font-medium"
             >
               <SlidersHorizontal size={12} /> Filters
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

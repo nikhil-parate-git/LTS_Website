@@ -26,7 +26,6 @@ const createSlug = (title = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// ─── StarRating — pure display, memoised ──────────────────────────────────────
 const StarRating = memo(function StarRating({ rating = 3.6 }) {
   return (
     <div className="flex items-center gap-1">
@@ -44,7 +43,6 @@ const StarRating = memo(function StarRating({ rating = 3.6 }) {
   );
 });
 
-// ─── SubCategoryCard — memoised to avoid re-render on parent state change ─────
 const SubCategoryCard = memo(function SubCategoryCard({
   item,
   onCardClick,
@@ -96,8 +94,7 @@ const SubCategoryCard = memo(function SubCategoryCard({
   );
 });
 
-// ─── MobileSidebarDrawer ──────────────────────────────────────────────────────
-function MobileSidebarDrawer({ open, onClose, cityName }) {
+function MobileSidebarDrawer({ open, onClose, cityName, categoryId }) {
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     return () => {
@@ -121,14 +118,14 @@ function MobileSidebarDrawer({ open, onClose, cityName }) {
           </button>
         </div>
         <div className="p-4">
-          <Sidebar cityName={cityName} />
+          {/* ✅ categoryId pass karo */}
+          <Sidebar cityName={cityName} categoryId={categoryId} />
         </div>
       </div>
     </>
   );
 }
 
-// ─── SubCategory ──────────────────────────────────────────────────────────────
 export default function SubCategory() {
   const { cateId, slug } = useParams();
   const navigate = useNavigate();
@@ -147,20 +144,17 @@ export default function SubCategory() {
   } = useSelector((state) => state.subcategory);
   const { selectedCity } = useSelector((state) => state.location);
 
-  // Fetch only when cateId changes
   useEffect(() => {
     if (!cateId) return;
     dispatch(fetchSubcategories(cateId));
     dispatch(fetchCategoryBanners(cateId));
   }, [cateId, dispatch]);
 
-  // Stable callback — won't cause SubCategoryCard to re-render
   const handleSubcategoryClick = useCallback(
     (item) => {
       const subCateId = item.subCateId;
       const subSlug = createSlug(item.name || "");
       const citySlug = createSlug(selectedCity || "india");
-      // ✅ URL: /service/CAT-001/SUBCAT-001/nagpur/bed-bug-control-service
       navigate(`/service/${cateId}/${subCateId}/${citySlug}/${subSlug}`);
     },
     [navigate, selectedCity, cateId],
@@ -172,14 +166,12 @@ export default function SubCategory() {
 
   const pageTitle = categoryName || slug?.replace(/-/g, " ") || "Services";
   const cityLabel = selectedCity || "India";
-  // const canonical = `https://www.localtradestreet.com/subcategory/${cateId}/${slug}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <SEO
         title={`${pageTitle} in ${cityLabel} | LocalTradeStreet`}
         description={`Find trusted ${pageTitle} providers in ${cityLabel}. Browse all subcategories and connect with verified local businesses on LocalTradeStreet.`}
-        // canonical={canonical}
         ogType="website"
       />
 
@@ -189,10 +181,13 @@ export default function SubCategory() {
         pageTitle={pageTitle}
         selectedCity={selectedCity}
       />
+
+      {/* ✅ categoryId pass karo mobile sidebar mein */}
       <MobileSidebarDrawer
         open={sidebarOpen}
         onClose={closeSidebar}
         cityName={selectedCity}
+        categoryId={cateId}
       />
 
       {/* Sticky toolbar */}
@@ -298,13 +293,14 @@ export default function SubCategory() {
             )}
           </div>
 
+          {/* ✅ Desktop sidebar mein categoryId pass karo */}
           <div className="hidden lg:block w-72 shrink-0">
-            <Sidebar cityName={selectedCity} />
+            <Sidebar cityName={selectedCity} categoryId={cateId} />
           </div>
         </div>
       </div>
 
-      {/* {showModal && <SubmitEnquiry onClose={closeModal} />} */}
+      {/* ✅ SubmitEnquiry mein categoryId pass karo */}
       {showModal && <SubmitEnquiry onClose={closeModal} categoryId={cateId} />}
     </div>
   );
