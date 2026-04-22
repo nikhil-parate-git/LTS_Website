@@ -28,6 +28,7 @@ import {
   Check,
   X,
   AlertTriangle,
+  ZoomIn,
 } from "lucide-react";
 import Banner from "./Acbanner/Banner";
 import CatgInfoRightSideBar from "./CatgInfoRightSideBar";
@@ -35,17 +36,130 @@ import InfoRateNow from "./InfoRateNow";
 import Faq from "./Faq";
 import { SEO } from "../../../hooks/useSEO";
 
+// ─── ImageLightbox ────────────────────────────────────────────────────────────
+function ImageLightbox({ images, startIndex, onClose }) {
+  const [current, setCurrent] = useState(startIndex);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") setCurrent((p) => (p + 1) % images.length);
+      if (e.key === "ArrowLeft")
+        setCurrent((p) => (p - 1 + images.length) % images.length);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [images.length, onClose]);
+
+  // Prevent body scroll while open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  const src = images[current]?.image || images[current]?.url;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Close */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+        aria-label="Close"
+      >
+        <X size={20} />
+      </button>
+
+      {/* Counter */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-white/70 text-sm font-medium">
+        {current + 1} / {images.length}
+      </div>
+
+      {/* Prev */}
+      {images.length > 1 && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setCurrent((p) => (p - 1 + images.length) % images.length);
+          }}
+          className="absolute left-3 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+          aria-label="Previous"
+        >
+          <ChevronRight size={22} className="rotate-180" />
+        </button>
+      )}
+
+      {/* Image */}
+      <div className="relative z-10 max-w-[90vw] max-h-[85vh] flex items-center justify-center">
+        <img
+          src={src}
+          alt={`Gallery image ${current + 1}`}
+          className="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl select-none"
+          draggable={false}
+        />
+      </div>
+
+      {/* Next */}
+      {images.length > 1 && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setCurrent((p) => (p + 1) % images.length);
+          }}
+          className="absolute right-3 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+          aria-label="Next"
+        >
+          <ChevronRight size={22} />
+        </button>
+      )}
+
+      {/* Thumbnail strip */}
+      {images.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 px-3 py-2 bg-black/40 rounded-xl backdrop-blur-sm max-w-[90vw] overflow-x-auto">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrent(i);
+              }}
+              className={`w-10 h-10 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                i === current
+                  ? "border-orange-400 scale-110"
+                  : "border-white/20 opacity-60 hover:opacity-100"
+              }`}
+            >
+              <img
+                src={img.image || img.url}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── DeleteConfirmModal ───────────────────────────────────────────────────────
 function DeleteConfirmModal({ isOpen, onConfirm, onCancel }) {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onCancel}
       />
-      {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm border border-gray-100 animate-[fadeInScale_0.18s_ease]">
         <style>{`
           @keyframes fadeInScale {
@@ -53,7 +167,6 @@ function DeleteConfirmModal({ isOpen, onConfirm, onCancel }) {
             to   { opacity: 1; transform: scale(1); }
           }
         `}</style>
-
         <div className="flex flex-col items-center text-center gap-3">
           <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
             <AlertTriangle size={24} className="text-red-500" />
@@ -68,7 +181,6 @@ function DeleteConfirmModal({ isOpen, onConfirm, onCancel }) {
             </p>
           </div>
         </div>
-
         <div className="flex gap-3 mt-6">
           <button
             onClick={onCancel}
@@ -337,7 +449,6 @@ function ReviewCard({ review, currentCustomerId }) {
 
   const reviewId = review?.reviewId;
 
-  // Handle both: plain string OR populated object
   const customerId =
     typeof review?.customerId === "object" && review?.customerId !== null
       ? review?.customerId?._id?.toString()
@@ -348,13 +459,10 @@ function ReviewCard({ review, currentCustomerId }) {
     !!customerId &&
     customerId === currentCustomerId.toString();
 
-  // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editRating, setEditRating] = useState(review?.rating || 0);
   const [editHovered, setEditHovered] = useState(0);
   const [editText, setEditText] = useState(review?.review || "");
-
-  // Delete confirm modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const name = review?.customerId?.name || "Anonymous";
@@ -625,6 +733,8 @@ export default function Details() {
   );
 
   const [rateModalOpen, setRateModalOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null); // gallery lightbox
+  const [serviceLightboxIndex, setServiceLightbox] = useState(null); // services lightbox
 
   const currentCustomerId = localStorage.getItem("customerId") || null;
 
@@ -650,6 +760,8 @@ export default function Details() {
 
   const openRateModal = useCallback(() => setRateModalOpen(true), []);
   const closeRateModal = useCallback(() => setRateModalOpen(false), []);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const closeServiceLightbox = useCallback(() => setServiceLightbox(null), []);
 
   const handleSendEnquiry = useCallback(() => {
     const catId = vendor?.categoryId;
@@ -712,6 +824,13 @@ export default function Details() {
 
   if (!vendor) return null;
 
+  const galleryImages = vendor.gallery || [];
+  const serviceImages = (vendor.services || []).map((s) => ({
+    image:
+      s.image ||
+      "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=500&q=80",
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
       <SEO
@@ -720,6 +839,24 @@ export default function Details() {
         ogImage={vendor?.image}
         ogType="business.business"
       />
+
+      {/* Gallery Lightbox */}
+      {lightboxIndex !== null && galleryImages.length > 0 && (
+        <ImageLightbox
+          images={galleryImages}
+          startIndex={lightboxIndex}
+          onClose={closeLightbox}
+        />
+      )}
+
+      {/* Services Lightbox */}
+      {serviceLightboxIndex !== null && serviceImages.length > 0 && (
+        <ImageLightbox
+          images={serviceImages}
+          startIndex={serviceLightboxIndex}
+          onClose={closeServiceLightbox}
+        />
+      )}
 
       <InfoRateNow
         isOpen={rateModalOpen}
@@ -832,18 +969,26 @@ export default function Details() {
                 Photo Gallery
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {vendor.gallery?.length > 0 ? (
-                  vendor.gallery.map((item, i) => (
+                {galleryImages.length > 0 ? (
+                  galleryImages.map((item, i) => (
                     <div
                       key={item.id || i}
-                      className="rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50"
+                      onClick={() => setLightboxIndex(i)}
+                      className="group relative rounded-lg overflow-hidden aspect-square border border-gray-200 bg-gray-50 cursor-pointer"
                     >
                       <img
                         src={item.image || item.url}
                         alt={`${vendor.companyName} gallery ${i + 1}`}
                         loading="lazy"
-                        className="w-full h-full object-cover hover:scale-105 transition-transform"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                        <ZoomIn
+                          size={22}
+                          className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow"
+                        />
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -871,7 +1016,10 @@ export default function Details() {
                           ₹ {service.price}
                         </span>
                       </div>
-                      <div className="aspect-[16/9] overflow-hidden bg-gray-100">
+                      <div
+                        className="aspect-[16/9] overflow-hidden bg-gray-100 cursor-pointer relative"
+                        onClick={() => setServiceLightbox(i)}
+                      >
                         <img
                           src={
                             service.image ||
@@ -881,6 +1029,13 @@ export default function Details() {
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                          <ZoomIn
+                            size={22}
+                            className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 text-center border-t border-gray-50">
                         <h3 className="text-sm font-medium text-gray-700 truncate">
