@@ -1,9 +1,10 @@
+// redux/slice/vendorReviews/vendorReviewsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BASE =
-  "https://local-trade-street-be.onrender.com/api/customer/rate-reviews";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const BASE = `${API_BASE}/customer/rate-reviews`;
 
 const getHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -36,7 +37,6 @@ export const fetchVendorReviews = createAsyncThunk(
 );
 
 // ── UPDATE review ──────────────────────────────────────────────────────────
-// payload: { reviewId: "REV-009", rating, review }
 export const updateVendorReview = createAsyncThunk(
   "vendorReviews/update",
   async ({ reviewId, rating, review }, { rejectWithValue }) => {
@@ -70,7 +70,6 @@ export const updateVendorReview = createAsyncThunk(
 );
 
 // ── DELETE review ──────────────────────────────────────────────────────────
-// payload: reviewId string e.g. "REV-007"
 export const deleteVendorReview = createAsyncThunk(
   "vendorReviews/delete",
   async (reviewId, { rejectWithValue }) => {
@@ -143,7 +142,6 @@ const vendorReviewsSlice = createSlice({
       .addCase(updateVendorReview.fulfilled, (state, action) => {
         state.updating = false;
         const updated = action.payload;
-        // Replace the old review in the array optimistically
         state.reviews = state.reviews.map((r) =>
           r.reviewId === updated.reviewId ? { ...r, ...updated } : r,
         );

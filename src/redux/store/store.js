@@ -25,6 +25,7 @@ import vendorFormReducer from "../slice/addvendorform/allDropdownSlice";
 import addVendorReducer from "../slice/addvendorform/addVendorSlice";
 import rateReviewReducer from "../slice/ratingandreviews/addReviewSlice"
 import vendorReviewsReducer from "../slice/ratingandreviews/getReviewSlice";
+import searchReducer from "../slice/searching/getSearchSlice";
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -73,7 +74,9 @@ const store = configureStore({
     //rating&review
      rateReview: rateReviewReducer,
      vendorReviews: vendorReviewsReducer,
- 
+    
+     //search
+     search: searchReducer,   
   },
 });
 export default store;

@@ -523,7 +523,7 @@ function ReviewCard({ review, currentCustomerId }) {
                   className="p-1.5 rounded-lg text-gray-400 hover:text-orange-500 hover:bg-orange-50 transition-colors"
                   aria-label="Edit review"
                 >
-                  <Pencil size={15} />
+                  <Pencil color="black" size={17} />
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(true)}
@@ -534,7 +534,7 @@ function ReviewCard({ review, currentCustomerId }) {
                   {isDeleting ? (
                     <span className="inline-block w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Trash2 size={15} />
+                    <Trash2 color="black" size={17} />
                   )}
                 </button>
               </div>

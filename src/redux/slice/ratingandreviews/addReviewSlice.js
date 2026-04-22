@@ -2,6 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const REVIEW_URL = `${API_BASE}/customer/rate-reviews/reviews`;
+
 // ── Thunk ──────────────────────────────────────────────────────────────────
 export const submitRateReview = createAsyncThunk(
   "rateReview/submit",
@@ -10,24 +13,27 @@ export const submitRateReview = createAsyncThunk(
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "https://local-trade-street-be.onrender.com/api/customer/rate-reviews/reviews",
+        REVIEW_URL,
         { vendorId, rating, review },
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
-      toast.success(response.data.message || "Rating & review submitted successfully! 🎉", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.success(
+        response.data.message || "Rating & review submitted successfully! 🎉",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        },
+      );
 
       return response.data;
     } catch (error) {
@@ -41,12 +47,15 @@ export const submitRateReview = createAsyncThunk(
         message.toLowerCase().includes("already reviewed");
 
       if (isAlreadyReviewed) {
-        toast.info("You have already reviewed this vendor. You can only review once. ✅", {
-          position: "top-right",
-          autoClose: 4000,
-          closeOnClick: true,
-          pauseOnHover: true,
-        });
+        toast.info(
+          "You have already reviewed this vendor. You can only review once. ✅",
+          {
+            position: "top-right",
+            autoClose: 4000,
+            closeOnClick: true,
+            pauseOnHover: true,
+          },
+        );
       } else {
         toast.error(message, {
           position: "top-right",
@@ -60,7 +69,7 @@ export const submitRateReview = createAsyncThunk(
 
       return rejectWithValue({ message, alreadyReviewed: isAlreadyReviewed });
     }
-  }
+  },
 );
 
 // ── Slice ──────────────────────────────────────────────────────────────────
