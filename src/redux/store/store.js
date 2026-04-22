@@ -23,6 +23,8 @@ import faqReducer from "../slice/faq/getFaqSlice";
 import vendorOtpReducer from "../slice/addvendorform/otpSlice";
 import vendorFormReducer from "../slice/addvendorform/allDropdownSlice";
 import addVendorReducer from "../slice/addvendorform/addVendorSlice";
+import rateReviewReducer from "../slice/ratingandreviews/addReviewSlice"
+import vendorReviewsReducer from "../slice/ratingandreviews/getReviewSlice";
 const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -67,6 +69,10 @@ const store = configureStore({
     vendorOtp: vendorOtpReducer,
     vendorForm: vendorFormReducer,
     addVendor: addVendorReducer,
+
+    //rating&review
+     rateReview: rateReviewReducer,
+     vendorReviews: vendorReviewsReducer,
  
   },
 });
