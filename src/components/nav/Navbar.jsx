@@ -1,3 +1,415 @@
+// import { useState, useRef, useEffect, useMemo } from "react";
+// import {
+//   Search,
+//   Menu,
+//   User,
+//   MapPin,
+//   ChevronDown,
+//   Loader2,
+//   X,
+// } from "lucide-react";
+// import logo from "../../../src/assets/logo.png";
+// import HamburgerDrawer from "./HamburgerDrawer";
+// import { useNavigate, useLocation, Link, NavLink } from "react-router-dom";
+// import ProfileLogin from "../../pages/modules/profilelogin/ProfileLogin";
+// import ProfileDropdown from "./ProfileDropdown";
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchCities } from "../../redux/slice/citydropdown/getCityDropdownSlice";
+// import { setCity } from "../../redux/slice/locationSlice";
+// import AddVendorForm from "../../components/nav/AddVendorForm";
+
+// export default function Navbar() {
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const [selectedLocation, setSelectedLocation] = useState("Select City");
+//   const [dropdownOpen, setDropdownOpen] = useState(false);
+//   const [citySearch, setCitySearch] = useState("");
+//   const [visibleCount, setVisibleCount] = useState(50);
+//   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+//   const [mobileCityOpen, setMobileCityOpen] = useState(false);
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const [profileOpen, setProfileOpen] = useState(false);
+//   const [vendorFormOpen, setVendorFormOpen] = useState(false);
+
+//   const dropdownRef = useRef(null);
+//   const mobileDropdownRef = useRef(null);
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const dispatch = useDispatch();
+
+//   const { cities, loading } = useSelector((state) => state.cityDropdown);
+//   const selectedCityFromRedux = useSelector(
+//     (state) => state.location.selectedCity,
+//   );
+
+//   useEffect(() => {
+//     if (selectedCityFromRedux) {
+//       setSelectedLocation(selectedCityFromRedux);
+//     }
+//   }, [selectedCityFromRedux]);
+
+//   const handleCitySelect = (cityName) => {
+//     if (!cityName) return;
+//     setSelectedLocation(cityName);
+//     dispatch(setCity(cityName));
+//     setDropdownOpen(false);
+//     setMobileCityOpen(false);
+//     setCitySearch("");
+//     setSearchQuery("");
+//   };
+
+//   useEffect(() => {
+//     dispatch(fetchCities());
+//   }, [dispatch]);
+
+//   const filteredCities = useMemo(() => {
+//     const cityList = Array.isArray(cities) ? cities : [];
+//     const activeSearch = citySearch || searchQuery;
+//     if (!activeSearch) return cityList;
+//     return cityList.filter((city) =>
+//       city?.name?.toLowerCase().includes(activeSearch.toLowerCase()),
+//     );
+//   }, [cities, citySearch, searchQuery]);
+
+//   const displayCities = filteredCities.slice(0, visibleCount);
+
+//   const handleKeyDown = (e) => {
+//     if (e.key === "Enter" && searchQuery.trim() !== "") {
+//       const exactMatch = cities.find(
+//         (c) => c.name.toLowerCase() === searchQuery.toLowerCase(),
+//       );
+//       if (exactMatch) {
+//         handleCitySelect(exactMatch.name);
+//       } else {
+//         handleCitySelect(searchQuery);
+//       }
+//     }
+//   };
+
+//   const handleListingClick = () => {
+//     setVendorFormOpen(true);
+//   };
+
+//   const handleScroll = (e) => {
+//     const { scrollTop, scrollHeight, clientHeight } = e.target;
+//     if (scrollHeight - scrollTop <= clientHeight + 20) {
+//       if (visibleCount < filteredCities.length) {
+//         setVisibleCount((prev) => prev + 50);
+//       }
+//     }
+//   };
+
+//   useEffect(() => {
+//     setVisibleCount(50);
+//   }, [citySearch, searchQuery, dropdownOpen, mobileCityOpen]);
+
+//   useEffect(() => {
+//     const handler = (e) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+//         setDropdownOpen(false);
+//       }
+//       if (
+//         mobileDropdownRef.current &&
+//         !mobileDropdownRef.current.contains(e.target)
+//       ) {
+//         setMobileCityOpen(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handler);
+//     return () => document.removeEventListener("mousedown", handler);
+//   }, []);
+
+//   useEffect(() => {
+//     if (mobileSearchOpen || mobileCityOpen) {
+//       document.body.style.overflow = "hidden";
+//     } else {
+//       document.body.style.overflow = "";
+//     }
+//     return () => {
+//       document.body.style.overflow = "";
+//     };
+//   }, [mobileSearchOpen, mobileCityOpen]);
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//     window.location.reload();
+//   };
+
+//   const CityList = ({ onSelect }) => (
+//     <>
+//       {loading ? (
+//         <div className="p-8 text-center">
+//           <Loader2 className="w-6 h-6 animate-spin mx-auto text-orange-500" />
+//         </div>
+//       ) : displayCities.length > 0 ? (
+//         displayCities.map((city, index) => (
+//           <button
+//             key={`${city.name}-${index}`}
+//             onClick={() => onSelect(city?.name)}
+//             className="w-full text-left px-4 py-3 text-sm cursor-pointer hover:bg-orange-50 active:bg-orange-100 flex items-center transition-colors"
+//           >
+//             <MapPin className="w-3.5 h-3.5 text-gray-400 mr-2 flex-shrink-0" />
+//             {city?.name}
+//           </button>
+//         ))
+//       ) : (
+//         <div className="p-8 text-center text-sm text-gray-500">
+//           No city found
+//         </div>
+//       )}
+//     </>
+//   );
+
+//   const navLinks = [
+//     { label: "Services", path: "/navservice" },
+//     { label: "Blogs", path: "/blog" },
+//     { label: "Contact", path: "/contact" },
+//     { label: "About", path: "/about" },
+//   ];
+
+//   return (
+//     <>
+//       <div className="h-[96px] sm:h-[96px] md:h-[64px]" />
+
+//       <nav
+//         className="w-full bg-white fixed top-0 left-0 right-0 z-50 shadow-sm"
+//         aria-label="Main Navigation"
+//       >
+//         {/* ROW 1 */}
+//         <div className="px-3 sm:px-4 md:px-5 lg:px-6 py-2">
+//           <div className="max-w-[1400px] mx-auto flex items-center gap-1 sm:gap-1.5 lg:gap-2">
+//             {/* Logo: Changed to Link for SEO crawling */}
+//             <Link
+//               to="/"
+//               className="flex-shrink-0"
+//               aria-label="Local Trade Street Home"
+//             >
+//               <img
+//                 src={logo}
+//                 alt="Local Trade Street - Connect with Local Services"
+//                 className="h-7 sm:h-8 md:h-9 lg:h-10 w-auto"
+//               />
+//             </Link>
+
+//             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
+
+//             {/* DESKTOP: Location Dropdown */}
+//             <div
+//               className="relative hidden md:block flex-shrink-0"
+//               ref={dropdownRef}
+//             >
+//               <button
+//                 onClick={() => setDropdownOpen(!dropdownOpen)}
+//                 aria-expanded={dropdownOpen}
+//                 aria-haspopup="listbox"
+//                 className="flex items-center gap-1 text-gray-700 font-medium text-xs lg:text-sm border rounded-lg px-2 lg:px-3 py-1.5 hover:bg-gray-50 transition-all whitespace-nowrap"
+//               >
+//                 <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-orange-500 flex-shrink-0" />
+//                 <span className="max-w-[70px] lg:max-w-[110px] xl:max-w-[140px] truncate">
+//                   {selectedLocation}
+//                 </span>
+//                 <ChevronDown
+//                   className={`w-3 h-3 flex-shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+//                 />
+//               </button>
+
+//               {dropdownOpen && (
+//                 <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] w-64 lg:w-72 overflow-hidden flex flex-col">
+//                   <div className="p-3 border-gray-200 border-b bg-white">
+//                     <input
+//                       type="text"
+//                       placeholder="Search from 4000+ cities..."
+//                       className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-orange-400"
+//                       value={citySearch || searchQuery}
+//                       onChange={(e) => setCitySearch(e.target.value)}
+//                       autoFocus
+//                     />
+//                   </div>
+//                   <div
+//                     className="max-h-[300px] overflow-y-auto cursor-pointer"
+//                     onScroll={handleScroll}
+//                   >
+//                     <CityList onSelect={handleCitySelect} />
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
+
+//             {/* DESKTOP: Search */}
+//             <div className="hidden md:flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 flex-1 min-w-0 p-1">
+//               <label htmlFor="desktop-search" className="sr-only">
+//                 Search Services
+//               </label>
+//               <input
+//                 id="desktop-search"
+//                 type="text"
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 onKeyDown={handleKeyDown}
+//                 placeholder={`Search in ${selectedLocation}`}
+//                 className="flex-1 px-2 lg:px-3 py-1.5 text-xs lg:text-sm outline-none min-w-0"
+//               />
+//               <button
+//                 aria-label="Search Submit"
+//                 className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors flex-shrink-0"
+//               >
+//                 <Search className="w-4 h-4" />
+//               </button>
+//             </div>
+
+//             {/* MOBILE: Search + City icons */}
+//             <div className="flex md:hidden items-center gap-1 ml-auto">
+//               <button
+//                 onClick={() => setMobileSearchOpen(true)}
+//                 className="p-2 text-gray-600 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+//                 aria-label="Open Search"
+//               >
+//                 <Search className="w-5 h-5" />
+//               </button>
+//               <button
+//                 onClick={() => setMobileCityOpen(true)}
+//                 className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-gray-700 border rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors max-w-[110px]"
+//                 aria-label="Select city"
+//               >
+//                 <MapPin className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
+//                 <span className="truncate">{selectedLocation}</span>
+//               </button>
+//             </div>
+
+//             {/* RIGHT SIDE */}
+//             <div className="flex items-center gap-1 lg:gap-2 ml-2 flex-shrink-0">
+//               {/* List Your Business - Kept as button because it's an external window.open action */}
+//               <button
+//                 onClick={handleListingClick}
+//                 className="group relative overflow-hidden hidden cursor-pointer md:inline-flex items-center gap-1.5 lg:gap-2.5 text-[9px] lg:text-[11px] uppercase tracking-wider font-bold text-white rounded-lg px-2 md:px-2.5 lg:px-4 py-2 whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:scale-[1.02] active:scale-95 bg-[linear-gradient(45deg,#f97316,#ea580c,#f97316)] bg-[length:200%_auto]"
+//               >
+//                 <span className="relative flex h-1.5 w-1.5 lg:h-2 lg:w-2 flex-shrink-0">
+//                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+//                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 lg:h-2 lg:w-2 bg-white"></span>
+//                 </span>
+//                 <span className="relative z-10">Listing Your Business</span>
+//               </button>
+
+//               {/* DESKTOP Nav Links - Using NavLink for SEO crawling & Active state */}
+//               {navLinks.map((link) => (
+//                 <NavLink
+//                   key={link.path}
+//                   to={link.path}
+//                   className={({ isActive }) =>
+//                     `hidden xl:block text-xs lg:text-sm px-1 lg:px-2 py-1 font-medium transition-colors duration-200 rounded-md
+//                     ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-700 hover:text-orange-500"}`
+//                   }
+//                 >
+//                   {link.label}
+//                 </NavLink>
+//               ))}
+
+//               <button
+//                 onClick={() => setMenuOpen(true)}
+//                 aria-label="Open Menu"
+//                 className="p-1.5 lg:p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+//               >
+//                 <Menu className="w-4 h-4 lg:w-5 lg:h-5" />
+//               </button>
+
+//               <button
+//                 onClick={() => setProfileOpen(true)}
+//                 aria-label="User Profile"
+//                 className={`p-1.5 rounded-full border flex-shrink-0 transition-colors hover:bg-gray-50 ${
+//                   localStorage.getItem("token")
+//                     ? "border-orange-500 bg-orange-50"
+//                     : "border-gray-200"
+//                 }`}
+//               >
+//                 <User className="w-4 h-4 lg:w-5 lg:h-5" />
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* ROW 2: Mobile Nav Links */}
+//         <div className="md:hidden border-t border-gray-100 bg-white px-3 py-1.5">
+//           <div className="flex items-center justify-around">
+//             {navLinks.map((link) => (
+//               <NavLink
+//                 key={link.path}
+//                 to={link.path}
+//                 className={({ isActive }) =>
+//                   `text-[11px] font-medium px-2 py-1 rounded-md transition-colors
+//                   ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-600 hover:text-orange-500"}`
+//                 }
+//               >
+//                 {link.label}
+//               </NavLink>
+//             ))}
+//             <button
+//               onClick={handleListingClick}
+//               className="text-[11px] font-bold text-orange-500 px-2 py-1 rounded-md border border-orange-400"
+//             >
+//               List Business
+//             </button>
+//           </div>
+//         </div>
+//       </nav>
+
+//       {/* MOBILE Search Overlay - Added labels for SEO and accessibility */}
+//       {mobileSearchOpen && (
+//         <div className="fixed inset-0 z-[200] bg-white flex flex-col md:hidden">
+//           <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200">
+//             <div className="flex items-center border border-orange-400 rounded-lg bg-white flex-1 px-3 py-2 gap-2">
+//               <Search className="w-4 h-4 text-gray-400" />
+//               <input
+//                 type="text"
+//                 id="mobile-search-input"
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 onKeyDown={(e) => {
+//                   handleKeyDown(e);
+//                   if (e.key === "Enter") setMobileSearchOpen(false);
+//                 }}
+//                 placeholder={`Search in ${selectedLocation}`}
+//                 className="flex-1 text-sm outline-none"
+//                 autoFocus
+//               />
+//             </div>
+//             <button
+//               onClick={() => setMobileSearchOpen(false)}
+//               className="text-sm font-medium text-orange-500"
+//             >
+//               Cancel
+//             </button>
+//           </div>
+//           {/* ... Popular searches part remains same ... */}
+//         </div>
+//       )}
+
+//       {/* Other Modals (City Bottom Sheet, Hamburger, Profile) remain same */}
+//       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+//       {profileOpen &&
+//         (localStorage.getItem("token") ? (
+//           <ProfileDropdown
+//             onClose={() => setProfileOpen(false)}
+//             onLogout={handleLogout}
+//           />
+//         ) : (
+//           <ProfileLogin onClose={() => setProfileOpen(false)} />
+//         ))}
+
+//       {vendorFormOpen && (
+//         <AddVendorForm
+//           onClose={() => setVendorFormOpen(false)}
+//           onSuccess={() => {
+//             setVendorFormOpen(false);
+//             window.location.href = "https://vendor.localtradestreet.com/login";
+//           }}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Search,
@@ -17,13 +429,151 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCities } from "../../redux/slice/citydropdown/getCityDropdownSlice";
 import { setCity } from "../../redux/slice/locationSlice";
 import AddVendorForm from "../../components/nav/AddVendorForm";
+import {
+  setSearchQuery,
+  clearSearchResults,
+  fetchCategoryResults,
+  fetchSubcategoryResults,
+} from "../../redux/slice/searching/getSearchSlice";
+
+function useDebounce(value, delay = 500) {
+  const [debounced, setDebounced] = useState(value);
+  const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    if (value.trim().length < 2) {
+      setIsPending(false);
+      setDebounced(value);
+      return;
+    }
+    setIsPending(true);
+    const t = setTimeout(() => {
+      setDebounced(value);
+      setIsPending(false);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+
+  return { debounced, isPending };
+}
+
+const SkeletonRow = () => (
+  <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
+    <div className="w-6 h-6 rounded bg-gray-200 flex-shrink-0" />
+    <div className="flex-1 space-y-1.5">
+      <div className="h-3 bg-gray-200 rounded w-2/3" />
+      <div className="h-2 bg-gray-100 rounded w-1/4" />
+    </div>
+  </div>
+);
+
+const SearchSkeleton = () => (
+  <>
+    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+      Categories
+    </div>
+    <SkeletonRow />
+    <SkeletonRow />
+    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100 mt-1">
+      Services
+    </div>
+    <SkeletonRow />
+    <SkeletonRow />
+    <SkeletonRow />
+  </>
+);
+
+// ✅ FIX: categories aur subcategories ko default [] diya
+const SearchDropdownContent = ({
+  isLoading,
+  hasResults,
+  searchInput,
+  categories = [],
+  subcategories = [],
+  onResultClick,
+  mobile = false,
+}) => {
+  const imgSize = mobile ? "w-8 h-8" : "w-6 h-6";
+
+  if (isLoading) return <SearchSkeleton />;
+
+  if (!hasResults)
+    return (
+      <div
+        className={`${mobile ? "p-8" : "p-6"} text-center text-sm text-gray-500`}
+      >
+        No results found for &quot;{searchInput}&quot;
+      </div>
+    );
+
+  return (
+    <>
+      {categories.length > 0 && (
+        <div>
+          <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+            Categories
+          </div>
+          {categories.map((cat) => (
+            <button
+              key={cat._id}
+              onClick={() => onResultClick(cat, "category", mobile)}
+              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-orange-50 transition-colors text-left border-b border-gray-50"
+            >
+              {cat.icon ? (
+                <img
+                  src={cat.icon}
+                  alt={cat.name}
+                  className={`${imgSize} rounded object-cover flex-shrink-0`}
+                />
+              ) : (
+                <div
+                  className={`${imgSize} rounded bg-orange-100 flex-shrink-0`}
+                />
+              )}
+              <p className="text-sm font-medium text-gray-800">{cat.name}</p>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* {subcategories.length > 0 && (
+        <div>
+          <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+            Services
+          </div>
+          {subcategories.map((sub) => (
+            <button
+              key={sub._id}
+              onClick={() => onResultClick(sub, "subcategory", mobile)}
+              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-orange-50 transition-colors text-left border-b border-gray-50"
+            >
+              {sub.image ? (
+                <img
+                  src={sub.image}
+                  alt={sub.name}
+                  className={`${imgSize} rounded object-cover flex-shrink-0`}
+                />
+              ) : (
+                <div
+                  className={`${imgSize} rounded bg-orange-100 flex-shrink-0`}
+                />
+              )}
+              <p className="text-sm font-medium text-gray-800">{sub.name}</p>
+            </button>
+          ))}
+        </div>
+      )} */}
+    </>
+  );
+};
 
 export default function Navbar() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("Select City");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [citySearch, setCitySearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(50);
+  const [searchInput, setSearchInput] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileCityOpen, setMobileCityOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,20 +582,58 @@ export default function Navbar() {
 
   const dropdownRef = useRef(null);
   const mobileDropdownRef = useRef(null);
+  const searchRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
 
-  const { cities, loading } = useSelector((state) => state.cityDropdown);
-  const selectedCityFromRedux = useSelector(
-    (state) => state.location.selectedCity,
-  );
+  const { cities, loading: citiesLoading } = useSelector((s) => s.cityDropdown);
+  const selectedCityFromRedux = useSelector((s) => s.location.selectedCity);
+
+  // ✅ FIX: default [] diya selector mein
+  const {
+    categories = [],
+    subcategories = [],
+    categoryLoading,
+    subcategoryLoading,
+  } = useSelector((s) => s.search);
+
+  const { debounced: debouncedSearch, isPending } = useDebounce(searchInput, 500);
+  const isLoading = isPending || categoryLoading || subcategoryLoading;
+  const hasResults = categories.length > 0 || subcategories.length > 0;
 
   useEffect(() => {
-    if (selectedCityFromRedux) {
-      setSelectedLocation(selectedCityFromRedux);
-    }
+    if (selectedCityFromRedux) setSelectedLocation(selectedCityFromRedux);
   }, [selectedCityFromRedux]);
+
+  useEffect(() => {
+    dispatch(fetchCities());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (debouncedSearch.trim().length < 2) {
+      dispatch(clearSearchResults());
+      setShowSearchResults(false);
+      return;
+    }
+    dispatch(setSearchQuery(debouncedSearch));
+    dispatch(fetchCategoryResults(debouncedSearch));
+    dispatch(fetchSubcategoryResults(debouncedSearch));
+    setShowSearchResults(true);
+  }, [debouncedSearch, dispatch]);
+
+  useEffect(() => {
+    if (searchInput.trim().length >= 2) setShowSearchResults(true);
+    else setShowSearchResults(false);
+  }, [searchInput]);
+
+  const toSlug = (name = "") =>
+    name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   const handleCitySelect = (cityName) => {
     if (!cityName) return;
@@ -54,76 +642,98 @@ export default function Navbar() {
     setDropdownOpen(false);
     setMobileCityOpen(false);
     setCitySearch("");
-    setSearchQuery("");
   };
 
-  useEffect(() => {
-    dispatch(fetchCities());
-  }, [dispatch]);
-
   const filteredCities = useMemo(() => {
-    const cityList = Array.isArray(cities) ? cities : [];
-    const activeSearch = citySearch || searchQuery;
-    if (!activeSearch) return cityList;
-    return cityList.filter((city) =>
-      city?.name?.toLowerCase().includes(activeSearch.toLowerCase()),
+    const list = Array.isArray(cities) ? cities : [];
+    if (!citySearch) return list;
+    return list.filter((c) =>
+      c?.name?.toLowerCase().includes(citySearch.toLowerCase()),
     );
-  }, [cities, citySearch, searchQuery]);
+  }, [cities, citySearch]);
 
   const displayCities = filteredCities.slice(0, visibleCount);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && searchQuery.trim() !== "") {
-      const exactMatch = cities.find(
-        (c) => c.name.toLowerCase() === searchQuery.toLowerCase(),
+  const handleCityKeyDown = (e) => {
+    if (e.key === "Enter" && citySearch.trim()) {
+      const exact = cities.find(
+        (c) => c.name.toLowerCase() === citySearch.toLowerCase(),
       );
-      if (exactMatch) {
-        handleCitySelect(exactMatch.name);
-      } else {
-        handleCitySelect(searchQuery);
-      }
+      handleCitySelect(exact ? exact.name : citySearch);
     }
-  };
-
-  const handleListingClick = () => {
-    setVendorFormOpen(true);
   };
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    if (scrollHeight - scrollTop <= clientHeight + 20) {
-      if (visibleCount < filteredCities.length) {
-        setVisibleCount((prev) => prev + 50);
-      }
+    if (
+      scrollHeight - scrollTop <= clientHeight + 20 &&
+      visibleCount < filteredCities.length
+    ) {
+      setVisibleCount((p) => p + 50);
     }
   };
 
   useEffect(() => {
     setVisibleCount(50);
-  }, [citySearch, searchQuery, dropdownOpen, mobileCityOpen]);
+  }, [citySearch, dropdownOpen, mobileCityOpen]);
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter" && searchInput.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`);
+      setShowSearchResults(false);
+    }
+    if (e.key === "Escape") setShowSearchResults(false);
+  };
+
+  // ✅ FIX: safe field name fallbacks
+  const handleSearchResultClick = (item, type, mobile = false) => {
+    setShowSearchResults(false);
+    if (mobile) setMobileSearchOpen(false);
+    setSearchInput("");
+    dispatch(clearSearchResults());
+
+    const slug = toSlug(item.name);
+    const citySlug = toSlug(
+      selectedLocation && selectedLocation !== "Select City"
+        ? selectedLocation
+        : "india",
+    );
+
+    if (type === "category") {
+      const id = item.cateId || item._id || item.id;
+      navigate(`/subcategory/${id}/${slug}`);
+    } else {
+      const catId = item.catId || item.cateId || item._id;
+      const subCateId = item.subCateId || item.subCategoryId || item._id;
+      navigate(`/service/${catId}/${subCateId}/${citySlug}/${slug}`);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchInput("");
+    dispatch(clearSearchResults());
+    setShowSearchResults(false);
+  };
 
   useEffect(() => {
     const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setDropdownOpen(false);
-      }
       if (
         mobileDropdownRef.current &&
         !mobileDropdownRef.current.contains(e.target)
-      ) {
+      )
         setMobileCityOpen(false);
-      }
+      if (searchRef.current && !searchRef.current.contains(e.target))
+        setShowSearchResults(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
-    if (mobileSearchOpen || mobileCityOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow =
+      mobileSearchOpen || mobileCityOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -137,7 +747,7 @@ export default function Navbar() {
 
   const CityList = ({ onSelect }) => (
     <>
-      {loading ? (
+      {citiesLoading ? (
         <div className="p-8 text-center">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-orange-500" />
         </div>
@@ -178,7 +788,6 @@ export default function Navbar() {
         {/* ROW 1 */}
         <div className="px-3 sm:px-4 md:px-5 lg:px-6 py-2">
           <div className="max-w-[1400px] mx-auto flex items-center gap-1 sm:gap-1.5 lg:gap-2">
-            {/* Logo: Changed to Link for SEO crawling */}
             <Link
               to="/"
               className="flex-shrink-0"
@@ -193,7 +802,7 @@ export default function Navbar() {
 
             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
 
-            {/* DESKTOP: Location Dropdown */}
+            {/* DESKTOP: City Dropdown */}
             <div
               className="relative hidden md:block flex-shrink-0"
               ref={dropdownRef}
@@ -209,24 +818,27 @@ export default function Navbar() {
                   {selectedLocation}
                 </span>
                 <ChevronDown
-                  className={`w-3 h-3 flex-shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                  className={`w-3 h-3 flex-shrink-0 transition-transform ${
+                    dropdownOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
               {dropdownOpen && (
                 <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] w-64 lg:w-72 overflow-hidden flex flex-col">
-                  <div className="p-3 border-gray-200 border-b bg-white">
+                  <div className="p-3 border-b border-gray-200 bg-white">
                     <input
                       type="text"
                       placeholder="Search from 4000+ cities..."
                       className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-orange-400"
-                      value={citySearch || searchQuery}
+                      value={citySearch}
                       onChange={(e) => setCitySearch(e.target.value)}
+                      onKeyDown={handleCityKeyDown}
                       autoFocus
                     />
                   </div>
                   <div
-                    className="max-h-[300px] overflow-y-auto cursor-pointer"
+                    className="max-h-[300px] overflow-y-auto"
                     onScroll={handleScroll}
                   >
                     <CityList onSelect={handleCitySelect} />
@@ -238,28 +850,72 @@ export default function Navbar() {
             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
 
             {/* DESKTOP: Search */}
-            <div className="hidden md:flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 flex-1 min-w-0 p-1">
-              <label htmlFor="desktop-search" className="sr-only">
-                Search Services
-              </label>
-              <input
-                id="desktop-search"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={`Search in ${selectedLocation}`}
-                className="flex-1 px-2 lg:px-3 py-1.5 text-xs lg:text-sm outline-none min-w-0"
-              />
-              <button
-                aria-label="Search Submit"
-                className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors flex-shrink-0"
-              >
-                <Search className="w-4 h-4" />
-              </button>
+            <div
+              className="relative hidden md:block flex-1 min-w-0"
+              ref={searchRef}
+            >
+              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 p-1">
+                <label htmlFor="desktop-search" className="sr-only">
+                  Search Services
+                </label>
+                <input
+                  id="desktop-search"
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  onFocus={() => {
+                    if (searchInput.trim().length >= 2)
+                      setShowSearchResults(true);
+                  }}
+                  placeholder={`Search in ${selectedLocation}`}
+                  className="flex-1 px-2 lg:px-3 py-1.5 text-xs lg:text-sm outline-none min-w-0"
+                />
+                {searchInput && (
+                  <button
+                    onClick={clearSearch}
+                    className="p-1 text-gray-400 hover:text-gray-600 flex-shrink-0"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  aria-label="Search Submit"
+                  onClick={() => {
+                    if (searchInput.trim()) {
+                      navigate(
+                        `/search?q=${encodeURIComponent(searchInput.trim())}`,
+                      );
+                      setShowSearchResults(false);
+                    }
+                  }}
+                  className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors flex-shrink-0"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-orange-400" />
+                  ) : (
+                    <Search className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+
+              {/* Desktop Search Dropdown */}
+              {showSearchResults && searchInput.trim().length >= 2 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] max-h-[400px] overflow-y-auto">
+                  <SearchDropdownContent
+                    isLoading={isLoading}
+                    hasResults={hasResults}
+                    searchInput={searchInput}
+                    categories={categories}
+                    subcategories={subcategories}
+                    onResultClick={handleSearchResultClick}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* MOBILE: Search + City icons */}
+            {/* MOBILE icons */}
             <div className="flex md:hidden items-center gap-1 ml-auto">
               <button
                 onClick={() => setMobileSearchOpen(true)}
@@ -278,11 +934,10 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* RIGHT SIDE */}
+            {/* RIGHT */}
             <div className="flex items-center gap-1 lg:gap-2 ml-2 flex-shrink-0">
-              {/* List Your Business - Kept as button because it's an external window.open action */}
               <button
-                onClick={handleListingClick}
+                onClick={() => setVendorFormOpen(true)}
                 className="group relative overflow-hidden hidden cursor-pointer md:inline-flex items-center gap-1.5 lg:gap-2.5 text-[9px] lg:text-[11px] uppercase tracking-wider font-bold text-white rounded-lg px-2 md:px-2.5 lg:px-4 py-2 whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:scale-[1.02] active:scale-95 bg-[linear-gradient(45deg,#f97316,#ea580c,#f97316)] bg-[length:200%_auto]"
               >
                 <span className="relative flex h-1.5 w-1.5 lg:h-2 lg:w-2 flex-shrink-0">
@@ -292,14 +947,16 @@ export default function Navbar() {
                 <span className="relative z-10">Listing Your Business</span>
               </button>
 
-              {/* DESKTOP Nav Links - Using NavLink for SEO crawling & Active state */}
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
                   className={({ isActive }) =>
-                    `hidden xl:block text-xs lg:text-sm px-1 lg:px-2 py-1 font-medium transition-colors duration-200 rounded-md
-                    ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-700 hover:text-orange-500"}`
+                    `hidden xl:block text-xs lg:text-sm px-1 lg:px-2 py-1 font-medium transition-colors duration-200 rounded-md ${
+                      isActive
+                        ? "text-orange-500 border-b-2 border-orange-500"
+                        : "text-gray-700 hover:text-orange-500"
+                    }`
                   }
                 >
                   {link.label}
@@ -329,7 +986,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ROW 2: Mobile Nav Links */}
+        {/* ROW 2: Mobile nav */}
         <div className="md:hidden border-t border-gray-100 bg-white px-3 py-1.5">
           <div className="flex items-center justify-around">
             {navLinks.map((link) => (
@@ -337,15 +994,18 @@ export default function Navbar() {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `text-[11px] font-medium px-2 py-1 rounded-md transition-colors
-                  ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-600 hover:text-orange-500"}`
+                  `text-[11px] font-medium px-2 py-1 rounded-md transition-colors ${
+                    isActive
+                      ? "text-orange-500 border-b-2 border-orange-500"
+                      : "text-gray-600 hover:text-orange-500"
+                  }`
                 }
               >
                 {link.label}
               </NavLink>
             ))}
             <button
-              onClick={handleListingClick}
+              onClick={() => setVendorFormOpen(true)}
               className="text-[11px] font-bold text-orange-500 px-2 py-1 rounded-md border border-orange-400"
             >
               List Business
@@ -354,38 +1014,94 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* MOBILE Search Overlay - Added labels for SEO and accessibility */}
+      {/* MOBILE Search Overlay */}
       {mobileSearchOpen && (
         <div className="fixed inset-0 z-[200] bg-white flex flex-col md:hidden">
           <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200">
             <div className="flex items-center border border-orange-400 rounded-lg bg-white flex-1 px-3 py-2 gap-2">
-              <Search className="w-4 h-4 text-gray-400" />
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-orange-400 flex-shrink-0" />
+              ) : (
+                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              )}
               <input
                 type="text"
                 id="mobile-search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => {
-                  handleKeyDown(e);
+                  handleSearchKeyDown(e);
                   if (e.key === "Enter") setMobileSearchOpen(false);
                 }}
                 placeholder={`Search in ${selectedLocation}`}
                 className="flex-1 text-sm outline-none"
                 autoFocus
               />
+              {searchInput && (
+                <button onClick={clearSearch}>
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              )}
             </div>
             <button
               onClick={() => setMobileSearchOpen(false)}
-              className="text-sm font-medium text-orange-500"
+              className="text-sm font-medium text-orange-500 whitespace-nowrap"
             >
               Cancel
             </button>
           </div>
-          {/* ... Popular searches part remains same ... */}
+
+          {/* Mobile Search Dropdown */}
+          {searchInput.trim().length >= 2 && (
+            <div className="flex-1 overflow-y-auto">
+              <SearchDropdownContent
+                isLoading={isLoading}
+                hasResults={hasResults}
+                searchInput={searchInput}
+                categories={categories}
+                subcategories={subcategories}
+                onResultClick={handleSearchResultClick}
+                mobile
+              />
+            </div>
+          )}
         </div>
       )}
 
-      {/* Other Modals (City Bottom Sheet, Hamburger, Profile) remain same */}
+      {/* Mobile City Overlay */}
+      {mobileCityOpen && (
+        <div
+          className="fixed inset-0 z-[200] bg-white flex flex-col md:hidden"
+          ref={mobileDropdownRef}
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h3 className="text-base font-semibold text-gray-800">
+              Select City
+            </h3>
+            <button
+              onClick={() => setMobileCityOpen(false)}
+              className="text-sm font-medium text-orange-500"
+            >
+              Close
+            </button>
+          </div>
+          <div className="p-3 border-b border-gray-100">
+            <input
+              type="text"
+              placeholder="Search from 4000+ cities..."
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-orange-400"
+              value={citySearch}
+              onChange={(e) => setCitySearch(e.target.value)}
+              onKeyDown={handleCityKeyDown}
+              autoFocus
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
+            <CityList onSelect={handleCitySelect} />
+          </div>
+        </div>
+      )}
+
       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
       {profileOpen &&
         (localStorage.getItem("token") ? (
@@ -409,545 +1125,3 @@ export default function Navbar() {
     </>
   );
 }
-
-// import { useState, useRef, useEffect, useMemo } from "react";
-// import {
-//   Search,
-//   Menu,
-//   User,
-//   MapPin,
-//   ChevronDown,
-//   Loader2,
-//   X,
-// } from "lucide-react";
-// import logo from "../../../src/assets/logo.png";
-// import HamburgerDrawer from "./HamburgerDrawer";
-// import { useNavigate, useLocation, Link, NavLink } from "react-router-dom";
-// import ProfileLogin from "../../pages/modules/profilelogin/ProfileLogin";
-// import ProfileDropdown from "./ProfileDropdown";
-// import { useDispatch, useSelector } from "react-redux";
-// import { fetchCities } from "../../redux/slice/citydropdown/getCityDropdownSlice";
-// import { setCity } from "../../redux/slice/locationSlice";
-// import AddVendorForm from "../../components/nav/AddVendorForm";
-// import {
-//   setSearchQuery,
-//   clearSearchResults,
-//   fetchCategoryResults,
-//   fetchSubcategoryResults,
-// } from "../../redux/slice/searching/getSearchSlice";
-
-// // ── Debounce hook — isPending = true while user is still typing ──────────────
-// function useDebounce(value, delay = 500) {
-//   const [debounced, setDebounced] = useState(value);
-//   const [isPending, setIsPending] = useState(false);
-
-//   useEffect(() => {
-//     if (value.trim().length < 2) {
-//       // below threshold — reset instantly, no skeleton
-//       setIsPending(false);
-//       setDebounced(value);
-//       return;
-//     }
-//     setIsPending(true);                  // user just typed → show skeleton NOW
-//     const t = setTimeout(() => {
-//       setDebounced(value);               // debounce settled → fire API
-//       setIsPending(false);
-//     }, delay);
-//     return () => clearTimeout(t);        // keystroke cancelled previous timer
-//   }, [value, delay]);
-
-//   return { debounced, isPending };
-// }
-
-// // ── Skeleton rows shown while debounce is pending ────────────────────────────
-// const SkeletonRow = () => (
-//   <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
-//     <div className="w-6 h-6 rounded bg-gray-200 flex-shrink-0" />
-//     <div className="flex-1 space-y-1.5">
-//       <div className="h-3 bg-gray-200 rounded w-2/3" />
-//       <div className="h-2 bg-gray-100 rounded w-1/4" />
-//     </div>
-//   </div>
-// );
-
-// const SearchSkeleton = () => (
-//   <>
-//     <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-//       Categories
-//     </div>
-//     <SkeletonRow /><SkeletonRow />
-//     <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100 mt-1">
-//       Services
-//     </div>
-//     <SkeletonRow /><SkeletonRow /><SkeletonRow />
-//   </>
-// );
-
-// export default function Navbar() {
-//   // ── City state ────────────────────────────────────────────────────────────
-//   const [selectedLocation, setSelectedLocation] = useState("Select City");
-//   const [dropdownOpen, setDropdownOpen] = useState(false);
-//   const [citySearch, setCitySearch] = useState("");   // isolated — never mixed with searchInput
-//   const [visibleCount, setVisibleCount] = useState(50);
-
-//   // ── Search state (completely isolated from city) ──────────────────────────
-//   const [searchInput, setSearchInput] = useState("");
-//   const [showSearchResults, setShowSearchResults] = useState(false);
-
-//   // ── UI state ──────────────────────────────────────────────────────────────
-//   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-//   const [mobileCityOpen, setMobileCityOpen] = useState(false);
-//   const [menuOpen, setMenuOpen] = useState(false);
-//   const [profileOpen, setProfileOpen] = useState(false);
-//   const [vendorFormOpen, setVendorFormOpen] = useState(false);
-
-//   const dropdownRef = useRef(null);
-//   const mobileDropdownRef = useRef(null);
-//   const searchRef = useRef(null);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-
-//   // ── Redux ─────────────────────────────────────────────────────────────────
-//   const { cities, loading: citiesLoading } = useSelector((s) => s.cityDropdown);
-//   const selectedCityFromRedux = useSelector((s) => s.location.selectedCity);
-//   const { categories, subcategories, categoryLoading, subcategoryLoading } =
-//     useSelector((s) => s.search);
-
-//   // ── Debounce (500 ms) ─────────────────────────────────────────────────────
-//   const { debounced: debouncedSearch, isPending } = useDebounce(searchInput, 500);
-
-//   // isLoading = pending debounce timer OR actual API in-flight
-//   const isLoading = isPending || categoryLoading || subcategoryLoading;
-//   const hasResults = categories.length > 0 || subcategories.length > 0;
-
-//   // ── Effects ───────────────────────────────────────────────────────────────
-//   useEffect(() => {
-//     if (selectedCityFromRedux) setSelectedLocation(selectedCityFromRedux);
-//   }, [selectedCityFromRedux]);
-
-//   useEffect(() => { dispatch(fetchCities()); }, [dispatch]);
-
-//   // Fire API only after debounce settles
-//   useEffect(() => {
-//     if (debouncedSearch.trim().length < 2) {
-//       dispatch(clearSearchResults());
-//       setShowSearchResults(false);
-//       return;
-//     }
-//     dispatch(setSearchQuery(debouncedSearch));
-//     dispatch(fetchCategoryResults(debouncedSearch));
-//     dispatch(fetchSubcategoryResults(debouncedSearch));
-//     setShowSearchResults(true);
-//   }, [debouncedSearch, dispatch]);
-
-//   // Open dropdown immediately on input (shows skeleton while waiting)
-//   useEffect(() => {
-//     if (searchInput.trim().length >= 2) setShowSearchResults(true);
-//     else setShowSearchResults(false);
-//   }, [searchInput]);
-
-//   // ── City helpers ──────────────────────────────────────────────────────────
-//   const handleCitySelect = (cityName) => {
-//     if (!cityName) return;
-//     setSelectedLocation(cityName);
-//     dispatch(setCity(cityName));
-//     setDropdownOpen(false);
-//     setMobileCityOpen(false);
-//     setCitySearch("");
-//   };
-
-//   const filteredCities = useMemo(() => {
-//     const list = Array.isArray(cities) ? cities : [];
-//     if (!citySearch) return list;
-//     return list.filter((c) =>
-//       c?.name?.toLowerCase().includes(citySearch.toLowerCase())
-//     );
-//   }, [cities, citySearch]);
-
-//   const displayCities = filteredCities.slice(0, visibleCount);
-
-//   const handleCityKeyDown = (e) => {
-//     if (e.key === "Enter" && citySearch.trim()) {
-//       const exact = cities.find((c) => c.name.toLowerCase() === citySearch.toLowerCase());
-//       handleCitySelect(exact ? exact.name : citySearch);
-//     }
-//   };
-
-//   const handleScroll = (e) => {
-//     const { scrollTop, scrollHeight, clientHeight } = e.target;
-//     if (scrollHeight - scrollTop <= clientHeight + 20 && visibleCount < filteredCities.length) {
-//       setVisibleCount((p) => p + 50);
-//     }
-//   };
-
-//   useEffect(() => { setVisibleCount(50); }, [citySearch, dropdownOpen, mobileCityOpen]);
-
-//   // ── Search helpers ────────────────────────────────────────────────────────
-//   const handleSearchKeyDown = (e) => {
-//     if (e.key === "Enter" && searchInput.trim()) {
-//       navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`);
-//       setShowSearchResults(false);
-//     }
-//     if (e.key === "Escape") setShowSearchResults(false);
-//   };
-
-//   const toSlug = (name = "") =>
-//     name.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-
-//   const handleSearchResultClick = (item, type) => {
-//     setShowSearchResults(false);
-//     setSearchInput(item.name);
-//     if (type === "category") {
-//       navigate(`/subcategory/${item.cateId}/${toSlug(item.name)}`);
-//     } else {
-//       navigate(`/subcategory/${item.subCateId}/${toSlug(item.name)}`);
-//     }
-//   };
-
-//   const clearSearch = () => {
-//     setSearchInput("");
-//     dispatch(clearSearchResults());
-//     setShowSearchResults(false);
-//   };
-
-//   // ── Outside click ─────────────────────────────────────────────────────────
-//   useEffect(() => {
-//     const handler = (e) => {
-//       if (dropdownRef.current && !dropdownRef.current.contains(e.target))
-//         setDropdownOpen(false);
-//       if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(e.target))
-//         setMobileCityOpen(false);
-//       if (searchRef.current && !searchRef.current.contains(e.target))
-//         setShowSearchResults(false);
-//     };
-//     document.addEventListener("mousedown", handler);
-//     return () => document.removeEventListener("mousedown", handler);
-//   }, []);
-
-//   useEffect(() => {
-//     document.body.style.overflow = mobileSearchOpen || mobileCityOpen ? "hidden" : "";
-//     return () => { document.body.style.overflow = ""; };
-//   }, [mobileSearchOpen, mobileCityOpen]);
-
-//   const handleLogout = () => {
-//     localStorage.removeItem("token");
-//     localStorage.removeItem("user");
-//     window.location.reload();
-//   };
-
-//   // ── Search result list (shared by desktop + mobile) ───────────────────────
-//   const SearchDropdownContent = ({ mobile = false }) => {
-//     const imgSize = mobile ? "w-8 h-8" : "w-6 h-6";
-
-//     if (isLoading) return <SearchSkeleton />;
-
-//     if (!hasResults) return (
-//       <div className={`${mobile ? "p-8" : "p-6"} text-center text-sm text-gray-500`}>
-//         No results found for &quot;{searchInput}&quot;
-//       </div>
-//     );
-
-//     return (
-//       <>
-//         {categories.length > 0 && (
-//           <div>
-//             <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-//               Categories
-//             </div>
-//             {categories.map((cat) => (
-//               <button
-//                 key={cat._id}
-//                 onClick={() => { handleSearchResultClick(cat, "category"); if (mobile) setMobileSearchOpen(false); }}
-//                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-orange-50 transition-colors text-left border-b border-gray-50"
-//               >
-//                 {cat.icon
-//                   ? <img src={cat.icon} alt={cat.name} className={`${imgSize} rounded object-cover flex-shrink-0`} />
-//                   : <div className={`${imgSize} rounded bg-orange-100 flex-shrink-0`} />
-//                 }
-//                 <div>
-//                   <p className="text-sm font-medium text-gray-800">{cat.name}</p>
-//                   <p className="text-xs text-gray-400">{cat.cateId}</p>
-//                 </div>
-//               </button>
-//             ))}
-//           </div>
-//         )}
-
-//         {subcategories.length > 0 && (
-//           <div>
-//             <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-//               Services
-//             </div>
-//             {subcategories.map((sub) => (
-//               <button
-//                 key={sub._id}
-//                 onClick={() => { handleSearchResultClick(sub, "subcategory"); if (mobile) setMobileSearchOpen(false); }}
-//                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-orange-50 transition-colors text-left border-b border-gray-50"
-//               >
-//                 {sub.image
-//                   ? <img src={sub.image} alt={sub.name} className={`${imgSize} rounded object-cover flex-shrink-0`} />
-//                   : <div className={`${imgSize} rounded bg-orange-100 flex-shrink-0`} />
-//                 }
-//                 <div>
-//                   <p className="text-sm font-medium text-gray-800">{sub.name}</p>
-//                   <p className="text-xs text-gray-400">{sub.subCateId}</p>
-//                 </div>
-//               </button>
-//             ))}
-//           </div>
-//         )}
-//       </>
-//     );
-//   };
-
-//   // ── City list ─────────────────────────────────────────────────────────────
-//   const CityList = ({ onSelect }) => (
-//     <>
-//       {citiesLoading ? (
-//         <div className="p-8 text-center">
-//           <Loader2 className="w-6 h-6 animate-spin mx-auto text-orange-500" />
-//         </div>
-//       ) : displayCities.length > 0 ? (
-//         displayCities.map((city, index) => (
-//           <button
-//             key={`${city.name}-${index}`}
-//             onClick={() => onSelect(city?.name)}
-//             className="w-full text-left px-4 py-3 text-sm cursor-pointer hover:bg-orange-50 active:bg-orange-100 flex items-center transition-colors"
-//           >
-//             <MapPin className="w-3.5 h-3.5 text-gray-400 mr-2 flex-shrink-0" />
-//             {city?.name}
-//           </button>
-//         ))
-//       ) : (
-//         <div className="p-8 text-center text-sm text-gray-500">No city found</div>
-//       )}
-//     </>
-//   );
-
-//   const navLinks = [
-//     { label: "Services", path: "/navservice" },
-//     { label: "Blogs", path: "/blog" },
-//     { label: "Contact", path: "/contact" },
-//     { label: "About", path: "/about" },
-//   ];
-
-//   return (
-//     <>
-//       <div className="h-[96px] sm:h-[96px] md:h-[64px]" />
-
-//       <nav className="w-full bg-white fixed top-0 left-0 right-0 z-50 shadow-sm" aria-label="Main Navigation">
-
-//         {/* ROW 1 */}
-//         <div className="px-3 sm:px-4 md:px-5 lg:px-6 py-2">
-//           <div className="max-w-[1400px] mx-auto flex items-center gap-1 sm:gap-1.5 lg:gap-2">
-
-//             <Link to="/" className="flex-shrink-0" aria-label="Local Trade Street Home">
-//               <img src={logo} alt="Local Trade Street - Connect with Local Services" className="h-7 sm:h-8 md:h-9 lg:h-10 w-auto" />
-//             </Link>
-
-//             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
-
-//             {/* DESKTOP: City Dropdown */}
-//             <div className="relative hidden md:block flex-shrink-0" ref={dropdownRef}>
-//               <button
-//                 onClick={() => setDropdownOpen(!dropdownOpen)}
-//                 aria-expanded={dropdownOpen}
-//                 aria-haspopup="listbox"
-//                 className="flex items-center gap-1 text-gray-700 font-medium text-xs lg:text-sm border rounded-lg px-2 lg:px-3 py-1.5 hover:bg-gray-50 transition-all whitespace-nowrap"
-//               >
-//                 <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-orange-500 flex-shrink-0" />
-//                 <span className="max-w-[70px] lg:max-w-[110px] xl:max-w-[140px] truncate">{selectedLocation}</span>
-//                 <ChevronDown className={`w-3 h-3 flex-shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
-//               </button>
-
-//               {dropdownOpen && (
-//                 <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] w-64 lg:w-72 overflow-hidden flex flex-col">
-//                   <div className="p-3 border-b border-gray-200 bg-white">
-//                     <input
-//                       type="text"
-//                       placeholder="Search from 4000+ cities..."
-//                       className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-orange-400"
-//                       value={citySearch}
-//                       onChange={(e) => setCitySearch(e.target.value)}
-//                       onKeyDown={handleCityKeyDown}
-//                       autoFocus
-//                     />
-//                   </div>
-//                   <div className="max-h-[300px] overflow-y-auto" onScroll={handleScroll}>
-//                     <CityList onSelect={handleCitySelect} />
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-
-//             <div className="hidden md:block h-7 w-px bg-gray-200 mx-1 flex-shrink-0" />
-
-//             {/* DESKTOP: Search */}
-//             <div className="relative hidden md:block flex-1 min-w-0" ref={searchRef}>
-//               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-orange-400 p-1">
-//                 <label htmlFor="desktop-search" className="sr-only">Search Services</label>
-//                 <input
-//                   id="desktop-search"
-//                   type="text"
-//                   value={searchInput}
-//                   onChange={(e) => setSearchInput(e.target.value)}
-//                   onKeyDown={handleSearchKeyDown}
-//                   onFocus={() => { if (searchInput.trim().length >= 2) setShowSearchResults(true); }}
-//                   placeholder={`Search in ${selectedLocation}`}
-//                   className="flex-1 px-2 lg:px-3 py-1.5 text-xs lg:text-sm outline-none min-w-0"
-//                 />
-//                 {searchInput && (
-//                   <button onClick={clearSearch} className="p-1 text-gray-400 hover:text-gray-600 flex-shrink-0" aria-label="Clear search">
-//                     <X className="w-3.5 h-3.5" />
-//                   </button>
-//                 )}
-//                 <button
-//                   aria-label="Search Submit"
-//                   onClick={() => { if (searchInput.trim()) { navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`); setShowSearchResults(false); } }}
-//                   className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors flex-shrink-0"
-//                 >
-//                   {isLoading
-//                     ? <Loader2 className="w-4 h-4 animate-spin text-orange-400" />
-//                     : <Search className="w-4 h-4" />
-//                   }
-//                 </button>
-//               </div>
-
-//               {showSearchResults && searchInput.trim().length >= 2 && (
-//                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] max-h-[400px] overflow-y-auto">
-//                   <SearchDropdownContent />
-//                 </div>
-//               )}
-//             </div>
-
-//             {/* MOBILE icons */}
-//             <div className="flex md:hidden items-center gap-1 ml-auto">
-//               <button onClick={() => setMobileSearchOpen(true)} className="p-2 text-gray-600 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors" aria-label="Open Search">
-//                 <Search className="w-5 h-5" />
-//               </button>
-//               <button onClick={() => setMobileCityOpen(true)} className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-gray-700 border rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors max-w-[110px]" aria-label="Select city">
-//                 <MapPin className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
-//                 <span className="truncate">{selectedLocation}</span>
-//               </button>
-//             </div>
-
-//             {/* RIGHT */}
-//             <div className="flex items-center gap-1 lg:gap-2 ml-2 flex-shrink-0">
-//               <button
-//                 onClick={() => setVendorFormOpen(true)}
-//                 className="group relative overflow-hidden hidden cursor-pointer md:inline-flex items-center gap-1.5 lg:gap-2.5 text-[9px] lg:text-[11px] uppercase tracking-wider font-bold text-white rounded-lg px-2 md:px-2.5 lg:px-4 py-2 whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:scale-[1.02] active:scale-95 bg-[linear-gradient(45deg,#f97316,#ea580c,#f97316)] bg-[length:200%_auto]"
-//               >
-//                 <span className="relative flex h-1.5 w-1.5 lg:h-2 lg:w-2 flex-shrink-0">
-//                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-//                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 lg:h-2 lg:w-2 bg-white"></span>
-//                 </span>
-//                 <span className="relative z-10">Listing Your Business</span>
-//               </button>
-
-//               {navLinks.map((link) => (
-//                 <NavLink
-//                   key={link.path}
-//                   to={link.path}
-//                   className={({ isActive }) =>
-//                     `hidden xl:block text-xs lg:text-sm px-1 lg:px-2 py-1 font-medium transition-colors duration-200 rounded-md ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-700 hover:text-orange-500"}`
-//                   }
-//                 >
-//                   {link.label}
-//                 </NavLink>
-//               ))}
-
-//               <button onClick={() => setMenuOpen(true)} aria-label="Open Menu" className="p-1.5 lg:p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-//                 <Menu className="w-4 h-4 lg:w-5 lg:h-5" />
-//               </button>
-
-//               <button
-//                 onClick={() => setProfileOpen(true)}
-//                 aria-label="User Profile"
-//                 className={`p-1.5 rounded-full border flex-shrink-0 transition-colors hover:bg-gray-50 ${localStorage.getItem("token") ? "border-orange-500 bg-orange-50" : "border-gray-200"}`}
-//               >
-//                 <User className="w-4 h-4 lg:w-5 lg:h-5" />
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* ROW 2: Mobile nav */}
-//         <div className="md:hidden border-t border-gray-100 bg-white px-3 py-1.5">
-//           <div className="flex items-center justify-around">
-//             {navLinks.map((link) => (
-//               <NavLink
-//                 key={link.path}
-//                 to={link.path}
-//                 className={({ isActive }) =>
-//                   `text-[11px] font-medium px-2 py-1 rounded-md transition-colors ${isActive ? "text-orange-500 border-b-2 border-orange-500" : "text-gray-600 hover:text-orange-500"}`
-//                 }
-//               >
-//                 {link.label}
-//               </NavLink>
-//             ))}
-//             <button onClick={() => setVendorFormOpen(true)} className="text-[11px] font-bold text-orange-500 px-2 py-1 rounded-md border border-orange-400">
-//               List Business
-//             </button>
-//           </div>
-//         </div>
-//       </nav>
-
-//       {/* MOBILE Search Overlay */}
-//       {mobileSearchOpen && (
-//         <div className="fixed inset-0 z-[200] bg-white flex flex-col md:hidden">
-//           <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200">
-//             <div className="flex items-center border border-orange-400 rounded-lg bg-white flex-1 px-3 py-2 gap-2">
-//               {isLoading
-//                 ? <Loader2 className="w-4 h-4 animate-spin text-orange-400 flex-shrink-0" />
-//                 : <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-//               }
-//               <input
-//                 type="text"
-//                 id="mobile-search-input"
-//                 value={searchInput}
-//                 onChange={(e) => setSearchInput(e.target.value)}
-//                 onKeyDown={(e) => { handleSearchKeyDown(e); if (e.key === "Enter") setMobileSearchOpen(false); }}
-//                 placeholder={`Search in ${selectedLocation}`}
-//                 className="flex-1 text-sm outline-none"
-//                 autoFocus
-//               />
-//               {searchInput && (
-//                 <button onClick={clearSearch}>
-//                   <X className="w-4 h-4 text-gray-400" />
-//                 </button>
-//               )}
-//             </div>
-//             <button onClick={() => setMobileSearchOpen(false)} className="text-sm font-medium text-orange-500 whitespace-nowrap">
-//               Cancel
-//             </button>
-//           </div>
-
-//           {searchInput.trim().length >= 2 && (
-//             <div className="flex-1 overflow-y-auto">
-//               <SearchDropdownContent mobile />
-//             </div>
-//           )}
-//         </div>
-//       )}
-
-//       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-//       {profileOpen &&
-//         (localStorage.getItem("token") ? (
-//           <ProfileDropdown onClose={() => setProfileOpen(false)} onLogout={handleLogout} />
-//         ) : (
-//           <ProfileLogin onClose={() => setProfileOpen(false)} />
-//         ))}
-
-//       {vendorFormOpen && (
-//         <AddVendorForm
-//           onClose={() => setVendorFormOpen(false)}
-//           onSuccess={() => {
-//             setVendorFormOpen(false);
-//             window.location.href = "https://vendor.localtradestreet.com/login";
-//           }}
-//         />
-//       )}
-//     </>
-//   );
-// }

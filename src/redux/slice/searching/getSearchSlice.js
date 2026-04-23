@@ -1,11 +1,8 @@
-// redux/slice/search/searchSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const SEARCH_URL = `${API_BASE}/customer/search`;
-
-// ── Thunks ──────────────────────────────────────────────────────────────────
 
 export const fetchCategoryResults = createAsyncThunk(
   "search/fetchCategoryResults",
@@ -30,7 +27,7 @@ export const fetchSubcategoryResults = createAsyncThunk(
       const { data } = await axios.get(`${SEARCH_URL}/subcategory`, {
         params: { keyword },
       });
-      return data.data; // array of subcategory objects
+      return data.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch subcategory results",
@@ -39,12 +36,10 @@ export const fetchSubcategoryResults = createAsyncThunk(
   },
 );
 
-// ── Slice ────────────────────────────────────────────────────────────────────
-
 const searchSlice = createSlice({
   name: "search",
   initialState: {
-    query: "", // the live search-bar text
+    query: "",
     categories: [],
     subcategories: [],
     categoryLoading: false,
@@ -65,7 +60,6 @@ const searchSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // ── category ──
     builder
       .addCase(fetchCategoryResults.pending, (state) => {
         state.categoryLoading = true;
@@ -73,14 +67,14 @@ const searchSlice = createSlice({
       })
       .addCase(fetchCategoryResults.fulfilled, (state, action) => {
         state.categoryLoading = false;
-        state.categories = action.payload;
+        state.categories = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchCategoryResults.rejected, (state, action) => {
         state.categoryLoading = false;
         state.categoryError = action.payload;
+        state.categories = [];
       });
 
-    // ── subcategory ──
     builder
       .addCase(fetchSubcategoryResults.pending, (state) => {
         state.subcategoryLoading = true;
@@ -88,11 +82,14 @@ const searchSlice = createSlice({
       })
       .addCase(fetchSubcategoryResults.fulfilled, (state, action) => {
         state.subcategoryLoading = false;
-        state.subcategories = action.payload;
+        state.subcategories = Array.isArray(action.payload)
+          ? action.payload
+          : [];
       })
       .addCase(fetchSubcategoryResults.rejected, (state, action) => {
         state.subcategoryLoading = false;
         state.subcategoryError = action.payload;
+        state.subcategories = [];
       });
   },
 });

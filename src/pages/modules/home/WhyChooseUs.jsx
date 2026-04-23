@@ -131,7 +131,7 @@ export default function WhyChooseUs() {
             id="why-choose-us-title"
             className="why-title font-extrabold text-gray-900 leading-tight"
           >
-            Why Choose <span className="text-orange-500">LocalTradeStreet</span>
+            Why Choose <span className="text-orange-500">Local Trade Street</span>
             <br className="hidden md:block" /> for Your Local Business Needs?
           </h2>
           <p className="why-subtitle text-gray-400 mt-4 max-w-xl mx-auto leading-relaxed">
