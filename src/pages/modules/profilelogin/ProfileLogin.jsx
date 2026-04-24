@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendOtp } from "../../../redux/slice/customerAuth/sendOtpSlice";
 import ProfileVerifyOtp from "./ProfileVerifyOtp";
 import { toast } from "react-toastify";
+
 const ProfileLogin = ({ onClose }) => {
   const [showOtp, setShowOtp] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "" });
@@ -37,14 +38,21 @@ const ProfileLogin = ({ onClose }) => {
 
   useEffect(() => {
     setShowOtp(false);
-    // Agar aapke slice mein reset action hai toh yahan dispatch karein
-    // dispatch(resetOtpState()); 
+    // dispatch(resetOtpState());
   }, []);
 
+  // --- Bug Fix: Name field validation ---
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    // Yeh regex sirf letters aur spaces allow karega, numbers ko automatically remove kar dega
+    const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+    setFormData({ ...formData, name: filteredValue });
+  };
+
   const handleLogin = () => {
-    if (!formData.name || formData.phone.length < 10) {
-      toast.warning("Please enter name or phone number",{
-        autoClose:1500
+    if (!formData.name.trim() || formData.phone.length < 10) {
+      toast.warning("Please enter a valid name and 10-digit phone number", {
+        autoClose: 1500,
       });
       return;
     }
@@ -99,7 +107,7 @@ const ProfileLogin = ({ onClose }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={handleNameChange} // Fixed logic here
               placeholder="Enter your full name"
               className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100"
             />
@@ -118,7 +126,11 @@ const ProfileLogin = ({ onClose }) => {
                 type="tel"
                 maxLength={10}
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => {
+                  // Only allow numbers in phone field
+                  const val = e.target.value.replace(/\D/g, "");
+                  setFormData({ ...formData, phone: val });
+                }}
                 placeholder="Enter 10-digit mobile number"
                 className="flex-1 h-12 px-4 bg-transparent text-gray-900 text-sm outline-none"
               />
@@ -130,12 +142,18 @@ const ProfileLogin = ({ onClose }) => {
             disabled={loading}
             className="w-full h-12 rounded-xl text-white font-semibold text-sm tracking-wide transition-all duration-200 mt-1 shadow-lg active:scale-95 flex items-center justify-center gap-2"
             style={{
-              background: loading ? "#9ca3af" : "linear-gradient(135deg, #f97316, #ea580c)",
+              background: loading
+                ? "#9ca3af"
+                : "linear-gradient(135deg, #f97316, #ea580c)",
               boxShadow: loading ? "none" : "0 4px 14px rgba(234,88,12,0.35)",
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : "Log In with OTP"}
+            {loading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              "Log In with OTP"
+            )}
           </button>
         </div>
       </div>

@@ -25,12 +25,17 @@ const Contact = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Validation: Mobile & Pincode should only contain numbers
-    if ((name === "mobile" || name === "pincode") && value !== "" && !/^\d+$/.test(value)) return;
-    
+    if (
+      (name === "mobile" || name === "pincode") &&
+      value !== "" &&
+      !/^\d+$/.test(value)
+    )
+      return;
+
     if (name === "message" && value.length > maxChars) return;
-    
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -43,7 +48,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-orange-100">
-      
       {/* ── BREADCRUMB ── */}
       <div className="w-full mt-5 px-4 md:px-12 lg:px-24">
         <div className="flex items-center py-2.5">
@@ -73,39 +77,55 @@ const Contact = () => {
       {/* ── BODY ── */}
       <div className="w-full px-4 md:px-12 lg:px-24 py-10">
         <div className="flex flex-col lg:flex-row gap-12 items-start">
-          
           {/* ── LEFT — Contact Info ── */}
           <div className="w-full lg:w-2/5">
-            <span className="text-orange-500 font-bold text-xs uppercase tracking-widest">Connect with us</span>
+            <span className="text-orange-500 font-bold text-xs uppercase tracking-widest">
+              Connect with us
+            </span>
             <h2 className="text-3xl font-black text-gray-900 mt-2 mb-4">
               Get In <span className="text-orange-500">Touch</span>
             </h2>
             <p className="text-sm text-gray-500 leading-relaxed mb-8">
-              Koi sawal ya feedback? Humari team hamesha aapki madad ke liye taiyar hai. 
-              Business listing ho ya support, niche diye gaye tariko se humse judiye.
+              Koi sawal ya feedback? Humari team hamesha aapki madad ke liye
+              taiyar hai. Business listing ho ya support, niche diye gaye tariko
+              se humse judiye.
             </p>
 
             {/* Info Cards */}
             <div className="space-y-4">
               {/* Email Card */}
-              <a href="mailto:support@localtradestreet.com" className="flex items-center gap-4 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 hover:shadow-md transition-all group">
+              <a
+                href="mailto:support@localtradestreet.com"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 hover:shadow-md transition-all group"
+              >
                 <div className="w-11 h-11 rounded-xl bg-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <Mail size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-blue-500 font-extrabold uppercase tracking-tight">Email Us</p>
-                  <p className="text-sm font-bold text-gray-700">support@localtradestreet.com</p>
+                  <p className="text-[10px] text-blue-500 font-extrabold uppercase tracking-tight">
+                    Email Us
+                  </p>
+                  <p className="text-sm font-bold text-gray-700">
+                    support@localtradestreet.com
+                  </p>
                 </div>
               </a>
 
               {/* Call Card */}
-              <a href="tel:+917030772573" className="flex items-center gap-4 p-4 rounded-2xl bg-green-50/50 border border-green-100 hover:shadow-md transition-all group">
+              <a
+                href="tel:+917030772573"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-green-50/50 border border-green-100 hover:shadow-md transition-all group"
+              >
                 <div className="w-11 h-11 rounded-xl bg-green-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <Phone size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-green-600 font-extrabold uppercase tracking-tight">Call/WhatsApp</p>
-                  <p className="text-sm font-bold text-gray-700">+91 70307 72573</p>
+                  <p className="text-[10px] text-green-600 font-extrabold uppercase tracking-tight">
+                    Call/WhatsApp
+                  </p>
+                  <p className="text-sm font-bold text-gray-700">
+                    +91 70307 72573
+                  </p>
                 </div>
               </a>
 
@@ -115,9 +135,12 @@ const Contact = () => {
                   <MapPin size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-orange-600 font-extrabold uppercase tracking-tight">Visit Us</p>
+                  <p className="text-[10px] text-orange-600 font-extrabold uppercase tracking-tight">
+                    Visit Us
+                  </p>
                   <p className="text-sm font-bold text-gray-700 leading-tight">
-                    4th floor, Prince Complex, Chatrapati Nagar, Nagpur, Maharashtra 440025
+                    4th floor, Prince Complex, Chatrapati Nagar, Nagpur,
+                    Maharashtra 440025
                   </p>
                 </div>
               </div>
@@ -129,13 +152,17 @@ const Contact = () => {
             <div className="bg-white rounded-[2rem] shadow-2xl shadow-gray-200/50 border border-gray-100 p-8 md:p-10">
               <div className="flex items-center gap-2 mb-6">
                 <MessageSquare className="text-orange-500" size={20} />
-                <h3 className="text-xl font-bold text-gray-800">Send Us a Message</h3>
+                <h3 className="text-xl font-bold text-gray-800">
+                  Send Us a Message
+                </h3>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 ml-1">YOUR NAME</label>
+                    <label className="text-xs font-bold text-gray-500 ml-1">
+                      Your Name
+                    </label>
                     <input
                       type="text"
                       name="name"
@@ -147,7 +174,9 @@ const Contact = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 ml-1">EMAIL ADDRESS</label>
+                    <label className="text-xs font-bold text-gray-500 ml-1">
+                      Email-Address
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -162,7 +191,9 @@ const Contact = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 ml-1">MOBILE NUMBER</label>
+                    <label className="text-xs font-bold text-gray-500 ml-1">
+                      Mobile Number
+                    </label>
                     <input
                       type="tel"
                       name="mobile"
@@ -175,7 +206,9 @@ const Contact = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 ml-1">PINCODE</label>
+                    <label className="text-xs font-bold text-gray-500 ml-1">
+                      Pincode
+                    </label>
                     <input
                       type="text"
                       name="pincode"
@@ -190,7 +223,9 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 ml-1">SUBJECT</label>
+                  <label className="text-xs font-bold text-gray-500 ml-1">
+                    Subject
+                  </label>
                   <input
                     type="text"
                     name="subject"
@@ -204,7 +239,8 @@ const Contact = () => {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500 ml-1 flex justify-between">
-                    MESSAGE <span>{maxChars - form.message.length} chars left</span>
+                    Message{" "}
+                    <span>{maxChars - form.message.length} chars left</span>
                   </label>
                   <textarea
                     name="message"

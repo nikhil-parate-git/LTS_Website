@@ -9,12 +9,12 @@ export const sendOtp = createAsyncThunk(
   async (phone, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}/send`, { phone });
-      const otp = response.data.OTP;
-      toast.success(
-        otp
-          ? `Your OTP is: ${otp}`
-          : response.data.message || "OTP sent successfully!",
-      );
+      // const otp = response.data.OTP;
+      // // toast.success(
+      // //   otp
+      // //     ? `Your OTP is: ${otp}`
+      // //     : response.data.message || "OTP sent successfully!",
+      // // );
       return response.data;
     } catch (error) {
       const message =

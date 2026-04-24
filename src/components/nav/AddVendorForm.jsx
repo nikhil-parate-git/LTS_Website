@@ -33,6 +33,7 @@ import {
   ImageIcon,
   ShieldCheck,
   Phone,
+  LogIn,
 } from "lucide-react";
 import Select from "react-select";
 import { State, City } from "country-state-city";
@@ -701,7 +702,6 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
     businessTypesLoading,
   } = useSelector((state) => state.vendorForm);
 
-  // addVendor Redux state
   const { loading: isSubmitting, success: vendorSuccess } = useSelector(
     (state) => state.addVendor,
   );
@@ -736,7 +736,6 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
     gstFileRef.current = file;
   }, []);
 
-  // Fetch on mount
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchBusinessTypes());
@@ -749,7 +748,6 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
     if (otpSent) setShowOtpModal(true);
   }, [otpSent]);
 
-  // On vendor created successfully, call onSuccess & close
   useEffect(() => {
     if (vendorSuccess) {
       if (onSuccess) onSuccess();
@@ -890,7 +888,6 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
       if (gstFileRef.current)
         formData.append("gstCertificate", gstFileRef.current);
 
-      // Dispatch Redux thunk — toast handled inside thunk
       dispatch(createVendor(formData));
     },
   });
@@ -954,7 +951,6 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
 
   return (
     <>
-      {/* ── SEO ── */}
       <SEO
         title="Add Vendor | Local Trade Street"
         description="Register a new vendor on Local Trade Street. Fill in vendor details, contact information, business documents, and service areas to onboard a trusted local service provider."
@@ -985,23 +981,40 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
             boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
           }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
-            <div className="flex items-center gap-3">
+          {/* ── Header ── */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-200 flex-shrink-0 gap-2 flex-wrap">
+            {/* Left — back arrow + title */}
+            <div className="flex items-center gap-3 min-w-0">
               {onClose && (
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#E23E08] hover:border-orange-200 transition-all shadow-sm"
+                  className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#E23E08] hover:border-orange-200 transition-all shadow-sm flex-shrink-0"
                 >
                   <ArrowLeft size={17} />
                 </button>
               )}
-              <h1 className="text-xl font-bold text-slate-900">Add Vendor</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                Add Vendor
+              </h1>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Right — login button + verify badge + close */}
+            <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+              {/* ── LOGIN BUTTON ── */}
+              <a
+                href="https://vendor.localtradestreet.com/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white bg-[#E23E08] hover:bg-orange-600 active:scale-95 transition-all shadow-sm whitespace-nowrap"
+              >
+                <LogIn size={14} />
+                <span className="hidden xs:inline">Vendor </span>Login
+              </a>
+
+              {/* Phone verified badge */}
               <div
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isPhoneVerified ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}
+                className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isPhoneVerified ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}
               >
                 {isPhoneVerified ? (
                   <>
@@ -1009,15 +1022,16 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                   </>
                 ) : (
                   <>
-                    <Phone size={12} /> Phone Not Verified
+                    <Phone size={12} /> Not Verified
                   </>
                 )}
               </div>
+
               {onClose && (
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all"
+                  className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all flex-shrink-0"
                 >
                   <X size={17} />
                 </button>
@@ -1025,9 +1039,9 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* Scrollable body — scrollbar hidden */}
+          {/* ── Scrollable body ── */}
           <div
-            className="overflow-y-auto flex-1 px-6 py-5"
+            className="overflow-y-auto flex-1 px-4 sm:px-6 py-5"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <style>{`
@@ -1036,6 +1050,11 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
               .freeze-overlay { position:relative; }
               .freeze-overlay::after { content:''; position:absolute; inset:0; background:rgba(248,250,252,0.55); border-radius:14px; z-index:10; pointer-events:none; }
               div.overflow-y-auto::-webkit-scrollbar { display:none; }
+              @media (max-width: 640px) {
+                .grid-cols-2-resp { grid-template-columns: 1fr !important; }
+                .grid-cols-3-resp { grid-template-columns: 1fr !important; }
+                .col-span-2-resp { grid-column: span 1 !important; }
+              }
             `}</style>
 
             {!isPhoneVerified && (
@@ -1057,9 +1076,9 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
 
             <form onSubmit={formik.handleSubmit} noValidate>
               {/* SECTION 1 — Basic Information */}
-              <div className="vcard p-6 mb-4">
+              <div className="vcard p-4 sm:p-6 mb-4">
                 <SectionHeader icon={Building2} title="Basic Information" />
-                <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                   <InputField
                     label="Vendor Name"
                     required
@@ -1153,7 +1172,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                     {...field("companyName")}
                   />
 
-                  {/* Service Category — API */}
+                  {/* Service Category */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-600 mb-1.5">
                       Service Category <span className="text-red-500">*</span>
@@ -1184,7 +1203,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                       )}
                   </div>
 
-                  {/* Subcategories — API */}
+                  {/* Subcategories */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-600 mb-1.5">
                       Service Subcategories{" "}
@@ -1229,7 +1248,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                     )}
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <CompanyImageUpload
                       file={companyImage}
                       onFileChange={handleCompanyImageChange}
@@ -1273,9 +1292,11 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
               </div>
 
               {/* SECTION 2 — Opening Hours */}
-              <div className={`vcard p-6 mb-4 ${f ? "freeze-overlay" : ""}`}>
+              <div
+                className={`vcard p-4 sm:p-6 mb-4 ${f ? "freeze-overlay" : ""}`}
+              >
                 <SectionHeader icon={Clock} title="Opening Hours" />
-                <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                   <TimeDropdown
                     label="Opening Time From"
                     value={formik.values.openingFrom}
@@ -1298,7 +1319,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                     placeholder="Select closing time (PM)..."
                     disabled={f}
                   />
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <label className="block text-sm font-semibold text-slate-600 mb-2.5">
                       Opening Days
                     </label>
@@ -1320,9 +1341,11 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
               </div>
 
               {/* SECTION 3 — Address Information */}
-              <div className={`vcard p-6 mb-4 ${f ? "freeze-overlay" : ""}`}>
+              <div
+                className={`vcard p-4 sm:p-6 mb-4 ${f ? "freeze-overlay" : ""}`}
+              >
                 <SectionHeader icon={MapPin} title="Address Information" />
-                <div className="grid grid-cols-3 gap-x-6 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
                   <InputField
                     label="Office Address"
                     placeholder="Enter office address"
@@ -1396,10 +1419,11 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
               </div>
 
               {/* SECTION 4 — Business Information */}
-              <div className={`vcard p-6 mb-4 ${f ? "freeze-overlay" : ""}`}>
+              <div
+                className={`vcard p-4 sm:p-6 mb-4 ${f ? "freeze-overlay" : ""}`}
+              >
                 <SectionHeader icon={Briefcase} title="Business Information" />
-                <div className="grid grid-cols-3 gap-x-6 gap-y-5">
-                  {/* Business Type — API */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
                   <div>
                     <label className="block text-sm font-semibold text-slate-600 mb-1.5">
                       Business Type
@@ -1437,9 +1461,11 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
               </div>
 
               {/* SECTION 5 — Business Documents */}
-              <div className={`vcard p-6 mb-4 ${f ? "freeze-overlay" : ""}`}>
+              <div
+                className={`vcard p-4 sm:p-6 mb-4 ${f ? "freeze-overlay" : ""}`}
+              >
                 <SectionHeader icon={FileText} title="Business Documents" />
-                <div className="grid grid-cols-3 gap-x-6 gap-y-5 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 mb-6">
                   <InputField
                     label="Aadhaar No."
                     placeholder="12-digit Aadhaar"
@@ -1460,13 +1486,13 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                   />
                 </div>
                 <div
-                  className="border border-dashed border-slate-300 rounded-xl p-5"
+                  className="border border-dashed border-slate-300 rounded-xl p-4 sm:p-5"
                   style={{ background: "#f8fafc" }}
                 >
                   <p className="text-sm font-bold text-slate-600 mb-4">
                     Upload Documents
                   </p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <FileUploadField
                       label="Aadhaar Card"
                       required
@@ -1483,7 +1509,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
                       accept="image/*,application/pdf"
                       disabled={f}
                     />
-                    <div className="col-span-2">
+                    <div className="col-span-1 sm:col-span-2">
                       <FileUploadField
                         label="GST / Shop Certificate"
                         optional

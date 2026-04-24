@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MapPin, Star, Loader2, BadgeCheck, TrendingUp } from "lucide-react";
@@ -22,7 +20,7 @@ function StarRating({ rating = 5 }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className="w-3.5 h-3.5"
+          className="w-3 h-3 sm:w-3.5 sm:h-3.5"
           fill={star <= Math.round(rating) ? "#f97316" : "#d1d5db"}
           stroke="none"
           aria-hidden="true"
@@ -70,7 +68,6 @@ function BusinessCard({ business, index }) {
     navigate(`/business/${city}/${venId}/${slug}`);
   };
 
-  // ✅ JSON-LD structured data per card
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -100,7 +97,7 @@ function BusinessCard({ business, index }) {
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleClick()}
       aria-label={`View ${cardData.name} — ${cardData.category} in ${cardData.city}`}
-      className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300"
+      className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer border border-gray-100 transition-all duration-300 flex flex-col"
       style={{
         transition:
           "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
@@ -114,14 +111,13 @@ function BusinessCard({ business, index }) {
         animation: "fadeSlideUp 0.5s ease both",
       }}
     >
-      {/* ✅ JSON-LD per card */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       {/* Image Section */}
-      <div className="relative overflow-hidden h-[185px] bg-orange-50 shrink-0">
+      <div className="relative overflow-hidden h-[140px] sm:h-[165px] md:h-[185px] bg-orange-50 shrink-0">
         <img
           src={cardData.image || fallbackImage}
           alt={`${cardData.name} — ${cardData.category} in ${cardData.city}`}
@@ -143,56 +139,62 @@ function BusinessCard({ business, index }) {
         />
 
         {/* Category pill */}
-        <div className="absolute top-3 left-3">
-          <span className="bg-orange-500 text-white text-[10.5px] font-semibold px-2.5 py-1 rounded-lg shadow-md leading-none">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+          <span className="bg-orange-500 text-white text-[9px] sm:text-[10.5px] font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg shadow-md leading-none">
             {cardData.category}
           </span>
         </div>
 
         {/* Top Rated badge */}
         {cardData.badge && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 bg-white text-orange-500 text-[10px] font-bold px-2 py-1 rounded-full shadow-md border border-orange-100">
-            <TrendingUp className="w-2.5 h-2.5" aria-hidden="true" />
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-0.5 sm:gap-1 bg-white text-orange-500 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-md border border-orange-100">
+            <TrendingUp
+              className="w-2 h-2 sm:w-2.5 sm:h-2.5"
+              aria-hidden="true"
+            />
             {cardData.badge}
           </div>
         )}
 
         {/* Verified badge */}
         {cardData.verified && (
-          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 bg-white/95 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full shadow border border-green-100">
-            <BadgeCheck className="w-3 h-3" aria-hidden="true" />
+          <div className="absolute bottom-2 right-2 sm:bottom-2.5 sm:right-2.5 flex items-center gap-0.5 sm:gap-1 bg-white/95 text-green-600 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shadow border border-green-100">
+            <BadgeCheck
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3"
+              aria-hidden="true"
+            />
             Verified
           </div>
         )}
       </div>
 
       {/* Card Body */}
-      <div className="px-4 py-3.5 flex flex-col gap-2 flex-1">
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
         <h3
-          className="font-bold text-[13.5px] leading-snug truncate transition-colors duration-200"
+          className="font-bold text-[12px] sm:text-[13.5px] leading-snug truncate transition-colors duration-200"
           style={{ color: hovered ? "#f97316" : "#111827" }}
         >
           {cardData.name}
         </h3>
 
-        <div className="flex items-start gap-1.5 text-gray-400 text-[11.5px]">
+        <div className="flex items-start gap-1 sm:gap-1.5 text-gray-400 text-[10px] sm:text-[11.5px]">
           <MapPin
-            className="w-3 h-3 text-orange-400 shrink-0 mt-0.5"
+            className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-400 shrink-0 mt-0.5"
             aria-hidden="true"
           />
           <span className="truncate leading-snug">{cardData.location}</span>
         </div>
 
-        <div className="border-t border-gray-100 mt-auto pt-2.5">
+        <div className="border-t border-gray-100 mt-auto pt-2 sm:pt-2.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="bg-orange-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="bg-orange-500 text-white text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md tabular-nums">
                 {Number(cardData.rating).toFixed(1)}
               </span>
               <StarRating rating={cardData.rating} />
             </div>
             {cardData.reviews > 0 && (
-              <span className="text-gray-400 text-[11px]">
+              <span className="text-gray-400 text-[9px] sm:text-[11px]">
                 {cardData.reviews} reviews
               </span>
             )}
@@ -209,11 +211,11 @@ function SkeletonCard() {
       className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse"
       aria-hidden="true"
     >
-      <div className="h-[185px] bg-gray-100" />
-      <div className="px-4 py-3.5 space-y-3">
-        <div className="h-4 bg-gray-100 rounded-lg w-3/4" />
-        <div className="h-3 bg-gray-100 rounded-lg w-1/2" />
-        <div className="h-3 bg-gray-100 rounded-lg w-1/3 mt-4" />
+      <div className="h-[140px] sm:h-[165px] md:h-[185px] bg-gray-100" />
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3.5 space-y-2 sm:space-y-3">
+        <div className="h-3 sm:h-4 bg-gray-100 rounded-lg w-3/4" />
+        <div className="h-2.5 sm:h-3 bg-gray-100 rounded-lg w-1/2" />
+        <div className="h-2.5 sm:h-3 bg-gray-100 rounded-lg w-1/3 mt-3 sm:mt-4" />
       </div>
     </div>
   );
@@ -230,7 +232,6 @@ export default function TopRatedBusinesses() {
     dispatch(fetchTopRatedVendors());
   }, [dispatch]);
 
-  // ✅ SEO dynamic values
   const pageTitle = `Top Rated Businesses in ${selectedCity} | Local Trade Street`;
   const pageDescription = `Discover the best and most trusted businesses in ${selectedCity}. Handpicked top-rated service providers with verified reviews on Local Trade Street.`;
   const canonicalUrl = `https://www.localtradestreet.com/top-rated/${createSlug(selectedCity)}`;
@@ -238,7 +239,6 @@ export default function TopRatedBusinesses() {
 
   return (
     <>
-      {/* ✅ SEO Hook */}
       <SEO
         title={pageTitle}
         description={pageDescription}
@@ -248,7 +248,7 @@ export default function TopRatedBusinesses() {
       />
 
       <section
-        className="py-14 px-4 bg-white"
+        className="py-10 sm:py-12 md:py-14 px-3 sm:px-4 bg-white"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <link
@@ -257,34 +257,43 @@ export default function TopRatedBusinesses() {
         />
 
         <div className="max-w-screen-xl mx-auto">
-          <header className="mb-10 text-center">
-            <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-500 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-3 uppercase tracking-widest">
-              <TrendingUp className="w-3.5 h-3.5" aria-hidden="true" />
+          <header className="mb-6 sm:mb-8 md:mb-10 text-center">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-100 text-orange-500 text-[10px] sm:text-xs font-semibold px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full mb-2 sm:mb-3 uppercase tracking-widest">
+              <TrendingUp
+                className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                aria-hidden="true"
+              />
               Top Picks
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-              Top Rated Businesses By <span className="text-orange-500">Local Trade Street</span>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight px-2">
+              Top Rated Businesses By{" "}
+              <span className="text-orange-500">Local Trade Street</span>
             </h1>
-            <p className="text-gray-400 text-sm mt-2 max-w-md mx-auto">
+            <p className="text-gray-400 text-xs sm:text-sm mt-1.5 sm:mt-2 max-w-xs sm:max-w-md mx-auto px-4">
               Handpicked and trusted by thousands of local customers
             </p>
           </header>
 
           {error && (
-            <div className="text-center py-12" role="alert">
+            <div className="text-center py-10 sm:py-12" role="alert">
               <div className="inline-flex flex-col items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                  <span className="text-red-400 text-lg" aria-hidden="true">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-50 flex items-center justify-center">
+                  <span
+                    className="text-red-400 text-base sm:text-lg"
+                    aria-hidden="true"
+                  >
                     !
                   </span>
                 </div>
-                <p className="text-red-400 text-sm font-medium">{error}</p>
+                <p className="text-red-400 text-xs sm:text-sm font-medium">
+                  {error}
+                </p>
               </div>
             </div>
           )}
 
           <div
-            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5"
             aria-label="Top rated businesses list"
           >
             {loading
@@ -297,8 +306,11 @@ export default function TopRatedBusinesses() {
           </div>
 
           {!loading && !error && (vendors || []).length === 0 && (
-            <div className="text-center py-16 text-gray-400" role="status">
-              <p className="text-sm">
+            <div
+              className="text-center py-12 sm:py-16 text-gray-400"
+              role="status"
+            >
+              <p className="text-xs sm:text-sm">
                 No top rated businesses found in {selectedCity}.
               </p>
             </div>
