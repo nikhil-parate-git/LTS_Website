@@ -44,10 +44,10 @@ const sendOtpSlice = createSlice({
         state.success = true;
         state.receivedOtp = action.payload.otp;
         
-        // toast.success(`OTP Sent! Your code is: ${action.payload.otp}`, {
-        //   duration: 6000,
-        //   icon: '🚀',
-        // });
+        toast.success(`OTP Sent! Your code is: ${action.payload.otp}`, {
+          duration: 6000,
+          icon: '🚀',
+        });
       })
       .addCase(sendOtp.rejected, (state, action) => {
         state.loading = false;
