@@ -3,9 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
-const REVIEW_URL = `${API_BASE}/customer/rate-reviews/reviews`;
+const REVIEW_URL = `${API_BASE}/customer/rate-review/reviews`; // ✅ FIXED
 
-// ── Thunk ──────────────────────────────────────────────────────────────────
 export const submitRateReview = createAsyncThunk(
   "rateReview/submit",
   async ({ vendorId, rating, review }, { rejectWithValue }) => {
@@ -25,14 +24,7 @@ export const submitRateReview = createAsyncThunk(
 
       toast.success(
         response.data.message || "Rating & review submitted successfully! 🎉",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        },
+        { position: "top-right", autoClose: 3000, closeOnClick: true }
       );
 
       return response.data;
@@ -49,21 +41,11 @@ export const submitRateReview = createAsyncThunk(
       if (isAlreadyReviewed) {
         toast.info(
           "You have already reviewed this vendor. You can only review once. ✅",
-          {
-            position: "top-right",
-            autoClose: 4000,
-            closeOnClick: true,
-            pauseOnHover: true,
-          },
+          { position: "top-right", autoClose: 4000, closeOnClick: true }
         );
       } else {
         toast.error(message, {
-          position: "top-right",
-          autoClose: 4000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+          position: "top-right", autoClose: 4000, closeOnClick: true
         });
       }
 
@@ -72,7 +54,6 @@ export const submitRateReview = createAsyncThunk(
   },
 );
 
-// ── Slice ──────────────────────────────────────────────────────────────────
 const rateReviewSlice = createSlice({
   name: "rateReview",
   initialState: {

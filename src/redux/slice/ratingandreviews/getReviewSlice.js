@@ -1,17 +1,15 @@
-// redux/slice/vendorReviews/vendorReviewsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
-const BASE = `${API_BASE}/customer/rate-reviews`;
+const BASE = `${API_BASE}/customer/rate-review`; 
 
 const getHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
 
-// ── FETCH reviews ──────────────────────────────────────────────────────────
 export const fetchVendorReviews = createAsyncThunk(
   "vendorReviews/fetch",
   async (vendorId, { rejectWithValue }) => {
@@ -25,18 +23,12 @@ export const fetchVendorReviews = createAsyncThunk(
         error?.response?.data?.message ||
         error?.message ||
         "Failed to fetch reviews.";
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
+      toast.error(message, { position: "top-right", autoClose: 3000 });
       return rejectWithValue(message);
     }
   },
 );
 
-// ── UPDATE review ──────────────────────────────────────────────────────────
 export const updateVendorReview = createAsyncThunk(
   "vendorReviews/update",
   async ({ reviewId, rating, review }, { rejectWithValue }) => {
@@ -47,29 +39,20 @@ export const updateVendorReview = createAsyncThunk(
         { headers: getHeaders() },
       );
       toast.success(response.data.message || "Review updated successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
+        position: "top-right", autoClose: 3000
       });
-      return response.data.data; // updated review object
+      return response.data.data;
     } catch (error) {
       const message =
         error?.response?.data?.message ||
         error?.message ||
         "Failed to update review.";
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
+      toast.error(message, { position: "top-right", autoClose: 3000 });
       return rejectWithValue(message);
     }
   },
 );
 
-// ── DELETE review ──────────────────────────────────────────────────────────
 export const deleteVendorReview = createAsyncThunk(
   "vendorReviews/delete",
   async (reviewId, { rejectWithValue }) => {
@@ -78,36 +61,27 @@ export const deleteVendorReview = createAsyncThunk(
         headers: getHeaders(),
       });
       toast.success(response.data.message || "Review deleted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
+        position: "top-right", autoClose: 3000
       });
-      return reviewId; // return id to remove from state
+      return reviewId;
     } catch (error) {
       const message =
         error?.response?.data?.message ||
         error?.message ||
         "Failed to delete review.";
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
+      toast.error(message, { position: "top-right", autoClose: 3000 });
       return rejectWithValue(message);
     }
   },
 );
 
-// ── Slice ──────────────────────────────────────────────────────────────────
 const vendorReviewsSlice = createSlice({
   name: "vendorReviews",
   initialState: {
     reviews: [],
     loading: false,
-    updating: false, // for patch loader
-    deleting: null, // reviewId being deleted
+    updating: false,
+    deleting: null,
     error: null,
   },
   reducers: {
@@ -121,7 +95,6 @@ const vendorReviewsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ── FETCH ──
       .addCase(fetchVendorReviews.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -134,8 +107,6 @@ const vendorReviewsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-      // ── UPDATE ──
       .addCase(updateVendorReview.pending, (state) => {
         state.updating = true;
       })
@@ -149,10 +120,8 @@ const vendorReviewsSlice = createSlice({
       .addCase(updateVendorReview.rejected, (state) => {
         state.updating = false;
       })
-
-      // ── DELETE ──
       .addCase(deleteVendorReview.pending, (state, action) => {
-        state.deleting = action.meta.arg; // reviewId
+        state.deleting = action.meta.arg;
       })
       .addCase(deleteVendorReview.fulfilled, (state, action) => {
         state.deleting = null;
