@@ -334,7 +334,7 @@ export default function ListBusiness() {
           onClose={() => setVendorFormOpen(false)}
           onSuccess={() => {
             setVendorFormOpen(false);
-            window.location.href = "https://vendor.localtradestreet.com/login";
+            window.location.href = "https://lts-vendor-panel.vercel.app/";
           }}
         />
       )}
