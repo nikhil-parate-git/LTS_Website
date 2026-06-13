@@ -570,7 +570,7 @@ const OtpModal = ({ phone, onClose }) => {
           Verify Phone Number
         </h2>
         <p className="text-sm text-slate-500 text-center mb-6">
-          Enter the 4-digit OTP sent to{" "}
+          Enter the 6-digit OTP sent to{" "}
           <span className="font-semibold text-slate-700">+91 {phone}</span>
         </p>
         <div className="flex gap-3 mb-4">
@@ -1003,7 +1003,7 @@ const AddVendorForm = ({ onClose, onSuccess }) => {
             <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
               {/* ── LOGIN BUTTON ── */}
               <a
-                href="https://vendor.localtradestreet.com/login"
+                href="https://lts-vendor-panel.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white bg-[#E23E08] hover:bg-orange-600 active:scale-95 transition-all shadow-sm whitespace-nowrap"
